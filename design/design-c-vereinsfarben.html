@@ -571,13 +571,6 @@ svg { display: block; }
   color: var(--poster-ink);
   border-radius: 18px; padding: 16px;
 }
-.prof-init {
-  width: 52px; height: 52px; border-radius: 50%; flex: none;
-  display: grid; place-items: center;
-  background: rgba(255,255,255,.14);
-  font-family: var(--font-display); font-stretch: 87.5%;
-  font-weight: 800; font-size: 19px;
-}
 .prof-name {
   font-family: var(--font-display); font-stretch: 87.5%;
   font-weight: 800; font-size: 23px; line-height: 1; text-transform: uppercase;
@@ -611,34 +604,119 @@ svg { display: block; }
 }
 .klartext .al-kicker { color: var(--crit); margin-bottom: 4px; }
 
-/* ================= PLANUNG ================= */
+/* ================= AVATARE (Inline-SVG, clubfarben) ================= */
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex: none;
+  background: var(--accent-soft); display: block;
+}
+.avatar svg { width: 100%; height: 100%; }
+.av-sm, .p-init.av-sm { width: 24px; height: 24px; font-size: 10px; }
+.av-xs, .p-init.av-xs { width: 22px; height: 22px; font-size: 9px; }
+.av-st, .p-init.av-st { width: 20px; height: 20px; font-size: 8.5px; }
+.av-lg, .p-init.av-lg { width: 56px; height: 56px; font-size: 19px; }
+.note .avatar, .note .p-init { margin-top: 2px; }
+.prof-head .p-init { background: rgba(255,255,255,.14); color: var(--poster-ink); }
+.foto-btn {
+  margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; color: var(--poster-ink);
+  border: 1px solid color-mix(in srgb, var(--poster-ink) 45%, transparent);
+  border-radius: 999px; min-height: 30px; padding: 0 12px;
+  font-size: 11.5px; font-weight: 600;
+}
+.foto-btn .ic { width: 13px; height: 13px; }
+
+/* ================= PLANUNG · V2 SPIELTAGSKADER ================= */
 .plan-head { font-size: 12.5px; color: var(--muted); margin: 2px 2px 10px; }
 .plan-head b { color: var(--ink); font-weight: 600; }
-.court {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;
-  background:
-    radial-gradient(120% 90% at 50% 118%, color-mix(in srgb, var(--accent) 12%, transparent) 0 46%, transparent 47%),
-    var(--card-2);
-  border: 1px solid var(--line); border-radius: 16px; padding: 12px;
+
+/* ---- Status: Entwurf / Freigegeben ---- */
+.plan-status {
+  border-radius: 16px; background: var(--card); box-shadow: var(--shadow);
+  padding: 13px 14px; border: 1.5px solid var(--line);
 }
-.slot {
-  min-height: 58px; border-radius: 12px;
-  border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent);
-  background: var(--card);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  padding: 5px 4px; text-align: center;
-}
-.slot .slot-pos {
+.plan-status.is-draft { border: 1.5px dashed color-mix(in srgb, var(--muted) 60%, transparent); }
+.plan-status.is-live  { border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+.status-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.badge-state {
   font-family: var(--font-display); font-stretch: 87.5%; font-weight: 800;
-  font-size: 10.5px; letter-spacing: .1em; color: var(--muted);
+  font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase;
+  border-radius: 7px; padding: 3px 8px;
 }
-.slot .slot-name { font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.15; }
-.slot.filled { border-style: solid; border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: var(--accent-soft); }
-.slot.filled .slot-pos { color: var(--accent); }
-.slot.filled .slot-name { color: var(--ink); }
-.slot.slot-tw { grid-column: 2; }
-.bench { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
-.bench .slot { min-height: 52px; }
+.badge-draft { color: var(--muted); border: 1.5px dashed color-mix(in srgb, var(--muted) 55%, transparent); }
+.badge-live  { color: var(--ok); background: var(--ok-soft); }
+.status-note { font-size: 11.5px; color: var(--muted); }
+.status-time { font-size: 11px; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+.count-wrap { display: flex; align-items: baseline; gap: 7px; margin-top: 12px; }
+.count-num {
+  font-family: var(--font-display); font-stretch: 87.5%; font-weight: 800;
+  font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums;
+}
+.count-num small { font-size: 16px; color: var(--muted); }
+.count-num.over { color: var(--crit); }
+.count-lbl { font-size: 12px; color: var(--muted); }
+.count-flag { margin-left: auto; font-size: 11px; font-weight: 600; text-align: right; }
+.count-flag.f-over { color: var(--crit); }
+.count-flag.f-full { color: var(--warn); }
+.count-bar { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 15%, transparent); overflow: hidden; margin-top: 8px; }
+.count-bar i { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+.count-bar i.over { background: var(--crit); }
+.btn-primary {
+  width: 100%; min-height: 46px; margin-top: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 12px; background: var(--btn-bg); color: var(--btn-ink);
+  font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 14px; letter-spacing: .05em; text-transform: uppercase;
+}
+.btn-primary .ic { width: 17px; height: 17px; }
+.rel-hint {
+  display: flex; gap: 8px; align-items: center; margin-top: 12px;
+  padding: 10px 11px; border-radius: 12px;
+  background: var(--warn-soft); border: 1px solid color-mix(in srgb, var(--warn) 34%, var(--line));
+  font-size: 12px;
+}
+.rel-hint .ic { width: 16px; height: 16px; color: var(--warn); flex: none; }
+.rel-hint > div { flex: 1; min-width: 0; }
+.rel-hint b { font-weight: 600; }
+.rel-hint button {
+  margin-left: auto; flex: none;
+  border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent);
+  color: var(--warn); background: transparent;
+  border-radius: 9px; min-height: 34px; padding: 0 10px;
+  font-weight: 600; font-size: 12px;
+}
+
+/* ---- Positionsgruppen (mehrfach besetzbar) ---- */
+.pgroups { display: flex; flex-direction: column; gap: 7px; }
+.pgroup {
+  display: flex; gap: 10px; align-items: center;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 9px 11px; min-height: 54px;
+}
+.pg-key { flex: none; width: 42px; text-align: center; }
+.pg-key b {
+  display: block; font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 15px; color: var(--accent);
+}
+.pg-key span { font-size: 8px; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); white-space: nowrap; display: block; }
+.pg-chips { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.pg-empty {
+  font-size: 11.5px; color: var(--muted);
+  border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent);
+  border-radius: 999px; padding: 5px 11px;
+}
+.nchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: var(--accent-soft);
+  border-radius: 999px; min-height: 36px; padding: 3px 11px 3px 4px;
+  font-size: 12px; font-weight: 600;
+}
+.pg-mult {
+  flex: none; font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 11px; color: var(--muted);
+}
+
+/* ---- Verfügbarkeits-Pool ---- */
 .pool { display: flex; flex-wrap: wrap; gap: 7px; }
 .pchip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -647,19 +725,109 @@ svg { display: block; }
   font-size: 12.5px; font-weight: 600;
 }
 .pchip .pos-chip { padding: 1px 4px; }
-.pchip .p-init { width: 24px; height: 24px; font-size: 10px; }
-.pchip.sel { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
-.pchip.placed { opacity: .42; }
+.pchip .p-init, .pchip .avatar, .nchip .p-init, .nchip .avatar { width: 24px; height: 24px; font-size: 10px; }
+.pchip.placed { opacity: .55; }
 .pchip[disabled] { opacity: .42; cursor: not-allowed; }
-.pchip .why {
+.pchip .why, .pchip .nom-flag {
   font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
   border-radius: 5px; padding: 1px 5px;
 }
+.pchip .nom-flag { background: var(--ok-soft); color: var(--ok); }
 .plan-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; display: flex; gap: 6px; }
 .plan-note .ic { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--accent); }
 
+/* ---- Bottom-Sheet ---- */
+.sheet-scrim {
+  position: absolute; inset: 0; z-index: 25;
+  background: color-mix(in srgb, var(--club-950) 44%, transparent);
+  display: flex; align-items: flex-end;
+}
+.sheet-scrim[hidden] { display: none; }
+.sheet {
+  width: 100%; max-height: 76%; overflow-y: auto;
+  background: var(--card); border-radius: 20px 20px 0 0;
+  padding: 10px 16px 20px;
+  box-shadow: 0 -12px 40px rgba(8,16,34,.3);
+  animation: sheet-up .22s ease;
+}
+@keyframes sheet-up { from { transform: translateY(28px); opacity: .5; } }
+.sheet-grab { width: 38px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--muted) 35%, transparent); margin: 0 auto 12px; }
+.sheet-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.sheet-title {
+  font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 17px; text-transform: uppercase; line-height: 1.05;
+}
+.sheet-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.sheet-lbl {
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin: 12px 2px 6px;
+}
+.sheet-txt { font-size: 13.5px; margin: 4px 0 0; }
+.sheet-txt b { font-weight: 600; }
+.pos-opt {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); background: var(--card-2);
+  border-radius: 12px; min-height: 46px; padding: 0 12px; margin-top: 6px;
+  font-weight: 600; font-size: 13.5px; text-align: left;
+}
+.pos-opt b {
+  font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 13px; width: 30px; flex: none; color: var(--accent);
+}
+.pos-opt small { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 11px; flex: none; }
+.pos-opt.main { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
+.pos-opt.danger { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 40%, var(--line)); background: var(--crit-soft); }
+.pos-opt.danger .ic { width: 16px; height: 16px; color: var(--crit); }
+.sheet-cancel {
+  width: 100%; min-height: 44px; margin-top: 12px;
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  border-radius: 12px; font-weight: 600; font-size: 13.5px;
+}
+
+/* ---- Spielerinnen-Ansicht (Vorschau nach Freigabe) ---- */
+.pv-toggle {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); background: var(--card);
+  border-radius: 14px; min-height: 46px; padding: 0 12px;
+  font-weight: 600; font-size: 13.5px; box-shadow: var(--shadow);
+}
+.pv-toggle .ic { color: var(--accent); width: 17px; height: 17px; }
+.pv-toggle .chev { margin-left: auto; width: 15px; height: 15px; color: var(--muted); transition: transform .18s ease; }
+.pv-toggle[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.pv-body { margin-top: 8px; }
+.pv-who { font-size: 11px; color: var(--muted); margin: 0 2px 6px; }
+.pv-hero {
+  border-radius: 16px; padding: 14px;
+  background: linear-gradient(150deg, var(--poster-a), var(--poster-b));
+  color: var(--poster-ink);
+}
+.pv-kick {
+  font-family: var(--font-display); font-stretch: 87.5%; font-weight: 800;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .8;
+}
+.pv-big {
+  font-family: var(--font-display); font-stretch: 87.5%; font-weight: 800;
+  font-size: 21px; text-transform: uppercase; line-height: 1; margin-top: 5px;
+}
+.pv-meta { font-size: 12.5px; opacity: .9; margin-top: 7px; font-variant-numeric: tabular-nums; }
+.pv-chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.pv-chips span {
+  font-size: 11px; font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--poster-ink) 40%, transparent);
+  border-radius: 999px; padding: 3px 9px;
+}
+.pv-list { margin-top: 8px; }
+.pv-row { display: flex; gap: 8px; padding: 7px 2px; border-bottom: 1px solid var(--line); font-size: 12.5px; align-items: baseline; }
+.pv-row:last-child { border-bottom: 0; }
+.pv-pos {
+  flex: none; width: 30px;
+  font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 11.5px; color: var(--accent);
+}
+.pv-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
 /* ================= STATISTIK ================= */
-.bar-row { display: grid; grid-template-columns: 92px 1fr 34px; gap: 8px; align-items: center; font-size: 12.5px; }
+.bar-row { display: grid; grid-template-columns: 20px 82px 1fr 34px; gap: 8px; align-items: center; font-size: 12.5px; }
 .bar-row .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar-track { height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--muted) 14%, transparent); overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 7px; background: linear-gradient(90deg, var(--club-500), var(--club-700)); }
@@ -923,6 +1091,7 @@ svg { display: block; }
           <div class="card stack">
             <div class="note">
               <i class="note-rail"></i>
+              <span data-av="lena" data-cls="av-xs"></span>
               <div>
                 <div class="note-meta">Heute, 08:12 · <b>Lena Brandt</b> <span class="chip-voice">Sprachnotiz</span></div>
                 <div class="note-txt">Rückraumwurf deutlich verbessert — 9-Meter-Quote im Abschlusstraining stark.</div>
@@ -937,6 +1106,7 @@ svg { display: block; }
             </div>
             <div class="note">
               <i class="note-rail"></i>
+              <span data-av="aylin" data-cls="av-xs"></span>
               <div>
                 <div class="note-meta">Mo, 06.07. · <b>Aylin Demir</b> <span class="chip-voice">Sprachnotiz</span></div>
                 <div class="note-txt">Gegenstoß-Timing top, Abschlussquote außen 7 von 9.</div>
@@ -1040,7 +1210,7 @@ svg { display: block; }
             <p class="seg-sub">7 Spielerinnen · 5 einsatzbereit · Festspiel-Ampel rechts</p>
             <div class="stack" style="margin-top:8px">
               <button class="prow" disabled>
-                <span class="p-init">MK</span>
+                <span data-av="marie"></span>
                 <span class="p-main">
                   <span class="p-name">Marie Köhler</span>
                   <span class="p-tags"><span class="pos-chip">TW</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1048,7 +1218,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">AD</span>
+                <span data-av="aylin"></span>
                 <span class="p-main">
                   <span class="p-name">Aylin Demir</span>
                   <span class="p-tags"><span class="pos-chip">LA</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1056,7 +1226,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">CW</span>
+                <span data-av="carla"></span>
                 <span class="p-main">
                   <span class="p-name">Carla Weiß</span>
                   <span class="p-tags"><span class="pos-chip">KM</span><span class="stat-chip st-crit">Verletzt · Bänderriss · bis 30.07.</span></span>
@@ -1064,7 +1234,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">NP</span>
+                <span data-av="nina"></span>
                 <span class="p-main">
                   <span class="p-name">Nina Petrovic</span>
                   <span class="p-tags"><span class="pos-chip">RM</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1072,7 +1242,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">JF</span>
+                <span data-av="johanna"></span>
                 <span class="p-main">
                   <span class="p-name">Johanna Falk</span>
                   <span class="p-tags"><span class="pos-chip">RR</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1080,7 +1250,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">MS</span>
+                <span data-av="merle"></span>
                 <span class="p-main">
                   <span class="p-name">Merle Sanders</span>
                   <span class="p-tags"><span class="pos-chip">RA</span><span class="stat-chip st-warn">Urlaub · 12.–26.07.</span></span>
@@ -1088,7 +1258,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">PV</span>
+                <span data-av="paula"></span>
                 <span class="p-main">
                   <span class="p-name">Paula Vogt</span>
                   <span class="p-tags"><span class="pos-chip">RL</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1103,7 +1273,7 @@ svg { display: block; }
             <p class="seg-sub">7 Spielerinnen · Lena Brandt ist für D2 gesperrt (festgespielt in D1)</p>
             <div class="stack" style="margin-top:8px">
               <button class="prow" disabled>
-                <span class="p-init">SO</span>
+                <span data-av="svenja"></span>
                 <span class="p-main">
                   <span class="p-name">Svenja Ott</span>
                   <span class="p-tags"><span class="pos-chip">TW</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1111,7 +1281,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" id="row-lena" aria-haspopup="dialog">
-                <span class="p-init">LB</span>
+                <span data-av="lena"></span>
                 <span class="p-main">
                   <span class="p-name">Lena Brandt</span>
                   <span class="p-tags">
@@ -1123,7 +1293,7 @@ svg { display: block; }
                 <svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">ER</span>
+                <span data-av="emma"></span>
                 <span class="p-main">
                   <span class="p-name">Emma Richter</span>
                   <span class="p-tags">
@@ -1134,7 +1304,7 @@ svg { display: block; }
                 <span class="ampel a-warn" title="Festspiel: 1 Einsatz"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">SL</span>
+                <span data-av="sarah"></span>
                 <span class="p-main">
                   <span class="p-name">Sarah Lindner</span>
                   <span class="p-tags"><span class="pos-chip">KM</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1142,7 +1312,7 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">FA</span>
+                <span data-av="frieda"></span>
                 <span class="p-main">
                   <span class="p-name">Frieda Albers</span>
                   <span class="p-tags"><span class="pos-chip">RM</span><span class="pos-chip">RL</span><span class="stat-chip st-ok">Verfügbar</span></span>
@@ -1150,15 +1320,15 @@ svg { display: block; }
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">ZK</span>
+                <span data-av="zoe"></span>
                 <span class="p-main">
                   <span class="p-name">Zoe Krüger</span>
-                  <span class="p-tags"><span class="pos-chip">RA</span><span class="stat-chip st-ok">Verfügbar</span></span>
+                  <span class="p-tags"><span class="pos-chip">RA</span><span class="stat-chip st-warn">Urlaub · 31.08.–06.09.</span></span>
                 </span>
                 <span class="ampel a-ok" title="Festspiel: frei"></span>
               </button>
               <button class="prow" disabled>
-                <span class="p-init">HB</span>
+                <span data-av="hanna"></span>
                 <span class="p-main">
                   <span class="p-name">Hanna Busch</span>
                   <span class="p-tags"><span class="pos-chip">RL</span><span class="stat-chip st-crit">Langzeitverletzt · Knie-OP</span></span>
@@ -1176,55 +1346,44 @@ svg { display: block; }
           </div>
         </section>
 
-        <!-- ================= 4) PLANUNG ================= -->
+        <!-- ================= 4) PLANUNG · SPIELTAGSKADER ================= -->
         <section class="screen" id="scr-planung" role="tabpanel" aria-label="Planung">
-          <p class="plan-head"><b>Aufstellung · Sa, 05.09. · @ TSV Harburg-Nord</b><br>
-          Spielerin antippen, dann Position wählen. Belegte Position antippen = freigeben.</p>
+          <p class="plan-head"><b>Spieltagskader · Sa, 05.09. · @ TSV Harburg-Nord</b><br>
+          Bis zu 16 Spielerinnen, Positionen mehrfach besetzbar. Spielerin antippen = nominieren,
+          Chip antippen = verschieben oder entfernen.</p>
 
-          <div class="court" aria-label="Feldpositionen">
-            <button class="slot" data-pos="LA"><span class="slot-pos">LA</span><span class="slot-name">+ frei</span></button>
-            <button class="slot" data-pos="KM"><span class="slot-pos">KM</span><span class="slot-name">+ frei</span></button>
-            <button class="slot" data-pos="RA"><span class="slot-pos">RA</span><span class="slot-name">+ frei</span></button>
-            <button class="slot filled" data-pos="RL2" data-chip="pc-paula"><span class="slot-pos">RL</span><span class="slot-name">Paula Vogt</span></button>
-            <button class="slot filled" data-pos="RM" data-chip="pc-nina"><span class="slot-pos">RM</span><span class="slot-name">Nina Petrovic</span></button>
-            <button class="slot filled" data-pos="RR" data-chip="pc-johanna"><span class="slot-pos">RR</span><span class="slot-name">Johanna Falk</span></button>
-            <button class="slot filled slot-tw" data-pos="TW" data-chip="pc-marie"><span class="slot-pos">TW</span><span class="slot-name">Marie Köhler</span></button>
+          <div class="plan-status is-draft" id="plan-status" aria-live="polite"></div>
+
+          <div id="pv-sec" hidden>
+            <h2 class="sec-label">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>
+              Spielerinnen-Ansicht
+            </h2>
+            <button class="pv-toggle" id="pv-toggle" data-act="pv" aria-expanded="false">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.2"/><path d="M5.5 19.5c.8-3.7 3.4-5.8 6.5-5.8s5.7 2.1 6.5 5.8"/></svg>
+              So sieht es eine nominierte Spielerin
+              <svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div class="pv-body" id="pv-body" hidden></div>
           </div>
 
-          <h2 class="sec-label">Bank</h2>
-          <div class="bench">
-            <button class="slot" data-pos="B1"><span class="slot-pos">Bank</span><span class="slot-name">+ frei</span></button>
-            <button class="slot" data-pos="B2"><span class="slot-pos">Bank</span><span class="slot-name">+ frei</span></button>
-            <button class="slot" data-pos="B3"><span class="slot-pos">Bank</span><span class="slot-name">+ frei</span></button>
-            <button class="slot" data-pos="B4"><span class="slot-pos">Bank</span><span class="slot-name">+ frei</span></button>
-          </div>
+          <h2 class="sec-label">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/></svg>
+            Positionen · doppelt besetzbar
+          </h2>
+          <div class="pgroups" id="pgroups" aria-label="Positionsgruppen"></div>
 
-          <h2 class="sec-label">Verfügbar · Damen 1 + Aushilfen</h2>
-          <div class="pool">
-            <button class="pchip placed" id="pc-marie"><span class="p-init">MK</span>Marie Köhler <span class="pos-chip">TW</span></button>
-            <button class="pchip placed" id="pc-nina"><span class="p-init">NP</span>Nina Petrovic <span class="pos-chip">RM</span></button>
-            <button class="pchip placed" id="pc-johanna"><span class="p-init">JF</span>Johanna Falk <span class="pos-chip">RR</span></button>
-            <button class="pchip placed" id="pc-paula"><span class="p-init">PV</span>Paula Vogt <span class="pos-chip">RL</span></button>
-            <button class="pchip" id="pc-aylin"><span class="p-init">AD</span>Aylin Demir <span class="pos-chip">LA</span></button>
-            <button class="pchip" id="pc-merle"><span class="p-init">MS</span>Merle Sanders <span class="pos-chip">RA</span></button>
-            <button class="pchip" id="pc-lena"><span class="p-init">LB</span>Lena Brandt <span class="pos-chip">RL/RM</span><span class="why st-info stat-chip">Festgespielt D1</span></button>
-            <button class="pchip" id="pc-emma"><span class="p-init">ER</span>Emma Richter <span class="pos-chip">LA/RA</span><span class="why st-warn stat-chip">Festspiel-Risiko</span></button>
-            <button class="pchip" id="pc-svenja"><span class="p-init">SO</span>Svenja Ott <span class="pos-chip">TW</span><span class="why st-info stat-chip">D2</span></button>
-            <button class="pchip" id="pc-sarah"><span class="p-init">SL</span>Sarah Lindner <span class="pos-chip">KM</span><span class="why st-info stat-chip">D2</span></button>
-            <button class="pchip" id="pc-frieda"><span class="p-init">FA</span>Frieda Albers <span class="pos-chip">RM/RL</span><span class="why st-info stat-chip">D2</span></button>
-            <button class="pchip" id="pc-zoe"><span class="p-init">ZK</span>Zoe Krüger <span class="pos-chip">RA</span><span class="why st-info stat-chip">D2</span></button>
-          </div>
+          <h2 class="sec-label">Verfügbar · Damen 1, Damen 2 &amp; A-Jugend</h2>
+          <div class="pool" id="pool-av"></div>
 
           <h2 class="sec-label">Nicht verfügbar</h2>
-          <div class="pool">
-            <button class="pchip" disabled><span class="p-init">CW</span>Carla Weiß <span class="pos-chip">KM</span><span class="why st-crit stat-chip">Verletzt · bis 30.07.</span></button>
-            <button class="pchip" disabled><span class="p-init">HB</span>Hanna Busch <span class="pos-chip">RL</span><span class="why st-crit stat-chip">Knie-OP</span></button>
-          </div>
+          <div class="pool" id="pool-na"></div>
 
           <p class="plan-note">
             <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.9v.1"/></svg>
-            Lena Brandt ist in D1 festgespielt und darf hier auflaufen — für Damen 2 bleibt sie bis 21.08. gesperrt.
-            Emma Richters nächster D1-Einsatz spielt sie fest. Merle Sanders ist zum Spieltag zurück aus dem Urlaub.
+            Lena Brandt ist in D1 festgespielt und darf hier auflaufen — für Damen 2 wäre sie gesperrt und ausgegraut.
+            Emma Richters nächster D1-Einsatz spielt sie fest. Merle Sanders ist zum Spieltag zurück aus dem Urlaub,
+            Zoe Krüger ist über den Spieltag im Urlaub.
           </p>
         </section>
 
@@ -1245,12 +1404,12 @@ svg { display: block; }
 
           <h2 class="sec-label">Einsätze &amp; Tore · Saison 25/26 · Damen 1</h2>
           <div class="card stack">
-            <div class="bar-row"><span class="nm">Nina Petrovic <span class="bar-sub">18 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:100%; display:block"></span></span><span class="val">87</span></div>
-            <div class="bar-row"><span class="nm">Johanna Falk <span class="bar-sub">17 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:85%; display:block"></span></span><span class="val">74</span></div>
-            <div class="bar-row"><span class="nm">Aylin Demir <span class="bar-sub">18 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:70%; display:block"></span></span><span class="val">61</span></div>
-            <div class="bar-row"><span class="nm">Merle Sanders <span class="bar-sub">16 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:67%; display:block"></span></span><span class="val">58</span></div>
-            <div class="bar-row"><span class="nm">Paula Vogt <span class="bar-sub">15 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:49%; display:block"></span></span><span class="val">43</span></div>
-            <div class="bar-row"><span class="nm">Carla Weiß <span class="bar-sub">12 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:45%; display:block"></span></span><span class="val">39</span></div>
+            <div class="bar-row"><span data-av="nina" data-cls="av-st"></span><span class="nm">Nina Petrovic <span class="bar-sub">18 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:100%; display:block"></span></span><span class="val">87</span></div>
+            <div class="bar-row"><span data-av="johanna" data-cls="av-st"></span><span class="nm">Johanna Falk <span class="bar-sub">17 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:85%; display:block"></span></span><span class="val">74</span></div>
+            <div class="bar-row"><span data-av="aylin" data-cls="av-st"></span><span class="nm">Aylin Demir <span class="bar-sub">18 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:70%; display:block"></span></span><span class="val">61</span></div>
+            <div class="bar-row"><span data-av="merle" data-cls="av-st"></span><span class="nm">Merle Sanders <span class="bar-sub">16 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:67%; display:block"></span></span><span class="val">58</span></div>
+            <div class="bar-row"><span data-av="paula" data-cls="av-st"></span><span class="nm">Paula Vogt <span class="bar-sub">15 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:49%; display:block"></span></span><span class="val">43</span></div>
+            <div class="bar-row"><span data-av="carla" data-cls="av-st"></span><span class="nm">Carla Weiß <span class="bar-sub">12 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:45%; display:block"></span></span><span class="val">39</span></div>
           </div>
 
           <h2 class="sec-label">Positionsabdeckung · Stand heute</h2>
@@ -1293,10 +1452,14 @@ svg { display: block; }
             Kader
           </button>
           <div class="prof-head">
-            <span class="prof-init">LB</span>
+            <span data-av="lena" data-cls="av-lg"></span>
             <div>
               <div class="prof-name">Lena Brandt</div>
               <div class="prof-sub">RL / RM · Damen 2 · Rechtshänderin</div>
+              <button class="foto-btn" id="btn-foto">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5h3l1.6-2.2h6.8L17 8.5h3v10H4Z"/><circle cx="12" cy="13" r="3"/></svg>
+                Foto ändern
+              </button>
             </div>
           </div>
 
@@ -1382,6 +1545,14 @@ svg { display: block; }
         </div>
       </div>
 
+      <!-- ===== Bottom-Sheet (Nominieren / Verschieben / Freigabe) ===== -->
+      <div class="sheet-scrim" id="sheet" hidden>
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="Aktion wählen">
+          <div class="sheet-grab" aria-hidden="true"></div>
+          <div id="sheet-body"></div>
+        </div>
+      </div>
+
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
       <!-- ===== Tab-Bar ===== -->
@@ -1414,7 +1585,7 @@ svg { display: block; }
   <!-- ============ RATIONALE ============ -->
   <aside class="rationale">
     <div>
-      <div class="rat-kicker">Design C · Richtung 3 von 3</div>
+      <div class="rat-kicker">Design C · Gewinner · Iteration V2</div>
       <h1 class="rat-title">Vereinsfarben</h1>
       <p class="rat-copy">
         Die App trägt die Farben des Vereins — nicht umgekehrt: Ein tiefes Königsblau ersetzt jedes
@@ -1424,6 +1595,14 @@ svg { display: block; }
         Bundesliga-Programmheft, während Listen und Planung bewusst nüchtern bleiben. Der Spieltag-Held
         ist das Aushängeschild, alles andere ist Werkzeug. Über die Vereinsfarben-Tokens themt sich das
         gesamte Produkt in Sekunden auf jeden Club um — hier live mit drei Beispielvereinen.
+      </p>
+      <p class="rat-copy">
+        <b style="color:var(--ink)">Neu in V2 (Trainer-Feedback):</b> Die Planung ist jetzt ein
+        Spieltagskader-Builder — Positionsgruppen sind mehrfach besetzbar (TW ×2, Rückraum ×3), ein
+        Live-Zähler warnt jenseits der 16 laut Spielbericht. Dazu kommt der Entwurf-→-Freigabe-Workflow
+        mit Bestätigungs-Sheet, Spielerinnen-Vorschau und „erneut freigeben"-Hinweis nach Änderungen.
+        Alle Spielerinnen tragen clubfarbene Inline-SVG-Avatare, die mit dem Vereinsfarben-Schalter
+        live umfärben; Initialen bleiben als „Foto fehlt noch"-Fallback erhalten.
       </p>
     </div>
 
@@ -1500,6 +1679,7 @@ svg { display: block; }
     $$(".screen").forEach(function (s) { s.classList.toggle("active", s.id === "scr-" + name); });
     $$(".tab").forEach(function (t) { t.setAttribute("aria-selected", String(t.dataset.screen === name)); });
     $("#profile").hidden = true;
+    closeSheet();
     var active = $("#scr-" + name);
     if (active) active.scrollTop = 0;
   }
@@ -1573,58 +1753,318 @@ svg { display: block; }
   });
   $("#btn-prof-back").addEventListener("click", function () { $("#profile").hidden = true; });
 
-  /* ---------- Planung: Spielerin -> Slot ---------- */
-  var sel = null;
-  function chipName(chip) {
-    // erster Textknoten nach dem Initialen-Badge
-    var n = "";
-    chip.childNodes.forEach(function (nd) { if (nd.nodeType === 3) n += nd.textContent; });
-    return n.trim();
+  /* ================================================================
+     SPIELERINNEN-DATEN + AVATARE (Inline-SVG, clubfarben via CSS-Vars)
+     ================================================================ */
+  var SKIN  = ["#F6D2B4", "#EDB98E", "#D29B6E", "#A9764E", "#7E5236"];
+  var HAIRC = ["#2B2422", "#4E342A", "#6F4A2B", "#9C6C33", "#C79043", "#8C3B22"];
+  var AVBG  = [
+    ["var(--club-150)", "var(--club-700)"],
+    ["var(--club-300)", "var(--club-900)"],
+    ["var(--club-700)", "var(--club-150)"],
+    ["var(--club-500)", "var(--club-950)"]
+  ];
+  var PLAYERS = {
+    marie:    { name: "Marie Köhler",     init: "MK", team: "D1", pos: ["TW"],       main: "TW", av: { c: 0, s: 0, h: 1, style: "bun" } },
+    aylin:    { name: "Aylin Demir",      init: "AD", team: "D1", pos: ["LA"],       main: "LA", av: { c: 1, s: 2, h: 0, style: "long" } },
+    carla:    { name: "Carla Weiß",       init: "CW", team: "D1", pos: ["KM"],       main: "KM", av: { c: 0, s: 1, h: 4, style: "pony" }, out: "Verletzt · Aufbau", outKind: "crit" },
+    nina:     { name: "Nina Petrovic",    init: "NP", team: "D1", pos: ["RM"],       main: "RM", av: { c: 2, s: 0, h: 0, style: "short" } },
+    johanna:  { name: "Johanna Falk",     init: "JF", team: "D1", pos: ["RR"],       main: "RR", av: { c: 1, s: 1, h: 2, style: "bun" } },
+    merle:    { name: "Merle Sanders",    init: "MS", team: "D1", pos: ["RA"],       main: "RA", av: { c: 0, s: 0, h: 4, style: "curly" } },
+    paula:    { name: "Paula Vogt",       init: "PV", team: "D1", pos: ["RL"],       main: "RL", av: { c: 3, s: 1, h: 1, style: "short" } },
+    svenja:   { name: "Svenja Ott",       init: "SO", team: "D2", pos: ["TW"],       main: "TW", av: { c: 2, s: 0, h: 3, style: "pony" } },
+    lena:     { name: "Lena Brandt",      init: "LB", team: "D2", pos: ["RL", "RM"], main: "RL", av: { c: 0, s: 1, h: 0, style: "long" }, why: "Festgespielt D1", whyKind: "info" },
+    emma:     { name: "Emma Richter",     init: "ER", team: "D2", pos: ["LA", "RA"], main: "LA", av: { c: 1, s: 3, h: 0, style: "curly" }, why: "Festspiel-Risiko", whyKind: "warn" },
+    sarah:    { name: "Sarah Lindner",    init: "SL", team: "D2", pos: ["KM"],       main: "KM", av: { c: 3, s: 2, h: 1, style: "bun" } },
+    frieda:   { name: "Frieda Albers",    init: "FA", team: "D2", pos: ["RM", "RL"], main: "RM", av: { c: 0, s: 4, h: 0, style: "short" } },
+    zoe:      { name: "Zoe Krüger",       init: "ZK", team: "D2", pos: ["RA"],       main: "RA", av: null, out: "Urlaub · 31.08.–06.09.", outKind: "warn" },
+    hanna:    { name: "Hanna Busch",      init: "HB", team: "D2", pos: ["RL"],       main: "RL", av: null, out: "Knie-OP", outKind: "crit" },
+    lea:      { name: "Lea Hoffmann",     init: "LH", team: "AJ", pos: ["TW"],       main: "TW", av: { c: 1, s: 0, h: 5, style: "pony" } },
+    maja:     { name: "Maja Winter",      init: "MW", team: "AJ", pos: ["KM"],       main: "KM", av: { c: 2, s: 2, h: 1, style: "long" } },
+    finja:    { name: "Finja Krause",     init: "FK", team: "AJ", pos: ["RA"],       main: "RA", av: { c: 0, s: 0, h: 3, style: "short" } },
+    elif:     { name: "Elif Kaya",        init: "EK", team: "AJ", pos: ["RM", "RL"], main: "RM", av: null },
+    josefine: { name: "Josefine Braun",   init: "JB", team: "AJ", pos: ["LA"],       main: "LA", av: { c: 3, s: 1, h: 5, style: "bun" } },
+    charlotte:{ name: "Charlotte Mertens",init: "CM", team: "AJ", pos: ["RR", "RL"], main: "RR", av: { c: 1, s: 2, h: 2, style: "curly" } }
+  };
+  var ORDER_AV = ["marie", "aylin", "nina", "johanna", "merle", "paula",
+                  "svenja", "lena", "emma", "sarah", "frieda",
+                  "lea", "maja", "finja", "elif", "josefine", "charlotte"];
+  var ORDER_NA = ["carla", "zoe", "hanna"];
+  function teamLabel(t) { return t === "D1" ? "Damen 1" : t === "D2" ? "Damen 2" : "A-Jugend"; }
+
+  function avatarHTML(key, cls) {
+    var p = PLAYERS[key];
+    cls = cls || "";
+    if (!p.av) {
+      return '<span class="p-init ' + cls + '" title="Foto fehlt noch — Initialen als Fallback">' + p.init + '</span>';
+    }
+    var a = p.av, bg = AVBG[a.c][0], shirt = AVBG[a.c][1], skin = SKIN[a.s], hc = HAIRC[a.h];
+    var s = '<span class="avatar ' + cls + '" aria-hidden="true"><svg viewBox="0 0 48 48">';
+    s += '<rect width="48" height="48" fill="' + bg + '"/>';
+    if (a.style === "long")
+      s += '<path d="M13 38c-1.5-9-1-19 2-24 2.2-3.6 5-5.5 9-5.5s6.8 1.9 9 5.5c3 5 3.5 15 2 24h-6.5c.8-7 .8-13-.5-17h-8c-1.3 4-1.3 10-.5 17Z" fill="' + hc + '"/>';
+    if (a.style === "curly")
+      s += '<circle cx="15" cy="15.5" r="6" fill="' + hc + '"/><circle cx="24" cy="10" r="7" fill="' + hc + '"/><circle cx="33" cy="15.5" r="6" fill="' + hc + '"/>';
+    s += '<path d="M6.5 48c1.8-9.5 9-13.8 17.5-13.8S39.7 38.5 41.5 48Z" fill="' + shirt + '"/>';
+    s += '<rect x="20.6" y="24" width="6.8" height="10" rx="3" fill="' + skin + '"/>';
+    s += '<circle cx="24" cy="19.5" r="8.8" fill="' + skin + '"/>';
+    s += '<path d="M15.2 19c0-7.4 3.9-11.6 8.8-11.6S32.8 11.6 32.8 19c-2.3-3.7-5.2-5.3-8.8-5.3S17.5 15.3 15.2 19Z" fill="' + hc + '"/>';
+    if (a.style === "bun")  s += '<circle cx="24" cy="6.8" r="3.6" fill="' + hc + '"/>';
+    if (a.style === "pony") s += '<circle cx="31.5" cy="8.5" r="3.2" fill="' + hc + '"/><path d="M32.5 9.5c3.4 3.2 4 9.5 2.2 15.5-.4-5.5-1.5-10-4.3-13Z" fill="' + hc + '"/>';
+    s += '</svg></span>';
+    return s;
   }
-  $$(".pchip").forEach(function (chip) {
-    if (chip.disabled) return;
-    chip.addEventListener("click", function () {
-      if (chip.classList.contains("placed")) {
-        toast("Bereits aufgestellt — Position antippen, um sie freizugeben");
-        return;
-      }
-      if (sel === chip) {
-        chip.classList.remove("sel");
-        sel = null;
-        return;
-      }
-      if (sel) sel.classList.remove("sel");
-      sel = chip;
-      chip.classList.add("sel");
-    });
+  /* Statische Platzhalter (Kader, Notizen, Statistik, Profil) hydrieren */
+  $$("[data-av]").forEach(function (el) {
+    el.outerHTML = avatarHTML(el.dataset.av, el.dataset.cls || "");
   });
-  function clearSlot(slot) {
-    var old = slot.dataset.chip && document.getElementById(slot.dataset.chip);
-    if (old) old.classList.remove("placed");
-    delete slot.dataset.chip;
-    slot.classList.remove("filled");
-    slot.querySelector(".slot-name").textContent = "+ frei";
+
+  /* ================================================================
+     PLANUNG V2 — Spieltagskader (bis 16), Entwurf → Freigabe
+     ================================================================ */
+  var POS = [
+    ["TW", "Tor",     "Torhüterin"],
+    ["LA", "Außen L", "Linksaußen"],
+    ["RA", "Außen R", "Rechtsaußen"],
+    ["KM", "Kreis",   "Kreis Mitte"],
+    ["RL", "Rück. L", "Rückraum links"],
+    ["RM", "Rück. M", "Rückraum Mitte"],
+    ["RR", "Rück. R", "Rückraum rechts"]
+  ];
+  var LIMIT = 16;
+  var nom = {
+    marie: "TW", svenja: "TW", aylin: "LA", merle: "RA", sarah: "KM",
+    paula: "RL", nina: "RM", frieda: "RM", johanna: "RR"
+  };
+  var plan = {
+    status: "draft", releasedAt: null, snapshot: null, dirty: false,
+    lastEdited: "Do 09.07., 21:14"
+  };
+  var pvOpen = false;
+
+  function fmtNow() {
+    var d = new Date();
+    var wd = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"][d.getDay()];
+    return wd + " " + pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "., " +
+           d.getHours() + ":" + pad(d.getMinutes());
   }
-  $$(".slot").forEach(function (slot) {
-    slot.addEventListener("click", function () {
-      if (sel) {
-        if (slot.classList.contains("filled")) clearSlot(slot);
-        slot.dataset.chip = sel.id;
-        slot.classList.add("filled");
-        slot.querySelector(".slot-name").textContent = chipName(sel);
-        sel.classList.remove("sel");
-        sel.classList.add("placed");
-        if (sel.id === "pc-emma") {
-          toast("Achtung: Emma Richters 2. D1-Einsatz — sie spielt sich damit fest");
-        }
-        sel = null;
-      } else if (slot.classList.contains("filled")) {
-        clearSlot(slot);
+  function nomCount() { return Object.keys(nom).length; }
+  function snapshotNow() {
+    var out = [];
+    POS.forEach(function (pp) {
+      ORDER_AV.forEach(function (k) { if (nom[k] === pp[0]) out.push({ id: k, pos: pp[0] }); });
+    });
+    return out;
+  }
+
+  /* ---- Renderer ---- */
+  var icWarn = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 19H3Z"/><path d="M12 10v4"/><path d="M12 16.9v.1"/></svg>';
+  function renderStatus() {
+    var n = nomCount(), el = $("#plan-status");
+    el.className = "plan-status " + (plan.status === "draft" ? "is-draft" : "is-live");
+    var h = '<div class="status-row">';
+    if (plan.status === "draft") {
+      h += '<span class="badge-state badge-draft">Entwurf</span>' +
+           '<span class="status-note">nur für Trainer sichtbar</span>' +
+           '<span class="status-time">bearbeitet ' + plan.lastEdited + '</span>';
+    } else {
+      h += '<span class="badge-state badge-live">Freigegeben</span>' +
+           '<span class="status-note">sichtbar für Spielerinnen</span>' +
+           '<span class="status-time">freigegeben ' + plan.releasedAt + '</span>';
+    }
+    h += '</div>';
+    var flag = "", numCls = "";
+    if (n > LIMIT) { flag = '<span class="count-flag f-over">' + (n - LIMIT) + ' über Limit — max. 16 laut Spielbericht</span>'; numCls = " over"; }
+    else if (n === LIMIT) { flag = '<span class="count-flag f-full">Kader voll</span>'; }
+    h += '<div class="count-wrap"><b class="count-num' + numCls + '">' + n + '<small> / 16</small></b>' +
+         '<span class="count-lbl">nominiert</span>' + flag + '</div>';
+    h += '<div class="count-bar"><i class="' + (n > LIMIT ? "over" : "") + '" style="width:' + (Math.min(n, LIMIT) / LIMIT * 100) + '%"></i></div>';
+    if (plan.status === "draft") {
+      h += '<button class="btn-primary" data-act="release">' +
+           '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8Z"/></svg>' +
+           'An Spielerinnen freigeben</button>';
+    } else if (plan.dirty) {
+      h += '<div class="rel-hint">' + icWarn +
+           '<div><b>Änderungen seit Freigabe</b> — die Spielerinnen sehen noch den Stand von ' + plan.releasedAt + '.</div>' +
+           '<button data-act="release">Erneut freigeben</button></div>';
+    }
+    el.innerHTML = h;
+    $("#pv-sec").hidden = plan.status !== "released";
+  }
+  function renderGroups() {
+    var h = "";
+    POS.forEach(function (pp) {
+      var members = ORDER_AV.filter(function (k) { return nom[k] === pp[0]; });
+      h += '<div class="pgroup"><div class="pg-key"><b>' + pp[0] + '</b><span>' + pp[1] + '</span></div><div class="pg-chips">';
+      if (!members.length) {
+        h += '<span class="pg-empty">+ unbesetzt</span>';
       } else {
-        toast("Erst Spielerin antippen, dann Position wählen");
+        members.forEach(function (k) {
+          h += '<button class="nchip" data-p="' + k + '" aria-label="' + PLAYERS[k].name + ' — verschieben oder entfernen">' +
+               avatarHTML(k, "av-sm") + PLAYERS[k].name + '</button>';
+        });
       }
+      h += '</div><span class="pg-mult">' + (members.length > 1 ? "×" + members.length : "") + '</span></div>';
     });
+    $("#pgroups").innerHTML = h;
+  }
+  function renderPools() {
+    var h = "";
+    ORDER_AV.forEach(function (k) {
+      var p = PLAYERS[k];
+      h += '<button class="pchip' + (nom[k] ? " placed" : "") + '" data-p="' + k + '">' +
+           avatarHTML(k, "av-sm") + p.name + ' <span class="pos-chip">' + p.pos.join("/") + '</span>';
+      if (p.team !== "D1") h += '<span class="why st-info stat-chip">' + (p.team === "AJ" ? "A-Jgd" : "D2") + '</span>';
+      if (p.why) h += '<span class="why st-' + p.whyKind + ' stat-chip">' + p.why + '</span>';
+      if (nom[k]) h += '<span class="nom-flag">✓ ' + nom[k] + '</span>';
+      h += '</button>';
+    });
+    $("#pool-av").innerHTML = h;
+    var n = "";
+    ORDER_NA.forEach(function (k) {
+      var p = PLAYERS[k];
+      n += '<button class="pchip" disabled>' + avatarHTML(k, "av-sm") + p.name +
+           ' <span class="pos-chip">' + p.pos.join("/") + '</span>' +
+           '<span class="why st-' + p.outKind + ' stat-chip">' + p.out + '</span></button>';
+    });
+    $("#pool-na").innerHTML = n;
+  }
+  function renderPV() {
+    var body = $("#pv-body"), tgl = $("#pv-toggle");
+    tgl.setAttribute("aria-expanded", String(pvOpen));
+    body.hidden = !pvOpen;
+    if (plan.status !== "released" || !pvOpen) return;
+    var snap = plan.snapshot || [];
+    var ex = null;
+    snap.forEach(function (s) { if (s.id === "merle") ex = s; });
+    if (!ex) ex = snap[0];
+    var h = "";
+    if (ex) {
+      h += '<div class="pv-who">Vorschau aus Sicht von ' + PLAYERS[ex.id].name + '</div>';
+      h += '<div class="pv-hero"><div class="pv-kick">Spieltagskader · freigegeben</div>' +
+           '<div class="pv-big">Du bist nominiert</div>' +
+           '<div class="pv-meta">Sa, 05.09. · 18:00 — Auswärts @ TSV Harburg-Nord</div>' +
+           '<div class="pv-chips"><span>Position: ' + ex.pos + '</span><span>Treffpunkt 16:30 · Halle Süd</span></div></div>';
+    }
+    h += '<div class="card pv-list"><div class="sheet-lbl" style="margin-top:0">Freigegebener Kader · ' + snap.length + ' Spielerinnen</div>';
+    POS.forEach(function (pp) {
+      var names = [];
+      snap.forEach(function (s) { if (s.pos === pp[0]) names.push(PLAYERS[s.id].name); });
+      if (names.length) h += '<div class="pv-row"><span class="pv-pos">' + pp[0] + '</span><span>' + names.join(", ") + '</span></div>';
+    });
+    h += '<div class="pv-note">Stand: ' + plan.releasedAt +
+         (plan.dirty ? ' — spätere Änderungen sind noch nicht freigegeben.' : '') + '</div></div>';
+    body.innerHTML = h;
+  }
+  function renderPlan() { renderStatus(); renderGroups(); renderPools(); renderPV(); }
+  function mutate() {
+    plan.lastEdited = fmtNow();
+    if (plan.status === "released") plan.dirty = true;
+    renderPlan();
+  }
+
+  /* ---- Bottom-Sheet ---- */
+  var sheetEl = $("#sheet"), sheetBody = $("#sheet-body");
+  function openSheet(html) { sheetBody.innerHTML = html; sheetEl.hidden = false; }
+  function closeSheet() { if (sheetEl && !sheetEl.hidden) sheetEl.hidden = true; }
+  function sheetHead(k, sub) {
+    var p = PLAYERS[k];
+    return '<div class="sheet-head">' + avatarHTML(k, "") +
+           '<div><div class="sheet-title">' + p.name + '</div><div class="sheet-sub">' + sub + '</div></div></div>';
+  }
+  function openNominateSheet(k) {
+    var p = PLAYERS[k];
+    var h = sheetHead(k, p.pos.join(" / ") + " · " + teamLabel(p.team) + (p.why ? " · " + p.why : ""));
+    h += '<div class="sheet-lbl">Position wählen — Hauptposition vorausgewählt</div>';
+    POS.forEach(function (pp) {
+      var main = pp[0] === p.main, neben = !main && p.pos.indexOf(pp[0]) >= 0;
+      h += '<button class="pos-opt' + (main ? " main" : "") + '" data-act="nom" data-p="' + k + '" data-pos="' + pp[0] + '">' +
+           '<b>' + pp[0] + '</b>' + pp[2] +
+           (main ? '<small>Hauptposition</small>' : neben ? '<small>Nebenposition</small>' : '') + '</button>';
+    });
+    h += '<button class="sheet-cancel" data-act="close">Abbrechen</button>';
+    openSheet(h);
+  }
+  function openChipSheet(k) {
+    var p = PLAYERS[k], cur = nom[k];
+    var h = sheetHead(k, "Nominiert · " + cur);
+    h += '<button class="pos-opt danger" data-act="remove" data-p="' + k + '">' +
+         '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12h7"/></svg>' +
+         'Aus dem Spieltagskader entfernen</button>';
+    h += '<div class="sheet-lbl">Oder verschieben nach</div>';
+    POS.forEach(function (pp) {
+      if (pp[0] === cur) return;
+      var main = pp[0] === p.main, neben = !main && p.pos.indexOf(pp[0]) >= 0;
+      h += '<button class="pos-opt' + (main ? " main" : "") + '" data-act="move" data-p="' + k + '" data-pos="' + pp[0] + '">' +
+           '<b>' + pp[0] + '</b>' + pp[2] +
+           (main ? '<small>Hauptposition</small>' : neben ? '<small>Nebenposition</small>' : '') + '</button>';
+    });
+    h += '<button class="sheet-cancel" data-act="close">Abbrechen</button>';
+    openSheet(h);
+  }
+  function openReleaseSheet() {
+    var n = nomCount();
+    if (!n) { toast("Noch keine Spielerin nominiert"); return; }
+    var again = plan.status === "released";
+    var h = '<div class="sheet-head"><div><div class="sheet-title">' +
+            (again ? "Erneut freigeben?" : "Kader freigeben?") +
+            '</div><div class="sheet-sub">Sa, 05.09. · 18:00 · Auswärts @ TSV Harburg-Nord</div></div></div>';
+    h += '<p class="sheet-txt"><b>' + n + ' Spielerinnen</b> werden benachrichtigt und sehen Kader, ihre Position und den Treffpunkt (16:30 · Halle Süd).' +
+         (again ? ' Bereits informierte Spielerinnen erhalten die Aktualisierung.' : '') + '</p>';
+    if (n > LIMIT) {
+      h += '<div class="rel-hint">' + icWarn + '<div><b>' + n + ' nominiert</b> — der Spielbericht erlaubt max. 16. Vor dem Anwurf müssen ' + (n - LIMIT) + ' gestrichen werden.</div></div>';
+    }
+    h += '<button class="btn-primary" data-act="confirm-release">' +
+         '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8Z"/></svg>' +
+         'Jetzt freigeben</button>';
+    h += '<button class="sheet-cancel" data-act="close">Abbrechen</button>';
+    openSheet(h);
+  }
+  function doRelease() {
+    var n = nomCount();
+    plan.status = "released";
+    plan.releasedAt = fmtNow();
+    plan.snapshot = snapshotNow();
+    plan.dirty = false;
+    closeSheet();
+    renderPlan();
+    toast(n + " Spielerinnen benachrichtigt — Kader ist freigegeben");
+  }
+  function nomToast(k, pos) {
+    var n = nomCount();
+    if (k === "emma") toast("Achtung: Emma Richters 2. D1-Einsatz — sie spielt sich damit fest");
+    else if (n > LIMIT) toast(n + " nominiert — über dem Limit von 16 (Spielbericht)");
+    else toast(PLAYERS[k].name + " nominiert · " + pos);
+  }
+
+  /* ---- Interaktion (Delegation) ---- */
+  $("#scr-planung").addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act],[data-p]");
+    if (!t || t.disabled) return;
+    if (t.dataset.act === "release") { openReleaseSheet(); return; }
+    if (t.dataset.act === "pv") { pvOpen = !pvOpen; renderPV(); return; }
+    var k = t.dataset.p;
+    if (!k) return;
+    if (nom[k]) openChipSheet(k); else openNominateSheet(k);
   });
+  sheetEl.addEventListener("click", function (e) {
+    if (e.target === sheetEl) { closeSheet(); return; }
+    var t = e.target.closest("[data-act]");
+    if (!t) return;
+    var act = t.dataset.act, k = t.dataset.p, pos = t.dataset.pos;
+    if (act === "close") { closeSheet(); }
+    else if (act === "nom")  { nom[k] = pos; closeSheet(); nomToast(k, pos); mutate(); }
+    else if (act === "move") { nom[k] = pos; closeSheet(); toast(PLAYERS[k].name + " → " + pos); mutate(); }
+    else if (act === "remove") { delete nom[k]; closeSheet(); toast(PLAYERS[k].name + " aus dem Spieltagskader entfernt"); mutate(); }
+    else if (act === "confirm-release") { doRelease(); }
+  });
+
+  /* ---- Profil: Foto ändern (Mock) ---- */
+  $("#btn-foto").addEventListener("click", function () {
+    toast("Foto ändern — Kamera oder Galerie (Mock)");
+  });
+
+  renderPlan();
 
   /* ---------- Vereinsfarben-Schalter ---------- */
   var clubs = {
