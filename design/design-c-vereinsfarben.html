@@ -9,7 +9,9 @@
 
 /* ---------- 1) CLUB-TÖNE ---------- */
 :root {
-  /* HSG Blauweiß Elbtal — Königsblau, kein Interface-Standardblau */
+  /* TuS Köln-Ehrenfeld 1865 — Königsblau + Vereinsgelb.
+     Blau führt (Flächen, Buttons, Poster), Gelb ist Energie-Akzent
+     (Wappenband, CTA, Gast-Badges) — nie Gelb-Text auf Weiß. */
   --club-950: #071230;
   --club-900: #0B2158;
   --club-700: #14418F;
@@ -17,6 +19,8 @@
   --club-300: #7AA3E8;
   --club-150: #D9E4F7;
   --club-on:  #F5F8FF;
+  --club-acc:     #FFC72C;  /* Vereinsgelb — warm, trägt in Hell & Dunkel */
+  --club-acc-ink: #172B5E;  /* Tinte auf Gelb: tiefes Blau, nie Weiß/Gelb */
 }
 :root[data-club="rotersand"] {
   /* HSV Roter Sand — Rot/Schwarz */
@@ -27,6 +31,8 @@
   --club-300: #E4818C;
   --club-150: #F6DCDF;
   --club-on:  #FFF6F6;
+  --club-acc:     #E8C892;
+  --club-acc-ink: #45090F;
 }
 :root[data-club="gruenhof"] {
   /* TSV Grünhof — Grün/Weiß */
@@ -37,6 +43,8 @@
   --club-300: #74C592;
   --club-150: #DCF0E2;
   --club-on:  #F4FBF6;
+  --club-acc:     #F4FBF6;
+  --club-acc-ink: #0C3A1D;
 }
 
 /* ---------- 2) SEMANTIK — HELL (Basis) ---------- */
@@ -227,7 +235,8 @@ svg { display: block; }
   font-weight: 800; letter-spacing: .04em;
 }
 .crest .c-bg   { fill: var(--crest-bg, var(--club-700)); }
-.crest .c-band { fill: var(--crest-band, var(--club-on)); opacity: .92; }
+.crest .c-band { fill: var(--crest-band, var(--club-acc)); opacity: .96; }
+.crest .c-year { fill: var(--club-acc); }
 .crest .c-edge { fill: none; stroke: var(--crest-edge, var(--club-on)); stroke-width: 1.6; opacity: .9; }
 .crest .c-mono { fill: var(--crest-ink, var(--club-on)); }
 .crest.crest-opp .c-bg   { fill: #3B4453; }
@@ -324,13 +333,11 @@ svg { display: block; }
 .poster-cta {
   position: relative; margin-top: 12px; width: 100%;
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--club-on); color: var(--club-900);
+  background: var(--club-acc); color: var(--club-acc-ink);
   border: 0; border-radius: 12px; min-height: 44px;
   font-family: var(--font-display); font-stretch: 87.5%;
   font-weight: 800; font-size: 14px; letter-spacing: .06em; text-transform: uppercase;
 }
-:root[data-club="rotersand"] .poster-cta { color: #45090F; }
-:root[data-club="gruenhof"]  .poster-cta { color: #0C3A1D; }
 
 /* ================= WARNUNGEN / STATUSKARTEN ================= */
 .alert {
@@ -548,6 +555,23 @@ svg { display: block; }
          box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--card) 55%, transparent); }
 .a-ok { background: var(--ok); } .a-warn { background: var(--warn); } .a-crit { background: var(--crit); }
 .prow .chev { color: var(--muted); flex: none; width: 16px; height: 16px; }
+.gast-badge {
+  display: inline-flex; align-items: center; flex: none;
+  background: var(--club-acc); color: var(--club-acc-ink);
+  border: 1px solid color-mix(in srgb, var(--club-acc-ink) 24%, transparent);
+  border-radius: 6px; padding: 1.5px 6px;
+  font-family: var(--font-display); font-stretch: 87.5%;
+  font-weight: 800; font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.btn-gast {
+  width: 100%; display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: var(--accent-soft); color: var(--accent);
+  border-radius: 14px; min-height: 48px; padding: 0 12px;
+  font-weight: 600; font-size: 13.5px;
+}
+.btn-gast .ic { width: 17px; height: 17px; }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--muted);
           margin: 10px 2px 0; align-items: center; }
 .legend .ampel { width: 9px; height: 9px; margin-right: 4px; vertical-align: -1px; display: inline-block; }
@@ -1080,6 +1104,52 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 .tb-hint { font-size: 11.5px; color: var(--muted); margin: 10px 2px 0; display: flex; gap: 6px; }
 .tb-hint .ic { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--accent); }
 
+/* ---- Trainingsmaterial-Palette ---- */
+.tb-mat-row {
+  display: flex; gap: 6px; overflow-x: auto; margin-top: 8px; padding: 2px;
+  scrollbar-width: thin;
+}
+.mat-btn {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 5px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  border-radius: 12px; min-width: 66px; min-height: 60px; padding: 8px 8px 7px;
+  font-size: 10px; font-weight: 600;
+}
+.mat-btn svg { width: 26px; height: 26px; }
+.tb-tok-mat { cursor: grab; touch-action: none; }
+.mat-outline { stroke: color-mix(in srgb, var(--ink) 65%, transparent); }
+
+/* ================= PLANUNG · FELD-ANSICHT ================= */
+.pf-wrap {
+  position: relative; margin-top: 10px;
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow);
+}
+#pf-court { width: 100%; height: auto; display: block; }
+.pf-zone circle {
+  fill: color-mix(in srgb, var(--accent) 7%, transparent);
+  stroke: color-mix(in srgb, var(--accent) 42%, var(--line));
+  stroke-width: .14; stroke-dasharray: .6 .45;
+}
+.pf-zone text {
+  font-family: var(--font-display); font-stretch: 87.5%; font-weight: 800;
+  font-size: 1.05px; letter-spacing: .05em; text-anchor: middle;
+  fill: color-mix(in srgb, var(--accent) 70%, var(--muted));
+  pointer-events: none;
+}
+.pf-zone.hot circle {
+  fill: color-mix(in srgb, var(--accent) 18%, transparent);
+  stroke: var(--accent); stroke-width: .24; stroke-dasharray: none;
+}
+.pf-tok { cursor: grab; touch-action: none; }
+.pf-tok .hit { fill: transparent; }
+.pf-tok .body { fill: var(--btn-bg); stroke: color-mix(in srgb, var(--club-on) 65%, transparent); stroke-width: .12; }
+.pf-tok text { fill: var(--btn-ink); font-family: var(--font-display); font-weight: 800; font-size: .78px; text-anchor: middle; pointer-events: none; }
+.pf-tok .pf-g  { fill: var(--club-acc); stroke: color-mix(in srgb, var(--club-acc-ink) 30%, transparent); stroke-width: .06; }
+.pf-tok .pf-gt { fill: var(--club-acc-ink); font-size: .58px; }
+.pf-hint { font-size: 11.5px; color: var(--muted); margin: 8px 2px 0; display: flex; gap: 6px; }
+.pf-hint .ic { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--accent); }
+
 /* ================= RESPONSIVE / A11Y ================= */
 @media (max-width: 470px) {
   .stage { padding: 0; gap: 0; }
@@ -1108,17 +1178,18 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     <div class="app">
 
       <header class="app-head">
-        <svg class="crest" viewBox="0 0 40 42" role="img" aria-label="Vereinswappen">
+        <svg class="crest" viewBox="0 0 40 42" role="img" aria-label="Vereinswappen TuS Köln-Ehrenfeld 1865">
           <use href="#shieldPath" class="c-bg"/>
           <g clip-path="url(#shieldClip)">
-            <rect class="c-band" x="-8" y="26" width="56" height="5" transform="rotate(-18 20 28)"/>
+            <rect class="c-band" x="2" y="20.5" width="36" height="4.4"/>
           </g>
           <use href="#shieldPath" class="c-edge"/>
-          <text class="c-mono mono-home" x="20" y="19.5" font-size="12" text-anchor="middle">BE</text>
+          <text class="c-mono mono-home" x="20" y="17.5" font-size="10.5" text-anchor="middle">TuS</text>
+          <text class="c-year year-home" x="20" y="31.5" font-size="6" text-anchor="middle">1865</text>
         </svg>
         <div class="head-txt">
-          <div class="club-name">HSG Blauweiß Elbtal</div>
-          <div class="head-sub">Damen 1 · Landesliga &nbsp;·&nbsp; Damen 2 · Bezirksliga</div>
+          <div class="club-name">TuS Köln-Ehrenfeld</div>
+          <div class="head-sub">1. Damen · Verbandsliga &nbsp;·&nbsp; Gäste aus Damen 2 &amp; A-Jugend</div>
         </div>
         <div class="head-date">Fr, 10.07.2026</div>
       </header>
@@ -1131,20 +1202,21 @@ body.no-select { user-select: none; -webkit-user-select: none; }
           <div class="poster">
             <svg class="crest watermark" viewBox="0 0 40 42" aria-hidden="true">
               <use href="#shieldPath" fill="none" stroke="#fff" stroke-width="1.4"/>
-              <text class="mono-home" x="20" y="20" font-size="12" text-anchor="middle" fill="#fff">BE</text>
+              <text class="mono-home" x="20" y="20" font-size="11" text-anchor="middle" fill="#fff">TuS</text>
             </svg>
-            <div class="poster-top"><span>Spieltag · Landesliga</span><span>4. Spieltag</span></div>
+            <div class="poster-top"><span>Spieltag · Verbandsliga</span><span>4. Spieltag</span></div>
             <div class="poster-teams">
               <div class="pt-side">
                 <svg class="crest" viewBox="0 0 40 42" aria-hidden="true">
                   <use href="#shieldPath" fill="var(--club-on)"/>
                   <g clip-path="url(#shieldClip)">
-                    <rect fill="var(--club-500)" x="-8" y="26" width="56" height="5" transform="rotate(-18 20 28)"/>
+                    <rect fill="var(--club-acc)" x="2" y="20.5" width="36" height="4.4"/>
                   </g>
                   <use href="#shieldPath" fill="none" stroke="var(--club-on)" stroke-width="1.6"/>
-                  <text class="mono-home" x="20" y="19.5" font-size="12" text-anchor="middle" fill="var(--club-700)" font-weight="800">BE</text>
+                  <text class="mono-home" x="20" y="17.5" font-size="10.5" text-anchor="middle" fill="var(--club-700)" font-weight="800">TuS</text>
+                  <text class="year-home" x="20" y="31.5" font-size="6" text-anchor="middle" fill="var(--club-700)" font-weight="800">1865</text>
                 </svg>
-                <div class="pt-name club-name-poster">Blauweiß Elbtal</div>
+                <div class="pt-name club-name-poster">Köln-Ehrenfeld</div>
               </div>
               <div class="pt-vs">VS</div>
               <div class="pt-side">
@@ -1154,14 +1226,14 @@ body.no-select { user-select: none; -webkit-user-select: none; }
                     <rect class="c-band" x="-8" y="26" width="56" height="5" transform="rotate(-18 20 28)"/>
                   </g>
                   <use href="#shieldPath" class="c-edge"/>
-                  <text class="c-mono" x="20" y="19.5" font-size="12" text-anchor="middle">TH</text>
+                  <text class="c-mono" x="20" y="19.5" font-size="12" text-anchor="middle">KW</text>
                 </svg>
-                <div class="pt-name">TSV Harburg-Nord</div>
+                <div class="pt-name">HSG Köln-West</div>
               </div>
             </div>
             <div class="poster-meta">
               <span class="tag-away">Auswärts</span>
-              <span>Sa, 05.09.2026 · 18:00</span> <span>·</span> <span>Sporthalle Am Sandberg</span>
+              <span>Sa, 05.09.2026 · 18:00</span> <span>·</span> <span>Bezirkssporthalle Weiden</span>
             </div>
             <div class="poster-count" aria-label="Countdown bis zum Anwurf">
               <div class="cnt"><b id="ct-d">57</b><span>Tage</span></div>
@@ -1176,23 +1248,23 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
           <h2 class="sec-label">
             <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 19H3Z"/><path d="M12 10v4"/><path d="M12 16.9v.1"/></svg>
-            Festspiel-Status · §55 SpO
+            Gäste &amp; Festspiel · §55 SpO
           </h2>
           <div class="stack">
             <div class="alert alert-crit">
               <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 19H3Z"/><path d="M12 10v4"/><path d="M12 16.9v.1"/></svg>
               <div>
-                <div class="al-kicker">Festgespielt</div>
-                <div class="al-body"><b>Lena Brandt</b> ist in Damen 1 festgespielt — für Damen 2 gesperrt bis <b>21.08.2026</b>.</div>
-                <div class="al-sub">2. D1-Einsatz in Folge am 27.06. · zählt für Damen 2 nicht mehr als Stammspielerin</div>
+                <div class="al-kicker">Gast festgespielt</div>
+                <div class="al-body"><b>Lena Brandt</b> (Gast · Damen 2) hat sich in der 1. Damen festgespielt — für Damen 2 gesperrt bis <b>21.08.2026</b>.</div>
+                <div class="al-sub">2. Einsatz in Folge am 27.06. · zählt für Damen 2 nicht mehr als Stammspielerin</div>
               </div>
             </div>
             <div class="alert alert-warn">
               <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 19H3Z"/><path d="M12 10v4"/><path d="M12 16.9v.1"/></svg>
               <div>
-                <div class="al-kicker">Warnung · 1 Einsatz</div>
-                <div class="al-body"><b>Emma Richter</b> hat 1 D1-Einsatz — der nächste spielt sie fest.</div>
-                <div class="al-sub">Vor der Aufstellung am 05.09. bewusst entscheiden</div>
+                <div class="al-kicker">Gast · 1 Einsatz</div>
+                <div class="al-body"><b>Emma Richter</b> (Gast · Damen 2) hat 1 Einsatz in der 1. Damen — der nächste spielt sie fest.</div>
+                <div class="al-sub">Vor der Nominierung für den 05.09. bewusst entscheiden</div>
               </div>
             </div>
           </div>
@@ -1203,7 +1275,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
           </h2>
           <div class="card">
             <div class="rsvp-row">
-              <span class="rsvp-title">Training · Halle Süd</span>
+              <span class="rsvp-title">Training · Sporthalle Ehrenfeld</span>
               <span class="rsvp-when">Di, 14.07. · 19:30</span>
             </div>
             <div class="rsvp-bar" role="img" aria-label="11 Zusagen, 2 Absagen, 3 offen">
@@ -1232,7 +1304,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             <div class="note">
               <i class="note-rail"></i>
               <div>
-                <div class="note-meta">Mi, 08.07. · <b>Team Damen 1</b></div>
+                <div class="note-meta">Mi, 08.07. · <b>Team 1. Damen</b></div>
                 <div class="note-txt">Tempogegenstoß über links läuft, die zweite Welle kommt noch zu spät.</div>
               </div>
             </div>
@@ -1256,40 +1328,40 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
         <!-- ================= 2) SPIELPLAN ================= -->
         <section class="screen" id="scr-spielplan" role="tabpanel" aria-label="Spielplan">
-          <h2 class="sec-label">Kommend · Damen 1</h2>
+          <h2 class="sec-label">Kommend · 1. Damen</h2>
           <div class="stack">
             <div class="match">
               <div class="m-date"><b>15.08.</b><span>Sa</span></div>
               <div class="opp-badge" aria-hidden="true">EC</div>
               <div class="m-main">
-                <div class="m-opp">Elbe-Cup · Vorbereitungsturnier</div>
+                <div class="m-opp">Ehrenfeld-Cup · Vorbereitungsturnier</div>
                 <div class="m-sub">
                   <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0C18.5 15.8 12 21 12 21Z"/><circle cx="12" cy="10.8" r="2.3"/></svg>
-                  Eigene Halle · ganztägig
+                  Sporthalle Ehrenfeld · ganztägig
                 </div>
               </div>
               <span class="ha ha-h">Heim</span>
             </div>
             <div class="match">
               <div class="m-date"><b>05.09.</b><span>Sa</span></div>
-              <div class="opp-badge" aria-hidden="true">TH</div>
+              <div class="opp-badge" aria-hidden="true">KW</div>
               <div class="m-main">
-                <div class="m-opp">TSV Harburg-Nord</div>
+                <div class="m-opp">HSG Köln-West</div>
                 <div class="m-sub">
                   <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0C18.5 15.8 12 21 12 21Z"/><circle cx="12" cy="10.8" r="2.3"/></svg>
-                  18:00 · Sporthalle Am Sandberg
+                  18:00 · Bezirkssporthalle Weiden
                 </div>
               </div>
               <span class="ha ha-a">Ausw.</span>
             </div>
             <div class="match">
               <div class="m-date"><b>12.09.</b><span>Sa</span></div>
-              <div class="opp-badge" aria-hidden="true">SF</div>
+              <div class="opp-badge" aria-hidden="true">SZ</div>
               <div class="m-main">
-                <div class="m-opp">SG Findorff</div>
+                <div class="m-opp">SV Zollstock</div>
                 <div class="m-sub">
                   <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0C18.5 15.8 12 21 12 21Z"/><circle cx="12" cy="10.8" r="2.3"/></svg>
-                  17:00 · Eigene Halle
+                  17:00 · Sporthalle Ehrenfeld
                 </div>
               </div>
               <span class="ha ha-h">Heim</span>
@@ -1300,9 +1372,9 @@ body.no-select { user-select: none; -webkit-user-select: none; }
           <div class="stack">
             <div class="match">
               <div class="m-date"><b>27.06.</b><span>Sa</span></div>
-              <div class="opp-badge" aria-hidden="true">HW</div>
+              <div class="opp-badge" aria-hidden="true">TD</div>
               <div class="m-main">
-                <div class="m-opp">HC Weserbergland</div>
+                <div class="m-opp">TV Dellbrück</div>
                 <div class="m-sub"><span class="ha ha-a" style="padding:2px 5px">A</span> Testspiel</div>
               </div>
               <span class="score">19:27</span>
@@ -1310,9 +1382,9 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             </div>
             <div class="match">
               <div class="m-date"><b>13.06.</b><span>Sa</span></div>
-              <div class="opp-badge" aria-hidden="true">TH</div>
+              <div class="opp-badge" aria-hidden="true">KW</div>
               <div class="m-main">
-                <div class="m-opp">TSV Harburg-Nord</div>
+                <div class="m-opp">HSG Köln-West</div>
                 <div class="m-sub"><span class="ha ha-h" style="padding:2px 5px">H</span> Testspiel</div>
               </div>
               <span class="score">24:21</span>
@@ -1332,12 +1404,11 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
         <!-- ================= 3) KADER ================= -->
         <section class="screen" id="scr-kader" role="tabpanel" aria-label="Kader">
-          <div class="seg" role="group" aria-label="Team wählen">
-            <button id="seg-d1" aria-pressed="true">Damen 1 · Landesliga</button>
-            <button id="seg-d2" aria-pressed="false">Damen 2 · Bezirksliga</button>
-          </div>
+          <h2 class="sec-label">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c0-3 2.5-4.8 5.5-4.8s5.5 1.8 5.5 4.8"/><circle cx="16.5" cy="9" r="2.4"/><path d="M16.2 14.3c2.6.3 4.3 2 4.3 4.7"/></svg>
+            Stammkader · 1. Damen
+          </h2>
 
-          <!-- DAMEN 1 -->
           <div id="roster-d1">
             <p class="seg-sub">7 Spielerinnen · 5 einsatzbereit · Festspiel-Ampel rechts</p>
             <div class="stack" style="margin-top:8px">
@@ -1400,75 +1471,17 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             </div>
           </div>
 
-          <!-- DAMEN 2 -->
-          <div id="roster-d2" hidden>
-            <p class="seg-sub">7 Spielerinnen · Lena Brandt ist für D2 gesperrt (festgespielt in D1)</p>
-            <div class="stack" style="margin-top:8px">
-              <button class="prow" disabled>
-                <span data-av="svenja"></span>
-                <span class="p-main">
-                  <span class="p-name">Svenja Ott</span>
-                  <span class="p-tags"><span class="pos-chip">TW</span><span class="stat-chip st-ok">Verfügbar</span></span>
-                </span>
-                <span class="ampel a-ok" title="Festspiel: frei"></span>
-              </button>
-              <button class="prow" id="row-lena" aria-haspopup="dialog">
-                <span data-av="lena"></span>
-                <span class="p-main">
-                  <span class="p-name">Lena Brandt</span>
-                  <span class="p-tags">
-                    <span class="pos-chip">RL</span><span class="pos-chip">RM</span>
-                    <span class="stat-chip st-crit">Festgespielt D1 · bis 21.08.</span>
-                  </span>
-                </span>
-                <span class="ampel a-crit" title="Festspiel: festgespielt"></span>
-                <svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-              </button>
-              <button class="prow" disabled>
-                <span data-av="emma"></span>
-                <span class="p-main">
-                  <span class="p-name">Emma Richter</span>
-                  <span class="p-tags">
-                    <span class="pos-chip">LA</span><span class="pos-chip">RA</span>
-                    <span class="stat-chip st-warn">1. D1-Einsatz · Warnung</span>
-                  </span>
-                </span>
-                <span class="ampel a-warn" title="Festspiel: 1 Einsatz"></span>
-              </button>
-              <button class="prow" disabled>
-                <span data-av="sarah"></span>
-                <span class="p-main">
-                  <span class="p-name">Sarah Lindner</span>
-                  <span class="p-tags"><span class="pos-chip">KM</span><span class="stat-chip st-ok">Verfügbar</span></span>
-                </span>
-                <span class="ampel a-ok" title="Festspiel: frei"></span>
-              </button>
-              <button class="prow" disabled>
-                <span data-av="frieda"></span>
-                <span class="p-main">
-                  <span class="p-name">Frieda Albers</span>
-                  <span class="p-tags"><span class="pos-chip">RM</span><span class="pos-chip">RL</span><span class="stat-chip st-ok">Verfügbar</span></span>
-                </span>
-                <span class="ampel a-ok" title="Festspiel: frei"></span>
-              </button>
-              <button class="prow" disabled>
-                <span data-av="zoe"></span>
-                <span class="p-main">
-                  <span class="p-name">Zoe Krüger</span>
-                  <span class="p-tags"><span class="pos-chip">RA</span><span class="stat-chip st-warn">Urlaub · 31.08.–06.09.</span></span>
-                </span>
-                <span class="ampel a-ok" title="Festspiel: frei"></span>
-              </button>
-              <button class="prow" disabled>
-                <span data-av="hanna"></span>
-                <span class="p-main">
-                  <span class="p-name">Hanna Busch</span>
-                  <span class="p-tags"><span class="pos-chip">RL</span><span class="stat-chip st-crit">Langzeitverletzt · Knie-OP</span></span>
-                </span>
-                <span class="ampel a-ok" title="Festspiel: frei"></span>
-              </button>
-            </div>
-          </div>
+          <!-- GÄSTE -->
+          <h2 class="sec-label">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8.5" r="3.2"/><path d="M4 19.5c.8-3.7 3.1-5.8 6-5.8 1.5 0 2.8.5 3.9 1.4"/><path d="M17.5 13.5v6M14.5 16.5h6"/></svg>
+            Gäste · temporär im Team
+          </h2>
+          <p class="seg-sub">Aus Damen 2 oder A-Jugend geholt — die Festspiel-Ampel (§55 SpO) läuft mit.</p>
+          <div class="stack" id="gaeste-list" style="margin-top:8px" aria-live="polite"></div>
+          <button class="btn-gast" id="btn-gast" aria-haspopup="dialog">
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Gast hinzufügen — aus Damen 2 / A-Jugend
+          </button>
 
           <div class="legend">
             <span><i class="ampel a-ok"></i>frei</span>
@@ -1480,11 +1493,16 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
         <!-- ================= 4) PLANUNG · SPIELTAGSKADER ================= -->
         <section class="screen" id="scr-planung" role="tabpanel" aria-label="Planung">
-          <p class="plan-head"><b>Spieltagskader · Sa, 05.09. · @ TSV Harburg-Nord</b><br>
+          <p class="plan-head"><b>Spieltagskader · Sa, 05.09. · @ HSG Köln-West</b><br>
           Bis zu 16 Spielerinnen, keine Obergrenze pro Position. Spielerin in eine Positionsgruppe
           <b>ziehen</b> oder antippen = nominieren; Chip ziehen oder antippen = verschieben / entfernen.</p>
 
-          <div class="plan-status is-draft" id="plan-status" aria-live="polite"></div>
+          <div class="seg" role="group" aria-label="Ansicht wählen">
+            <button id="pl-liste" aria-pressed="true">Liste</button>
+            <button id="pl-feld" aria-pressed="false">Feld</button>
+          </div>
+
+          <div class="plan-status is-draft" id="plan-status" aria-live="polite" style="margin-top:10px"></div>
 
           <div id="pv-sec" hidden>
             <h2 class="sec-label">
@@ -1499,23 +1517,57 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             <div class="pv-body" id="pv-body" hidden></div>
           </div>
 
-          <h2 class="sec-label">
-            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/></svg>
-            Positionen · beliebig besetzbar
-          </h2>
-          <div class="pgroups" id="pgroups" aria-label="Positionsgruppen"></div>
+          <div id="plan-liste">
+            <h2 class="sec-label">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/></svg>
+              Positionen · beliebig besetzbar
+            </h2>
+            <div class="pgroups" id="pgroups" aria-label="Positionsgruppen"></div>
 
-          <h2 class="sec-label">Verfügbar · Damen 1, Damen 2 &amp; A-Jugend</h2>
-          <div class="pool" id="pool-av"></div>
+            <h2 class="sec-label">Verfügbar · Stammkader + Gäste</h2>
+            <div class="pool" id="pool-av"></div>
 
-          <h2 class="sec-label">Nicht verfügbar</h2>
-          <div class="pool" id="pool-na"></div>
+            <h2 class="sec-label">Nicht verfügbar</h2>
+            <div class="pool" id="pool-na"></div>
+          </div>
+
+          <div id="plan-feld" hidden>
+            <h2 class="sec-label">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/></svg>
+              Aufstellung auf dem Feld
+            </h2>
+            <div class="pf-wrap">
+              <svg id="pf-court" viewBox="19 -1 22 22" style="aspect-ratio:22/22"
+                   role="application" aria-label="Feld-Ansicht — Spielerinnen auf Positionszonen ziehen">
+                <g aria-hidden="true">
+                  <rect class="tb-floor" x="-1" y="-1" width="42" height="22"/>
+                  <path class="tb-area" d="M40 2.5 A6 6 0 0 0 34 8.5 L34 11.5 A6 6 0 0 0 40 17.5 Z"/>
+                  <rect class="tb-line" x="0" y="0" width="40" height="20" rx=".3"/>
+                  <path class="tb-line" d="M40 2.5 A6 6 0 0 0 34 8.5 L34 11.5 A6 6 0 0 0 40 17.5"/>
+                  <path class="tb-line tb-dash" d="M37.04 0 A9 9 0 0 0 31 8.5 L31 11.5 A9 9 0 0 0 37.04 20"/>
+                  <line class="tb-line" x1="20" y1="0" x2="20" y2="20"/>
+                  <line class="tb-line" x1="33" y1="9.4" x2="33" y2="10.6"/>
+                  <line class="tb-line" x1="36" y1="9.65" x2="36" y2="10.35"/>
+                  <rect class="tb-goal" x="40" y="8.5" width="0.45" height="3"/>
+                </g>
+                <g id="pf-zones"></g>
+                <g id="pf-toks"></g>
+              </svg>
+            </div>
+            <p class="pf-hint">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.9v.1"/></svg>
+              Spielerin aus der Ablage aufs Feld ziehen — sie rastet in der nächstgelegenen Positionszone ein.
+              Figur ziehen = Position wechseln, antippen = verschieben / entfernen. Gelbes G = Gast.
+            </p>
+            <h2 class="sec-label">Ablage · Stammkader + Gäste</h2>
+            <div class="pool" id="pf-tray"></div>
+          </div>
 
           <p class="plan-note">
             <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.9v.1"/></svg>
-            Lena Brandt ist in D1 festgespielt und darf hier auflaufen — für Damen 2 wäre sie gesperrt und ausgegraut.
-            Emma Richters nächster D1-Einsatz spielt sie fest. Merle Sanders ist zum Spieltag zurück aus dem Urlaub,
-            Zoe Krüger ist über den Spieltag im Urlaub.
+            Gäste holst du über <b>Kader → Gast hinzufügen</b> ins Team. Lena Brandt (Gast · Damen 2) ist in der
+            1. Damen festgespielt und darf hier auflaufen. Emma Richters nächster Einsatz wäre ihr 2. in Folge —
+            sie würde sich festspielen. Merle Sanders ist zum Spieltag zurück aus dem Urlaub.
           </p>
         </section>
 
@@ -1543,9 +1595,43 @@ body.no-select { user-select: none; -webkit-user-select: none; }
               <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5Z"/></svg>
               Spielzug: Kreuzung RM/RL
             </button>
+            <button class="tb-chip" id="tb-preset2">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l3.5 7H8.5Z"/><path d="M5.5 20l3-6h7l3 6Z"/></svg>
+              Training: Anspiel Kreis
+            </button>
             <button class="tb-chip" id="tb-new">
               <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               Neuer Zug
+            </button>
+            <button class="tb-chip" id="tb-mat-toggle" aria-pressed="false" aria-controls="tb-mat-row">
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l4 9H8Z"/><path d="M5.5 16.5h13M4 20h16"/></svg>
+              Material
+            </button>
+          </div>
+          <div class="tb-mat-row" id="tb-mat-row" hidden aria-label="Trainingsmaterial — antippen zum Platzieren">
+            <button class="mat-btn" data-mat="hut">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><path d="M-.75 .6 L0 -.85 L.75 .6 Z" fill="#E08A3C" stroke="#9A5A20" stroke-width=".08"/><line x1="-1.05" y1=".6" x2="1.05" y2=".6" stroke="#9A5A20" stroke-width=".12"/></svg>
+              Hütchen
+            </button>
+            <button class="mat-btn" data-mat="stange">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><ellipse cx="0" cy="1.3" rx=".6" ry=".2" fill="#9AA0AA" opacity=".8"/><rect x="-.14" y="-1.35" width=".28" height="2.6" rx=".14" fill="#C0432F"/><rect x="-.14" y="-.6" width=".28" height=".55" fill="#F2E7DC"/></svg>
+              Stange
+            </button>
+            <button class="mat-btn" data-mat="leiter">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><g stroke="#8B93A2" stroke-width=".13" fill="none"><line x1="-1.55" y1="-.55" x2="1.55" y2="-.55"/><line x1="-1.55" y1=".55" x2="1.55" y2=".55"/><line x1="-1.55" y1="-.55" x2="-1.55" y2=".55"/><line x1="-.78" y1="-.55" x2="-.78" y2=".55"/><line x1="0" y1="-.55" x2="0" y2=".55"/><line x1=".78" y1="-.55" x2=".78" y2=".55"/><line x1="1.55" y1="-.55" x2="1.55" y2=".55"/></g></svg>
+              Leiter
+            </button>
+            <button class="mat-btn" data-mat="matte">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><rect x="-1.35" y="-.85" width="2.7" height="1.7" rx=".26" fill="#4C9EB8" opacity=".9" stroke="#2E6E85" stroke-width=".08"/><line x1="-.68" y1="-.85" x2="-.68" y2=".85" stroke="#2E6E85" stroke-width=".07"/><line x1=".68" y1="-.85" x2=".68" y2=".85" stroke="#2E6E85" stroke-width=".07"/></svg>
+              Matte
+            </button>
+            <button class="mat-btn" data-mat="tor">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><rect x="-1.15" y="-.8" width="2.3" height="1.6" fill="none" stroke="#C0432F" stroke-width=".15"/><g stroke="#9AA2AE" stroke-width=".05"><line x1="-.75" y1="-.8" x2="-.75" y2=".8"/><line x1="-.38" y1="-.8" x2="-.38" y2=".8"/><line x1="0" y1="-.8" x2="0" y2=".8"/><line x1=".38" y1="-.8" x2=".38" y2=".8"/><line x1=".75" y1="-.8" x2=".75" y2=".8"/><line x1="-1.15" y1="-.27" x2="1.15" y2="-.27"/><line x1="-1.15" y1=".27" x2="1.15" y2=".27"/></g></svg>
+              Minitor
+            </button>
+            <button class="mat-btn" data-mat="ball2">
+              <svg viewBox="-2 -2 4 4" aria-hidden="true"><circle r="1.05" fill="none" stroke="#8B93A2" stroke-width=".11"/><circle cx="-.34" cy="-.16" r=".34" fill="#E3A23F"/><circle cx=".36" cy="-.1" r=".34" fill="#E3A23F"/><circle cx="0" cy=".44" r=".34" fill="#E3A23F"/></svg>
+              Bälle
             </button>
           </div>
 
@@ -1553,6 +1639,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             <span class="tb-badge" aria-hidden="true"><span class="tb-rec-dot"></span>Aufzeichnen</span>
             <svg id="tb-court" viewBox="19 -1 22 22" style="aspect-ratio:22/22"
                  role="application" aria-label="Taktikboard — Handballfeld mit verschiebbaren Figuren">
+              <g id="tb-rot">
               <g id="tb-field" aria-hidden="true">
                 <rect class="tb-floor" x="-1" y="-1" width="42" height="22"/>
                 <path class="tb-area" d="M0 2.5 A6 6 0 0 1 6 8.5 L6 11.5 A6 6 0 0 1 0 17.5 Z"/>
@@ -1572,6 +1659,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
               </g>
               <g id="tb-paths"></g>
               <g id="tb-tokens"></g>
+              </g>
             </svg>
           </div>
 
@@ -1611,7 +1699,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             </div>
           </div>
 
-          <h2 class="sec-label">Einsätze &amp; Tore · Saison 25/26 · Damen 1</h2>
+          <h2 class="sec-label">Einsätze &amp; Tore · Saison 25/26 · 1. Damen</h2>
           <div class="card stack">
             <div class="bar-row"><span data-av="nina" data-cls="av-st"></span><span class="nm">Nina Petrovic <span class="bar-sub">18 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:100%; display:block"></span></span><span class="val">87</span></div>
             <div class="bar-row"><span data-av="johanna" data-cls="av-st"></span><span class="nm">Johanna Falk <span class="bar-sub">17 Sp.</span></span><span class="bar-track"><span class="bar-fill" style="width:85%; display:block"></span></span><span class="val">74</span></div>
@@ -1629,12 +1717,12 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             <div class="cov-row"><span class="cov-pos">RM</span><span class="cov-dots"><i></i><i></i><i></i></span><span class="cov-flag f-ok">3 bereit</span></div>
             <div class="cov-row"><span class="cov-pos">RR</span><span class="cov-dots"><i></i></span><span class="cov-flag f-warn">nur 1 — dünn</span></div>
             <div class="cov-row"><span class="cov-pos">RA</span><span class="cov-dots"><i></i><i></i><i class="off"></i></span><span class="cov-flag f-warn">Merle bis 26.07. im Urlaub</span></div>
-            <div class="cov-row"><span class="cov-pos">KM</span><span class="cov-dots"><i></i><i class="off"></i></span><span class="cov-flag f-crit">nur 1 — Carla verletzt</span></div>
+            <div class="cov-row"><span class="cov-pos">KM</span><span class="cov-dots"><i class="off"></i><i class="off"></i></span><span class="cov-flag f-crit">Carla verletzt — 0 bereit</span></div>
             <div class="alert alert-warn" style="margin-top:6px">
               <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 21 19H3Z"/><path d="M12 10v4"/><path d="M12 16.9v.1"/></svg>
               <div>
                 <div class="al-kicker">Engpass Kreis Mitte</div>
-                <div class="al-body">Fällt Sarah Lindner aus, ist KM unbesetzt. Ausweichoption im Training aufbauen.</div>
+                <div class="al-body">Carla Weiß fällt bis 30.07. aus — für den Spieltag eine Gast-Spielerin holen (z.&nbsp;B. Sarah Lindner, Damen&nbsp;2) oder Ausweichoption im Training aufbauen.</div>
               </div>
             </div>
           </div>
@@ -1642,13 +1730,13 @@ body.no-select { user-select: none; -webkit-user-select: none; }
           <h2 class="sec-label">Gegner-Bilanz</h2>
           <div class="card">
             <div class="vs-row">
-              <div class="opp-badge" aria-hidden="true">TH</div>
-              <div>TSV Harburg-Nord<br><span class="vs-sub">1 Spiel · 1 Sieg · Heim, 13.06.</span></div>
+              <div class="opp-badge" aria-hidden="true">KW</div>
+              <div>HSG Köln-West<br><span class="vs-sub">1 Spiel · 1 Sieg · Heim, 13.06.</span></div>
               <span class="score" style="color:var(--ok)">24:21</span>
             </div>
             <div class="vs-row">
-              <div class="opp-badge" aria-hidden="true">HW</div>
-              <div>HC Weserbergland<br><span class="vs-sub">1 Spiel · 0 Siege · Auswärts, 27.06.</span></div>
+              <div class="opp-badge" aria-hidden="true">TD</div>
+              <div>TV Dellbrück<br><span class="vs-sub">1 Spiel · 0 Siege · Auswärts, 27.06.</span></div>
               <span class="score" style="color:var(--crit)">19:27</span>
             </div>
           </div>
@@ -1664,7 +1752,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             <span data-av="lena" data-cls="av-lg"></span>
             <div>
               <div class="prof-name">Lena Brandt</div>
-              <div class="prof-sub">RL / RM · Damen 2 · Rechtshänderin</div>
+              <div class="prof-sub">RL / RM · Gast aus Damen 2 · Rechtshänderin</div>
               <button class="foto-btn" id="btn-foto">
                 <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5h3l1.6-2.2h6.8L17 8.5h3v10H4Z"/><circle cx="12" cy="13" r="3"/></svg>
                 Foto ändern
@@ -1674,11 +1762,11 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
           <h2 class="sec-label">Festspiel-Status · §55 SpO</h2>
           <div class="klartext">
-            <div class="al-kicker">Festgespielt in Damen 1 · bis 21.08.2026</div>
-            Lena hat am <b>13.06.</b> und <b>27.06.</b> in Folge für Damen 1 gespielt (2. Einsatz in Folge).
-            Damit gilt sie nach §55 SpO als in Damen 1 <b>festgespielt</b> und ist für Damen 2 gesperrt.
+            <div class="al-kicker">Festgespielt in der 1. Damen · bis 21.08.2026</div>
+            Lena hat am <b>13.06.</b> und <b>27.06.</b> in Folge als Gast für die 1. Damen gespielt (2. Einsatz in Folge).
+            Damit gilt sie nach §55 SpO als in der 1. Damen <b>festgespielt</b> und ist für Damen 2 gesperrt.
             Frühestens ab dem <b>21.08.2026</b> ist sie wieder für Damen 2 spielberechtigt — vorausgesetzt,
-            sie hat bis dahin keinen weiteren D1-Einsatz.
+            sie hat bis dahin keinen weiteren Einsatz in der 1. Damen.
           </div>
 
           <h2 class="sec-label">Formkurve · Trainereindruck 1–5</h2>
@@ -1711,8 +1799,8 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             </div>
             <div class="hist-item">
               <span class="hist-kind k-spiel">Spiel</span>
-              <div><div class="hist-date">Sa, 27.06.2026 · D1 @ HC Weserbergland</div>
-              <div class="hist-txt">60 Minuten durchgespielt, Abwehr Mitte stabil. 2. D1-Einsatz in Folge → festgespielt.</div></div>
+              <div><div class="hist-date">Sa, 27.06.2026 · 1. Damen @ TV Dellbrück</div>
+              <div class="hist-txt">60 Minuten durchgespielt, Abwehr Mitte stabil. 2. Einsatz in Folge → festgespielt.</div></div>
             </div>
             <div class="hist-item">
               <span class="hist-kind k-train">Training</span>
@@ -1721,8 +1809,8 @@ body.no-select { user-select: none; -webkit-user-select: none; }
             </div>
             <div class="hist-item">
               <span class="hist-kind k-spiel">Spiel</span>
-              <div><div class="hist-date">Sa, 13.06.2026 · D1 vs. TSV Harburg-Nord</div>
-              <div class="hist-txt">Ab der 2. Halbzeit eingewechselt, 3 Tore. Erster D1-Einsatz.</div></div>
+              <div><div class="hist-date">Sa, 13.06.2026 · 1. Damen vs. HSG Köln-West</div>
+              <div class="hist-txt">Ab der 2. Halbzeit eingewechselt, 3 Tore. Erster Einsatz in der 1. Damen.</div></div>
             </div>
             <div class="hist-item">
               <span class="hist-kind k-train">Training</span>
@@ -1733,7 +1821,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
           <h2 class="sec-label">Abwesenheiten</h2>
           <div class="card" style="font-size:13px; color:var(--muted)">
-            Keine eingetragenen Abwesenheiten. Nächster geplanter Einsatz: Elbe-Cup, Sa 15.08. (Damen 1).
+            Keine eingetragenen Abwesenheiten. Nächster geplanter Einsatz: Ehrenfeld-Cup, Sa 15.08. (1. Damen).
           </div>
         </div>
 
@@ -1804,16 +1892,17 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   <!-- ============ RATIONALE ============ -->
   <aside class="rationale">
     <div>
-      <div class="rat-kicker">Design C · Gewinner · Iteration V3</div>
+      <div class="rat-kicker">Design C · Gewinner · Iteration V4</div>
       <h1 class="rat-title">Vereinsfarben</h1>
       <p class="rat-copy">
-        Die App trägt die Farben des Vereins — nicht umgekehrt: Ein tiefes Königsblau ersetzt jedes
-        Standard-Interface-Blau, Weiß und ein kühl abgetöntes Eisgrau halten den Alltag ruhig, und ein
-        warmes Signalrot ist allein Festspiel- und Verfügbarkeitswarnungen vorbehalten. Die kondensierte
-        Versal-Typografie gibt Spieltagen, Ergebnissen und Namen Plakatwirkung wie im
-        Bundesliga-Programmheft, während Listen und Planung bewusst nüchtern bleiben. Der Spieltag-Held
-        ist das Aushängeschild, alles andere ist Werkzeug. Über die Vereinsfarben-Tokens themt sich das
-        gesamte Produkt in Sekunden auf jeden Club um — hier live mit drei Beispielvereinen.
+        Die App trägt die Farben des Vereins — nicht umgekehrt: Das Königsblau des TuS Köln-Ehrenfeld
+        ersetzt jedes Standard-Interface-Blau, Weiß und ein kühl abgetöntes Eisgrau halten den Alltag
+        ruhig. Das Vereinsgelb ist der Energie-Akzent — Wappenband, Spieltag-CTA, Gast-Badges — immer
+        mit blauer Tinte darauf, nie als Text auf Weiß; ein warmes Signalrot bleibt allein Festspiel-
+        und Verfügbarkeitswarnungen vorbehalten. Die kondensierte Versal-Typografie gibt Spieltagen,
+        Ergebnissen und Namen Plakatwirkung wie im Bundesliga-Programmheft, während Listen und Planung
+        bewusst nüchtern bleiben. Über die Vereinsfarben-Tokens themt sich das gesamte Produkt in
+        Sekunden auf jeden Club um — hier live mit zwei weiteren Beispielvereinen.
       </p>
       <p class="rat-copy">
         <b style="color:var(--ink)">Neu in V2 (Trainer-Feedback):</b> Die Planung ist jetzt ein
@@ -1836,14 +1925,28 @@ body.no-select { user-select: none; -webkit-user-select: none; }
         Schritt-für-Schritt-Ansicht. Ein vorgebauter Beispielzug („Kreuzung RM/RL mit Einläufer")
         zeigt den Wert sofort.
       </p>
+      <p class="rat-copy">
+        <b style="color:var(--ink)">Neu in V4 (Trainer-Feedback):</b> Die App wird echt — der
+        <b style="color:var(--ink)">TuS Köln-Ehrenfeld 1865</b> in Blau/Gelb ist die Standard-Identität,
+        mit geometrischem TuS-1865-Wappen und Köln-Spielplan (HSG Köln-West, SV Zollstock, TV Dellbrück).
+        Statt zwei Teams zu verwalten, fokussiert alles auf die <b style="color:var(--ink)">1. Damen plus
+        Gäste-Konzept</b>: Spielerinnen aus Damen 2 oder A-Jugend werden temporär ins Team geholt, tragen
+        überall ein gelbes Gast-Badge, und genau hier greift §55 — Lena ist als Gast festgespielt, Emmas
+        nächste Nominierung warnt prominent vor dem 2. Einsatz in Folge. Die Planung bekommt eine
+        <b style="color:var(--ink)">Feld-Ansicht</b> (Liste ⇄ Feld, identischer Datenstand): Spielerinnen
+        aus der Ablage direkt auf die Halbfeld-Zonen ziehen, Drops rasten in der nächstgelegenen
+        Positionszone ein. Und das Taktikboard wird Trainingswerkzeug: das ganze Feld dreht sich hochkant
+        ins Telefon und ist voll bespielbar, dazu eine Material-Palette (Hütchen, Stangen, Leiter, Matte,
+        Minitor, Balltrolley) und die vorgebaute Einheit „Anspiel Kreis unter Druck“.
+      </p>
     </div>
 
     <div>
       <div class="rat-sec-label">Vereinsfarben-Schalter · live</div>
       <div class="club-switch" role="group" aria-label="Verein wählen">
-        <button class="club-btn" data-club="blauweiss" aria-pressed="true">
-          <span class="club-dot" style="background:linear-gradient(135deg,#14418F 50%,#F5F8FF 50%)"></span>
-          HSG Blauweiß Elbtal <small>Blau / Weiß</small>
+        <button class="club-btn" data-club="tus" aria-pressed="true">
+          <span class="club-dot" style="background:linear-gradient(135deg,#14418F 55%,#FFC72C 55%)"></span>
+          TuS Köln-Ehrenfeld 1865 <small>Blau / Gelb</small>
         </button>
         <button class="club-btn" data-club="rotersand" aria-pressed="false">
           <span class="club-dot" style="background:linear-gradient(135deg,#9E1B2C 50%,#1C0508 50%)"></span>
@@ -1859,9 +1962,9 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     <div>
       <div class="rat-sec-label">Palette</div>
       <div class="swatches">
-        <div class="sw"><i style="background:var(--club-700)"></i><span><b id="swn-1">Königsblau</b><code id="swx-1">#14418F</code></span></div>
+        <div class="sw"><i style="background:var(--club-700)"></i><span><b id="swn-1">Ehrenfeld-Blau</b><code id="swx-1">#14418F</code></span></div>
         <div class="sw"><i style="background:var(--club-900)"></i><span><b id="swn-2">Tiefblau</b><code id="swx-2">#0B2158</code></span></div>
-        <div class="sw"><i style="background:var(--club-300)"></i><span><b id="swn-3">Akzent hell</b><code id="swx-3">#7AA3E8</code></span></div>
+        <div class="sw"><i style="background:var(--club-acc)"></i><span><b id="swn-3">Vereinsgelb</b><code id="swx-3">#FFC72C</code></span></div>
         <div class="sw"><i style="background:#EFF2F8"></i><span><b>Eisgrau · Neutral</b><code>#EFF2F8</code></span></div>
         <div class="sw"><i style="background:#C2372C"></i><span><b>Signal · Warnung</b><code>#C2372C</code></span></div>
         <div class="sw"><i style="background:#25834F"></i><span><b>Zusage · OK</b><code>#25834F</code></span></div>
@@ -1967,22 +2070,12 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     toast("Spielplan ist aktuell — handball.net, Stand 10.07.2026");
   });
 
-  /* ---------- Kader: Segmented Control ---------- */
-  function pickSquad(which) {
-    $("#roster-d1").hidden = which !== "d1";
-    $("#roster-d2").hidden = which !== "d2";
-    $("#seg-d1").setAttribute("aria-pressed", String(which === "d1"));
-    $("#seg-d2").setAttribute("aria-pressed", String(which === "d2"));
-  }
-  $("#seg-d1").addEventListener("click", function () { pickSquad("d1"); });
-  $("#seg-d2").addEventListener("click", function () { pickSquad("d2"); });
-
   /* ---------- Profil ---------- */
-  $("#row-lena").addEventListener("click", function () {
+  function openProfile() {
     var p = $("#profile");
     p.hidden = false;
     p.scrollTop = 0;
-  });
+  }
   $("#btn-prof-back").addEventListener("click", function () { $("#profile").hidden = true; });
 
   /* ================================================================
@@ -2005,8 +2098,8 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     merle:    { name: "Merle Sanders",    init: "MS", team: "D1", pos: ["RA"],       main: "RA", av: { c: 0, s: 0, h: 4, style: "curly" } },
     paula:    { name: "Paula Vogt",       init: "PV", team: "D1", pos: ["RL"],       main: "RL", av: { c: 3, s: 1, h: 1, style: "short" } },
     svenja:   { name: "Svenja Ott",       init: "SO", team: "D2", pos: ["TW"],       main: "TW", av: { c: 2, s: 0, h: 3, style: "pony" } },
-    lena:     { name: "Lena Brandt",      init: "LB", team: "D2", pos: ["RL", "RM"], main: "RL", av: { c: 0, s: 1, h: 0, style: "long" }, why: "Festgespielt D1", whyKind: "info" },
-    emma:     { name: "Emma Richter",     init: "ER", team: "D2", pos: ["LA", "RA"], main: "LA", av: { c: 1, s: 3, h: 0, style: "curly" }, why: "Festspiel-Risiko", whyKind: "warn" },
+    lena:     { name: "Lena Brandt",      init: "LB", team: "D2", pos: ["RL", "RM"], main: "RL", av: { c: 0, s: 1, h: 0, style: "long" }, why: "festgespielt 1. Damen", whyKind: "info" },
+    emma:     { name: "Emma Richter",     init: "ER", team: "D2", pos: ["LA", "RA"], main: "LA", av: { c: 1, s: 3, h: 0, style: "curly" }, why: "2. Einsatz → fest", whyKind: "warn" },
     sarah:    { name: "Sarah Lindner",    init: "SL", team: "D2", pos: ["KM"],       main: "KM", av: { c: 3, s: 2, h: 1, style: "bun" } },
     frieda:   { name: "Frieda Albers",    init: "FA", team: "D2", pos: ["RM", "RL"], main: "RM", av: { c: 0, s: 4, h: 0, style: "short" } },
     zoe:      { name: "Zoe Krüger",       init: "ZK", team: "D2", pos: ["RA"],       main: "RA", av: null, out: "Urlaub · 31.08.–06.09.", outKind: "warn" },
@@ -2018,11 +2111,20 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     josefine: { name: "Josefine Braun",   init: "JB", team: "AJ", pos: ["LA"],       main: "LA", av: { c: 3, s: 1, h: 5, style: "bun" } },
     charlotte:{ name: "Charlotte Mertens",init: "CM", team: "AJ", pos: ["RR", "RL"], main: "RR", av: { c: 1, s: 2, h: 2, style: "curly" } }
   };
-  var ORDER_AV = ["marie", "aylin", "nina", "johanna", "merle", "paula",
-                  "svenja", "lena", "emma", "sarah", "frieda",
-                  "lea", "maja", "finja", "elif", "josefine", "charlotte"];
-  var ORDER_NA = ["carla", "zoe", "hanna"];
-  function teamLabel(t) { return t === "D1" ? "Damen 1" : t === "D2" ? "Damen 2" : "A-Jugend"; }
+  var D1_AVAIL = ["marie", "aylin", "nina", "johanna", "merle", "paula"];
+  var ORDER_NA = ["carla"];
+  /* Gäste: temporär aus Damen 2 / A-Jugend ins Team geholt — §55 läuft mit */
+  var GUESTS = {
+    lena: { scope: "für Spieltag 05.09.",      ampel: "crit", info: "Festgespielt 1. Damen · bis 21.08.",  infoKind: "crit" },
+    emma: { scope: "für 2 Wochen · bis 24.07.", ampel: "warn", info: "1. Einsatz · der nächste spielt fest", infoKind: "warn" }
+  };
+  function guestKeys() { return Object.keys(GUESTS); }
+  function planKeys()  { return D1_AVAIL.concat(guestKeys()); }
+  function teamLabel(t) { return t === "D1" ? "1. Damen" : t === "D2" ? "Damen 2" : "A-Jugend"; }
+  function gastBadge(k) {
+    if (!GUESTS[k]) return "";
+    return '<span class="gast-badge">Gast · ' + teamLabel(PLAYERS[k].team) + '</span>';
+  }
 
   function avatarHTML(key, cls) {
     var p = PLAYERS[key];
@@ -2052,6 +2154,67 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   });
 
   /* ================================================================
+     KADER — Gäste-Konzept: temporäre Spielerinnen aus D2 / A-Jugend
+     ================================================================ */
+  function renderGaeste() {
+    var h = "";
+    guestKeys().forEach(function (k) {
+      var p = PLAYERS[k], g = GUESTS[k];
+      h += '<button class="prow" data-guest="' + k + '"' + (k === "lena" ? ' aria-haspopup="dialog"' : "") + '>' +
+           avatarHTML(k, "") +
+           '<span class="p-main"><span class="p-name">' + p.name + ' ' + gastBadge(k) + '</span>' +
+           '<span class="p-tags">' +
+           p.pos.map(function (x) { return '<span class="pos-chip">' + x + '</span>'; }).join("") +
+           '<span class="stat-chip st-' + g.infoKind + '">' + g.info + '</span>' +
+           '<span class="stat-chip st-info">' + g.scope + '</span>' +
+           '</span></span>' +
+           '<span class="ampel a-' + g.ampel + '" title="Festspiel-Ampel §55"></span>' +
+           (k === "lena" ? '<svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>' : "") +
+           '</button>';
+    });
+    $("#gaeste-list").innerHTML = h;
+  }
+  $("#gaeste-list").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-guest]");
+    if (!b) return;
+    if (b.dataset.guest === "lena") openProfile();
+    else toast(PLAYERS[b.dataset.guest].name + " — Profil im Prototyp nur für Lena Brandt");
+  });
+  function openGastSheet() {
+    var h = '<div class="sheet-head"><div><div class="sheet-title">Gast hinzufügen</div>' +
+            '<div class="sheet-sub">Temporär aus Damen 2 oder A-Jugend — Festspiel-Ampel läuft mit (§55 SpO)</div></div></div>';
+    ["D2", "AJ"].forEach(function (team) {
+      h += '<div class="sheet-lbl">' + teamLabel(team) + '</div>';
+      Object.keys(PLAYERS).forEach(function (k) {
+        var p = PLAYERS[k];
+        if (p.team !== team || GUESTS[k]) return;
+        var blocked = !!p.out;
+        h += '<button class="pos-opt" data-act="gast-pick" data-p="' + k + '"' +
+             (blocked ? ' disabled style="opacity:.45"' : "") + '>' +
+             avatarHTML(k, "av-sm") + p.name +
+             '<small>' + p.pos.join("/") + (blocked ? " · " + p.out : "") + '</small></button>';
+      });
+    });
+    h += '<button class="sheet-cancel" data-act="close">Abbrechen</button>';
+    openSheet(h);
+  }
+  function openGastScopeSheet(k) {
+    var h = sheetHead(k, PLAYERS[k].pos.join(" / ") + " · " + teamLabel(PLAYERS[k].team));
+    h += '<div class="sheet-lbl">Zeitraum wählen</div>';
+    h += '<button class="pos-opt main" data-act="gast-add" data-p="' + k + '" data-scope="für Spieltag 05.09."><b>ST</b>Für Spieltag 05.09.<small>@ HSG Köln-West</small></button>';
+    h += '<button class="pos-opt" data-act="gast-add" data-p="' + k + '" data-scope="für 2 Wochen · bis 24.07."><b>2W</b>Für 2 Wochen<small>Training + Vorbereitung</small></button>';
+    h += '<button class="sheet-cancel" data-act="close">Abbrechen</button>';
+    openSheet(h);
+  }
+  function addGuest(k, scope) {
+    GUESTS[k] = { scope: scope, ampel: "ok", info: "Noch kein Einsatz 1. Damen", infoKind: "ok" };
+    renderGaeste();
+    renderPlan();
+    toast(PLAYERS[k].name + " ist jetzt Gast (" + teamLabel(PLAYERS[k].team) + ") — " + scope);
+  }
+  $("#btn-gast").addEventListener("click", openGastSheet);
+
+  /* ================================================================
      PLANUNG V2 — Spieltagskader (bis 16), Entwurf → Freigabe
      ================================================================ */
   var POS = [
@@ -2065,14 +2228,15 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   ];
   var LIMIT = 16;
   var nom = {
-    marie: "TW", svenja: "TW", aylin: "LA", merle: "RA", sarah: "KM",
-    paula: "RL", nina: "RM", frieda: "RM", johanna: "RR"
+    marie: "TW", aylin: "LA", merle: "RA",
+    paula: "RL", nina: "RM", lena: "RM", johanna: "RR"
   };
   var plan = {
     status: "draft", releasedAt: null, snapshot: null, dirty: false,
     lastEdited: "Do 09.07., 21:14"
   };
   var pvOpen = false;
+  var planView = "liste";
 
   function fmtNow() {
     var d = new Date();
@@ -2084,7 +2248,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   function snapshotNow() {
     var out = [];
     POS.forEach(function (pp) {
-      ORDER_AV.forEach(function (k) { if (nom[k] === pp[0]) out.push({ id: k, pos: pp[0] }); });
+      planKeys().forEach(function (k) { if (nom[k] === pp[0]) out.push({ id: k, pos: pp[0] }); });
     });
     return out;
   }
@@ -2120,38 +2284,46 @@ body.no-select { user-select: none; -webkit-user-select: none; }
            '<div><b>Änderungen seit Freigabe</b> — die Spielerinnen sehen noch den Stand von ' + plan.releasedAt + '.</div>' +
            '<button data-act="release">Erneut freigeben</button></div>';
     }
+    if (nom.emma) {
+      h += '<div class="rel-hint" role="alert">' + icWarn +
+           '<div><b>2. Einsatz in Folge:</b> Emma Richter (Gast · Damen 2) spielt sich mit diesem ' +
+           'Einsatz fest — für Damen 2 gesperrt bis vsl. <b>30.10.2026</b> (§55 SpO).</div></div>';
+    }
     el.innerHTML = h;
     $("#pv-sec").hidden = plan.status !== "released";
   }
   function renderGroups() {
     var h = "";
     POS.forEach(function (pp) {
-      var members = ORDER_AV.filter(function (k) { return nom[k] === pp[0]; });
+      var members = planKeys().filter(function (k) { return nom[k] === pp[0]; });
       h += '<div class="pgroup" data-pos="' + pp[0] + '"><div class="pg-key"><b>' + pp[0] + '</b><span>' + pp[1] + '</span></div><div class="pg-chips">';
       if (!members.length) {
         h += '<span class="pg-empty">+ unbesetzt</span>';
       } else {
         members.forEach(function (k) {
           h += '<button class="nchip" data-p="' + k + '" aria-label="' + PLAYERS[k].name + ' — verschieben oder entfernen">' +
-               avatarHTML(k, "av-sm") + PLAYERS[k].name + '</button>';
+               avatarHTML(k, "av-sm") + PLAYERS[k].name + gastBadge(k) + '</button>';
         });
       }
       h += '</div><span class="pg-mult">' + (members.length > 1 ? "×" + members.length : "") + '</span></div>';
     });
     $("#pgroups").innerHTML = h;
   }
-  function renderPools() {
+  function poolChipsHTML() {
     var h = "";
-    ORDER_AV.forEach(function (k) {
+    planKeys().forEach(function (k) {
       var p = PLAYERS[k];
       h += '<button class="pchip' + (nom[k] ? " placed" : "") + '" data-p="' + k + '">' +
            avatarHTML(k, "av-sm") + p.name + ' <span class="pos-chip">' + p.pos.join("/") + '</span>';
-      if (p.team !== "D1") h += '<span class="why st-info stat-chip">' + (p.team === "AJ" ? "A-Jgd" : "D2") + '</span>';
+      h += gastBadge(k);
       if (p.why) h += '<span class="why st-' + p.whyKind + ' stat-chip">' + p.why + '</span>';
       if (nom[k]) h += '<span class="nom-flag">✓ ' + nom[k] + '</span>';
       h += '</button>';
     });
-    $("#pool-av").innerHTML = h;
+    return h;
+  }
+  function renderPools() {
+    $("#pool-av").innerHTML = poolChipsHTML();
     var n = "";
     ORDER_NA.forEach(function (k) {
       var p = PLAYERS[k];
@@ -2160,6 +2332,78 @@ body.no-select { user-select: none; -webkit-user-select: none; }
            '<span class="why st-' + p.outKind + ' stat-chip">' + p.out + '</span></button>';
     });
     $("#pool-na").innerHTML = n;
+  }
+
+  /* ---- Feld-Ansicht: Positionszonen + Avatar-Cluster (synchron zur Liste) ---- */
+  var PF_ZONES = {
+    TW: { x: 38.6, y: 10,   dir: [-1, 0] },
+    LA: { x: 35.3, y: 2.7,  dir: [-0.35, 1] },
+    RA: { x: 35.3, y: 17.3, dir: [-0.35, -1] },
+    KM: { x: 32.4, y: 10,   dir: [-1, 0] },
+    RL: { x: 27.6, y: 5.2,  dir: [-1, 0] },
+    RM: { x: 25.6, y: 10,   dir: [-1, 0] },
+    RR: { x: 27.6, y: 14.8, dir: [-1, 0] }
+  };
+  function pfNearestZone(x, y) {
+    var best = null, bd = Infinity;
+    Object.keys(PF_ZONES).forEach(function (z) {
+      var dx = x - PF_ZONES[z].x, dy = y - PF_ZONES[z].y, d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = z; }
+    });
+    return best;
+  }
+  function pfClusterPt(z, i) {
+    var Z = PF_ZONES[z], d = Z.dir, L = Math.sqrt(d[0] * d[0] + d[1] * d[1]);
+    var ux = d[0] / L, uy = d[1] / L, px = -uy, py = ux;   /* senkrecht */
+    var OFF = [[0, 0], [1.7, -1.15], [1.7, 1.15], [3.4, 0], [3.4, -2.3], [3.4, 2.3], [5.1, -1.15], [5.1, 1.15]];
+    var o = OFF[Math.min(i, OFF.length - 1)];
+    return [
+      Math.min(40.2, Math.max(19.9, Z.x + ux * o[0] + px * o[1])),
+      Math.min(19.2, Math.max(0.8,  Z.y + uy * o[0] + py * o[1]))
+    ];
+  }
+  var pfSvg = $("#pf-court"), pfZonesG = $("#pf-zones"), pfToksG = $("#pf-toks");
+  function renderField() {
+    var zh = "";
+    Object.keys(PF_ZONES).forEach(function (z) {
+      var Z = PF_ZONES[z];
+      zh += '<g class="pf-zone" data-zone="' + z + '"><circle cx="' + Z.x + '" cy="' + Z.y + '" r="2.05"/>' +
+            '<text x="' + Z.x + '" y="' + (Z.y + 0.38) + '">' + z + '</text></g>';
+    });
+    pfZonesG.innerHTML = zh;
+    var th = "";
+    POS.forEach(function (pp) {
+      var members = planKeys().filter(function (k) { return nom[k] === pp[0]; });
+      members.forEach(function (k, i) {
+        var pt = pfClusterPt(pp[0], i);
+        th += '<g class="pf-tok" data-p="' + k + '" transform="translate(' + pt[0].toFixed(2) + ' ' + pt[1].toFixed(2) + ')">' +
+              '<circle class="hit" r="1.7"/><circle class="body" r="1.12"/>' +
+              '<text y=".3">' + PLAYERS[k].init + '</text>';
+        if (GUESTS[k]) th += '<circle class="pf-g" cx=".95" cy="-.95" r=".52"/><text class="pf-gt" x=".95" y="-.74">G</text>';
+        th += '</g>';
+      });
+    });
+    pfToksG.innerHTML = th;
+    $("#pf-tray").innerHTML = poolChipsHTML();
+  }
+  function pfSetView(v) {
+    planView = v;
+    $("#plan-liste").hidden = v !== "liste";
+    $("#plan-feld").hidden = v !== "feld";
+    $("#pl-liste").setAttribute("aria-pressed", String(v === "liste"));
+    $("#pl-feld").setAttribute("aria-pressed", String(v === "feld"));
+  }
+  $("#pl-liste").addEventListener("click", function () { pfSetView("liste"); });
+  $("#pl-feld").addEventListener("click", function () { pfSetView("feld"); });
+  function pfZoneHot(z) {
+    $$("#pf-zones .pf-zone").forEach(function (g) {
+      g.classList.toggle("hot", g.dataset.zone === z);
+    });
+  }
+  function pfPt(e) {
+    var r = pfSvg.getBoundingClientRect(), vb = pfSvg.viewBox.baseVal;
+    return [vb.x + (e.clientX - r.left) / r.width * vb.width,
+            vb.y + (e.clientY - r.top) / r.height * vb.height];
   }
   function renderPV() {
     var body = $("#pv-body"), tgl = $("#pv-toggle");
@@ -2175,20 +2419,20 @@ body.no-select { user-select: none; -webkit-user-select: none; }
       h += '<div class="pv-who">Vorschau aus Sicht von ' + PLAYERS[ex.id].name + '</div>';
       h += '<div class="pv-hero"><div class="pv-kick">Spieltagskader · freigegeben</div>' +
            '<div class="pv-big">Du bist nominiert</div>' +
-           '<div class="pv-meta">Sa, 05.09. · 18:00 — Auswärts @ TSV Harburg-Nord</div>' +
-           '<div class="pv-chips"><span>Position: ' + ex.pos + '</span><span>Treffpunkt 16:30 · Halle Süd</span></div></div>';
+           '<div class="pv-meta">Sa, 05.09. · 18:00 — Auswärts @ HSG Köln-West</div>' +
+           '<div class="pv-chips"><span>Position: ' + ex.pos + '</span><span>Treffpunkt 16:30 · Sporthalle Ehrenfeld</span></div></div>';
     }
     h += '<div class="card pv-list"><div class="sheet-lbl" style="margin-top:0">Freigegebener Kader · ' + snap.length + ' Spielerinnen</div>';
     POS.forEach(function (pp) {
       var names = [];
-      snap.forEach(function (s) { if (s.pos === pp[0]) names.push(PLAYERS[s.id].name); });
+      snap.forEach(function (s) { if (s.pos === pp[0]) names.push(PLAYERS[s.id].name + (GUESTS[s.id] ? " (Gast)" : "")); });
       if (names.length) h += '<div class="pv-row"><span class="pv-pos">' + pp[0] + '</span><span>' + names.join(", ") + '</span></div>';
     });
     h += '<div class="pv-note">Stand: ' + plan.releasedAt +
          (plan.dirty ? ' — spätere Änderungen sind noch nicht freigegeben.' : '') + '</div></div>';
     body.innerHTML = h;
   }
-  function renderPlan() { renderStatus(); renderGroups(); renderPools(); renderPV(); }
+  function renderPlan() { renderStatus(); renderGroups(); renderPools(); renderField(); renderPV(); }
   function mutate() {
     plan.lastEdited = fmtNow();
     if (plan.status === "released") plan.dirty = true;
@@ -2206,7 +2450,16 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   }
   function openNominateSheet(k) {
     var p = PLAYERS[k];
-    var h = sheetHead(k, p.pos.join(" / ") + " · " + teamLabel(p.team) + (p.why ? " · " + p.why : ""));
+    var sub = p.pos.join(" / ") + " · " + (GUESTS[k] ? "Gast · " + teamLabel(p.team) : teamLabel(p.team));
+    var h = sheetHead(k, sub + (p.why ? " · " + p.why : ""));
+    if (k === "emma") {
+      h += '<div class="rel-hint" role="alert">' + icWarn +
+           '<div><b>2. Einsatz in Folge:</b> Mit dieser Nominierung wäre Emma für Damen 2 ' +
+           '<b>festgespielt bis vsl. 30.10.2026</b> (§55 SpO). Bewusst entscheiden.</div></div>';
+    }
+    if (k === "lena") {
+      h += '<p class="sheet-txt">Lena ist in der 1. Damen <b>festgespielt</b> — Einsatz hier erlaubt, für Damen 2 gesperrt bis 21.08.</p>';
+    }
     h += '<div class="sheet-lbl">Position wählen — Hauptposition vorausgewählt</div>';
     POS.forEach(function (pp) {
       var main = pp[0] === p.main, neben = !main && p.pos.indexOf(pp[0]) >= 0;
@@ -2240,11 +2493,14 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     var again = plan.status === "released";
     var h = '<div class="sheet-head"><div><div class="sheet-title">' +
             (again ? "Erneut freigeben?" : "Kader freigeben?") +
-            '</div><div class="sheet-sub">Sa, 05.09. · 18:00 · Auswärts @ TSV Harburg-Nord</div></div></div>';
-    h += '<p class="sheet-txt"><b>' + n + ' Spielerinnen</b> werden benachrichtigt und sehen Kader, ihre Position und den Treffpunkt (16:30 · Halle Süd).' +
+            '</div><div class="sheet-sub">Sa, 05.09. · 18:00 · Auswärts @ HSG Köln-West</div></div></div>';
+    h += '<p class="sheet-txt"><b>' + n + ' Spielerinnen</b> werden benachrichtigt und sehen Kader, ihre Position und den Treffpunkt (16:30 · Sporthalle Ehrenfeld).' +
          (again ? ' Bereits informierte Spielerinnen erhalten die Aktualisierung.' : '') + '</p>';
     if (n > LIMIT) {
       h += '<div class="rel-hint">' + icWarn + '<div><b>' + n + ' nominiert</b> — der Spielbericht erlaubt max. 16. Vor dem Anwurf müssen ' + (n - LIMIT) + ' gestrichen werden.</div></div>';
+    }
+    if (nom.emma) {
+      h += '<div class="rel-hint">' + icWarn + '<div><b>Festspiel-Folge:</b> Emma Richter (Gast · Damen 2) spielt sich mit diesem Einsatz fest — für Damen 2 gesperrt bis vsl. 30.10.2026.</div></div>';
     }
     h += '<button class="btn-primary" data-act="confirm-release">' +
          '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 10.5 13.5"/><path d="M21 3l-6.8 18-3.7-7.5L3 9.8Z"/></svg>' +
@@ -2264,9 +2520,9 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   }
   function nomToast(k, pos) {
     var n = nomCount();
-    if (k === "emma") toast("Achtung: Emma Richters 2. D1-Einsatz — sie spielt sich damit fest");
+    if (k === "emma") toast("Achtung: 2. Einsatz in Folge — Emma wäre für Damen 2 festgespielt bis 30.10.");
     else if (n > LIMIT) toast(n + " nominiert — über dem Limit von 16 (Spielbericht)");
-    else toast(PLAYERS[k].name + " nominiert · " + pos);
+    else toast(PLAYERS[k].name + (GUESTS[k] ? " (Gast)" : "") + " nominiert · " + pos);
   }
 
   /* ---- Interaktion (Delegation) ---- */
@@ -2289,11 +2545,17 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     else if (act === "move") { nom[k] = pos; closeSheet(); toast(PLAYERS[k].name + " → " + pos); mutate(); }
     else if (act === "remove") { delete nom[k]; closeSheet(); toast(PLAYERS[k].name + " aus dem Spieltagskader entfernt"); mutate(); }
     else if (act === "confirm-release") { doRelease(); }
+    else if (act === "gast-pick") { openGastScopeSheet(k); }
+    else if (act === "gast-add")  { closeSheet(); addGuest(k, t.dataset.scope); }
     else if (act === "tb-delpath") {
       var tk = tbFind(t.dataset.id);
       if (tk) { tk.path = null; tbRenderPaths(); tbSetTokenXY(tk, tk.sx, tk.sy); }
       closeSheet();
       toast("Weg gelöscht");
+    }
+    else if (act === "tb-delmat") {
+      tbRemoveMat(t.dataset.id);
+      closeSheet();
     }
   });
 
@@ -2302,6 +2564,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     toast("Foto ändern — Kamera oder Galerie (Mock)");
   });
 
+  renderGaeste();
   renderPlan();
 
   /* ================================================================
@@ -2331,6 +2594,16 @@ body.no-select { user-select: none; -webkit-user-select: none; }
       g.classList.toggle("drop-hot", over);
       if (over) hot = g.dataset.pos;
     });
+    if (planView === "feld") {   /* Feld: Drop irgendwo auf dem Feld → nächste Zone */
+      var fr = pfSvg.getBoundingClientRect(), fz = null;
+      if (fr.width && x >= fr.left && x <= fr.right && y >= fr.top && y <= fr.bottom) {
+        var vb = pfSvg.viewBox.baseVal;
+        fz = pfNearestZone(vb.x + (x - fr.left) / fr.width * vb.width,
+                           vb.y + (y - fr.top) / fr.height * vb.height);
+      }
+      pfZoneHot(fz);
+      if (fz) hot = fz;
+    }
     dnd.overPos = hot;
     var overRm = false;
     if (dnd.fromGroup) {
@@ -2390,6 +2663,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     d.src.classList.remove("drag-src");
     $("#pgroups").classList.remove("drag-on");
     $$("#pgroups .pgroup").forEach(function (g) { g.classList.remove("drop-hot"); });
+    pfZoneHot(null);
     dzRemove.classList.remove("show");
     dzRemove.classList.remove("hot");
     if (!d.started) { dndSuppressClick = false; return; }   // war ein Tap → Klick läuft normal
@@ -2451,8 +2725,68 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     document.addEventListener("pointercancel", dndPCancel);
   });
   planScr.addEventListener("contextmenu", function (e) {
-    if (dnd || e.target.closest(".pchip,.nchip")) e.preventDefault();
+    if (dnd || e.target.closest(".pchip,.nchip,.pf-tok")) e.preventDefault();
   });
+
+  /* ---- Feld-Ansicht: Figur auf dem Feld ziehen (Zone wechseln / entfernen) ---- */
+  var pfdrag = null;
+  pfSvg.addEventListener("pointerdown", function (e) {
+    var g = e.target.closest(".pf-tok");
+    if (!g || pfdrag || dnd) return;
+    e.preventDefault();
+    GUARD.active = true;
+    pfdrag = { key: g.dataset.p, el: g, pid: e.pointerId, moved: false,
+               x0: e.clientX, y0: e.clientY, pt: null, overRemove: false };
+    try { pfSvg.setPointerCapture(e.pointerId); } catch (err) {}
+    dzRemove.classList.add("show");
+  });
+  pfSvg.addEventListener("pointermove", function (e) {
+    if (!pfdrag || e.pointerId !== pfdrag.pid) return;
+    var p = pfPt(e);
+    p[0] = Math.min(40.4, Math.max(19.6, p[0]));
+    p[1] = Math.min(19.4, Math.max(0.6, p[1]));
+    pfdrag.pt = p;
+    if (Math.abs(e.clientX - pfdrag.x0) + Math.abs(e.clientY - pfdrag.y0) > 6) pfdrag.moved = true;
+    pfdrag.el.setAttribute("transform", "translate(" + p[0].toFixed(2) + " " + p[1].toFixed(2) + ")");
+    var rr = dzRemove.getBoundingClientRect();
+    pfdrag.overRemove = e.clientX >= rr.left && e.clientX <= rr.right &&
+                        e.clientY >= rr.top && e.clientY <= rr.bottom;
+    dzRemove.classList.toggle("hot", pfdrag.overRemove);
+    pfZoneHot(pfdrag.overRemove ? null : pfNearestZone(p[0], p[1]));
+  });
+  function pfEndDrag(e, cancelled) {
+    if (!pfdrag || (e && e.pointerId !== pfdrag.pid)) return;
+    var d = pfdrag;
+    pfdrag = null;
+    GUARD.active = false;
+    pfZoneHot(null);
+    dzRemove.classList.remove("show");
+    dzRemove.classList.remove("hot");
+    dndSuppressClick = true;   /* Klick-Delegation nicht doppelt auslösen */
+    var k = d.key;
+    if (!d.moved) {
+      renderField();
+      if (!cancelled) openChipSheet(k);
+      return;
+    }
+    if (cancelled) { renderField(); return; }
+    if (d.overRemove) {
+      delete nom[k];
+      toast(PLAYERS[k].name + " aus dem Spieltagskader entfernt");
+      mutate();
+      return;
+    }
+    var z = pfNearestZone(d.pt[0], d.pt[1]);   /* weit weg = nächste Zone (Snap) */
+    if (nom[k] !== z) {
+      nom[k] = z;
+      toast(PLAYERS[k].name + " → " + z);
+      mutate();
+    } else {
+      renderField();
+    }
+  }
+  pfSvg.addEventListener("pointerup", function (e) { pfEndDrag(e, false); });
+  pfSvg.addEventListener("pointercancel", function (e) { pfEndDrag(e, true); });
 
   /* ================================================================
      TAKTIK — Spielzug-Board
@@ -2466,6 +2800,17 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   var tbSvg = $("#tb-court"), tbWrap = $("#tb-wrap"),
       tbTokensG = $("#tb-tokens"), tbPathsG = $("#tb-paths");
   var tb = { field: "half", defense: true, mode: "move", playing: false, step: 0, raf: null, tokens: [] };
+  var tbRotG = $("#tb-rot"), tbMatSeq = 0;
+  var MAT_NAMES = { hut: "Hütchen", stange: "Stange", leiter: "Koordinationsleiter",
+                    matte: "Matte", tor: "Minitor", ball2: "Balltrolley" };
+  var MAT_GLYPHS = {
+    hut: '<path d="M-.75 .6 L0 -.85 L.75 .6 Z" fill="#E08A3C" stroke="#9A5A20" stroke-width=".08"/><line x1="-1.05" y1=".6" x2="1.05" y2=".6" stroke="#9A5A20" stroke-width=".12"/>',
+    stange: '<ellipse cx="0" cy="1.3" rx=".6" ry=".2" fill="#9AA0AA" opacity=".8"/><rect x="-.14" y="-1.35" width=".28" height="2.6" rx=".14" fill="#C0432F"/><rect x="-.14" y="-.6" width=".28" height=".55" fill="#F2E7DC"/>',
+    leiter: '<g stroke="#8B93A2" stroke-width=".13" fill="none"><line x1="-1.55" y1="-.55" x2="1.55" y2="-.55"/><line x1="-1.55" y1=".55" x2="1.55" y2=".55"/><line x1="-1.55" y1="-.55" x2="-1.55" y2=".55"/><line x1="-.78" y1="-.55" x2="-.78" y2=".55"/><line x1="0" y1="-.55" x2="0" y2=".55"/><line x1=".78" y1="-.55" x2=".78" y2=".55"/><line x1="1.55" y1="-.55" x2="1.55" y2=".55"/></g>',
+    matte: '<rect x="-1.35" y="-.85" width="2.7" height="1.7" rx=".26" fill="#4C9EB8" opacity=".9" stroke="#2E6E85" stroke-width=".08"/><line x1="-.68" y1="-.85" x2="-.68" y2=".85" stroke="#2E6E85" stroke-width=".07"/><line x1=".68" y1="-.85" x2=".68" y2=".85" stroke="#2E6E85" stroke-width=".07"/>',
+    tor: '<rect x="-1.15" y="-.8" width="2.3" height="1.6" fill="none" stroke="#C0432F" stroke-width=".15"/><g stroke="#9AA2AE" stroke-width=".05"><line x1="-.75" y1="-.8" x2="-.75" y2=".8"/><line x1="-.38" y1="-.8" x2="-.38" y2=".8"/><line x1="0" y1="-.8" x2="0" y2=".8"/><line x1=".38" y1="-.8" x2=".38" y2=".8"/><line x1=".75" y1="-.8" x2=".75" y2=".8"/><line x1="-1.15" y1="-.27" x2="1.15" y2="-.27"/><line x1="-1.15" y1=".27" x2="1.15" y2=".27"/></g>',
+    ball2: '<circle r="1.05" fill="none" stroke="#8B93A2" stroke-width=".11"/><circle cx="-.34" cy="-.16" r=".34" fill="#E3A23F"/><circle cx=".36" cy="-.1" r=".34" fill="#E3A23F"/><circle cx="0" cy=".44" r=".34" fill="#E3A23F"/>'
+  };
   var TB_DEFS = [
     ["tw", "own", "TW"], ["la", "own", "LA"], ["rl", "own", "RL"], ["rm", "own", "RM"],
     ["rr", "own", "RR"], ["km", "own", "KM"], ["ra", "own", "RA"],
@@ -2497,12 +2842,21 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   function tbVisible(t) { return t.kind !== "opp" || tb.defense; }
 
   /* ---- Renderer ---- */
+  function tbTokTransform(x, y) {
+    /* Bei gedrehtem Vollfeld die Figur zurückdrehen — Beschriftung bleibt aufrecht */
+    return "translate(" + x + " " + y + ")" + (tb.field === "full" ? " rotate(-90)" : "");
+  }
   function tbRenderTokens() {
     var h = "";
     tb.tokens.forEach(function (t) {
       if (!tbVisible(t)) return;
+      if (t.kind === "mat") {
+        h += '<g class="tb-tok tb-tok-mat" data-id="' + t.id + '" transform="' + tbTokTransform(t.x, t.y) + '">' +
+             '<circle class="hit" r="1.7"/>' + MAT_GLYPHS[t.mat] + '</g>';
+        return;
+      }
       var r = t.kind === "ball" ? 0.62 : 1.12;
-      h += '<g class="tb-tok tb-tok-' + t.kind + '" data-id="' + t.id + '" transform="translate(' + t.x + ' ' + t.y + ')">';
+      h += '<g class="tb-tok tb-tok-' + t.kind + '" data-id="' + t.id + '" transform="' + tbTokTransform(t.x, t.y) + '">';
       h += '<circle class="hit" r="' + (t.kind === "ball" ? 1.5 : 1.9) + '"/>';
       h += '<circle class="body" r="' + r + '"/>';
       if (t.kind === "ball") h += '<path class="seam" d="M-.3 -.48 A.62 .62 0 0 0 -.3 .48 M.3 -.48 A.62 .62 0 0 1 .3 .48"/>';
@@ -2535,11 +2889,13 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   }
   function tbRender() { tbRenderPaths(); tbRenderTokens(); }
 
-  /* ---- Koordinaten (skalierungsfest via viewBox) ---- */
+  /* ---- Koordinaten (skalierungsfest via viewBox, inkl. Vollfeld-Drehung) ---- */
   function tbPt(e) {
     var r = tbSvg.getBoundingClientRect(), vb = tbSvg.viewBox.baseVal;
-    return [vb.x + (e.clientX - r.left) / r.width * vb.width,
-            vb.y + (e.clientY - r.top) / r.height * vb.height];
+    var X = vb.x + (e.clientX - r.left) / r.width * vb.width;
+    var Y = vb.y + (e.clientY - r.top) / r.height * vb.height;
+    if (tb.field === "full") return [Y, 20 - X];   /* Drehung invertieren */
+    return [X, Y];
   }
   function tbClamp(p) {
     return [Math.min(39.4, Math.max(0.6, p[0])), Math.min(19.4, Math.max(0.6, p[1]))];
@@ -2548,8 +2904,16 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   /* ---- Feld / Aufstellungen / Preset ---- */
   function tbSetField(f, silent) {
     tb.field = f;
-    tbSvg.setAttribute("viewBox", f === "half" ? "19 -1 22 22" : "-1 -1 42 22");
-    tbSvg.style.aspectRatio = f === "half" ? "22 / 22" : "42 / 22";
+    if (f === "half") {
+      tbSvg.setAttribute("viewBox", "19 -1 22 22");
+      tbSvg.style.aspectRatio = "22 / 22";
+      tbRotG.removeAttribute("transform");
+    } else {
+      /* Vollfeld hochkant: 90° gedreht füllt es das Telefon in der Höhe */
+      tbSvg.setAttribute("viewBox", "-1 -1 22 42");
+      tbSvg.style.aspectRatio = "22 / 42";
+      tbRotG.setAttribute("transform", "translate(20 0) rotate(90)");
+    }
     $("#tb-full").setAttribute("aria-pressed", String(f === "full"));
     $("#tb-half").setAttribute("aria-pressed", String(f === "half"));
     if (f === "half") {   /* Figuren in die sichtbare Angriffshälfte holen */
@@ -2559,7 +2923,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
       });
     }
     tbRender();
-    if (!silent) toast(f === "half" ? "Halbes Feld — Angriffshälfte" : "Ganzes Feld — 40 × 20 m");
+    if (!silent) toast(f === "half" ? "Halbes Feld — Angriffshälfte" : "Ganzes Feld hochkant — 40 × 20 m");
   }
   function tbNewZug() {
     tbStopPlay();
@@ -2594,6 +2958,58 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     if (!silent) toast("Spielzug geladen — „Abspielen“ zeigt die Animation");
   }
 
+  /* ---- Trainingsmaterial: platzieren, ziehen, löschen (nie animiert) ---- */
+  function tbAddMat(type, x, y, silent) {
+    tbMatSeq++;
+    var t = { id: "m" + tbMatSeq, kind: "mat", mat: type, label: "",
+              x: x, y: y, sx: x, sy: y, path: null };
+    tb.tokens.push(t);
+    tbRenderTokens();
+    if (!silent) toast(MAT_NAMES[type] + " platziert — ziehen zum Ausrichten, antippen zum Entfernen");
+    return t;
+  }
+  function tbRemoveMat(id) {
+    for (var i = 0; i < tb.tokens.length; i++) {
+      if (tb.tokens[i].id === id) {
+        var name = MAT_NAMES[tb.tokens[i].mat];
+        tb.tokens.splice(i, 1);
+        tbRenderTokens();
+        toast(name + " entfernt");
+        return;
+      }
+    }
+  }
+  function tbLoadPreset2(silent) {
+    /* Trainingseinheit: Hütchen + Spielerinnen — Anspiel an den Kreis unter Druck */
+    tbStopPlay();
+    tb.step = 0;
+    tbSetField("half", true);
+    tb.defense = true;
+    $("#tb-def").setAttribute("aria-pressed", "true");
+    tbInitTokens();
+    tbMatSeq = 0;
+    var P = {
+      km:   [[30.6, 7.4], [32, 9], [33.2, 11.2]],
+      rm:   [[24.6, 10], [26.4, 10.2], [27.8, 9.6]],
+      ball: [[25.3, 9.4], [28.4, 9.4], [32.6, 10.4]]
+    };
+    Object.keys(P).forEach(function (id) {
+      var t = tbFind(id);
+      t.path = P[id];
+      t.x = t.sx = P[id][0][0];
+      t.y = t.sy = P[id][0][1];
+    });
+    /* Hütchen markieren die Druckzonen, Trolley liegt an der Mittellinie */
+    [[28.6, 6.2], [28.6, 13.8], [25.6, 7], [25.6, 13]].forEach(function (c) {
+      tbAddMat("hut", c[0], c[1], true);
+    });
+    tbAddMat("ball2", 21.6, 17.6, true);
+    $("#tb-title").textContent = "Training: Anspiel Kreis unter Druck";
+    tbRender();
+    tbUpdatePlayLabel();
+    if (!silent) toast("Trainingseinheit geladen — Hütchen frei verschiebbar, „Abspielen“ zeigt das Anspiel");
+  }
+
   /* ---- Abspielen (rAF) / Schrittmodus (reduzierte Bewegung) ---- */
   function tbMovers() {
     return tb.tokens.filter(function (t) { return t.path && t.path.length > 1 && tbVisible(t); });
@@ -2620,7 +3036,7 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   function tbSetTokenXY(t, x, y) {
     t.x = x; t.y = y;
     var el = tbTokensG.querySelector('[data-id="' + t.id + '"]');
-    if (el) el.setAttribute("transform", "translate(" + x + " " + y + ")");
+    if (el) el.setAttribute("transform", tbTokTransform(x, y));
   }
   function tbSeek(u) {
     tbMovers().forEach(function (t) {
@@ -2676,7 +3092,8 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     if (!tok) return;
     e.preventDefault();
     GUARD.active = true;
-    tdrag = { tok: tok, rec: tb.mode === "record", moved: false, pid: e.pointerId,
+    tdrag = { tok: tok, rec: tb.mode === "record" && tok.kind !== "mat",   /* Material: nie Wege */
+              moved: false, pid: e.pointerId,
               pts: [[tok.x, tok.y]], startX: tok.x, startY: tok.y };
     try { tbSvg.setPointerCapture(e.pointerId); } catch (err) {}
     g.classList.add("rec-live");
@@ -2732,8 +3149,21 @@ body.no-select { user-select: none; -webkit-user-select: none; }
   tbSvg.addEventListener("pointercancel", function (e) { tbEndDrag(e, true); });
   tbSvg.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
-  /* ---- Weg antippen = löschen (Bottom-Sheet) ---- */
+  /* ---- Weg / Material antippen = löschen (Bottom-Sheet) ---- */
   tbSvg.addEventListener("click", function (e) {
+    var mg = e.target.closest(".tb-tok-mat");
+    if (mg) {
+      var mtok = tbFind(mg.dataset.id);
+      if (!mtok) return;
+      var mh = '<div class="sheet-head"><div><div class="sheet-title">' + MAT_NAMES[mtok.mat] +
+               '</div><div class="sheet-sub">Trainingsmaterial — wird nicht animiert</div></div></div>';
+      mh += '<button class="pos-opt danger" data-act="tb-delmat" data-id="' + mtok.id + '">' +
+            '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M9.5 7V4.5h5V7M7 7l1 13h8l1-13"/></svg>' +
+            'Vom Feld entfernen</button>';
+      mh += '<button class="sheet-cancel" data-act="close">Behalten</button>';
+      openSheet(mh);
+      return;
+    }
     var hit = e.target.closest(".tb-path-hit");
     if (!hit) return;
     var tok = tbFind(hit.dataset.path);
@@ -2760,7 +3190,21 @@ body.no-select { user-select: none; -webkit-user-select: none; }
     toast(tb.defense ? "Abwehr eingeblendet (6:0 + TW)" : "Abwehr ausgeblendet");
   });
   $("#tb-preset").addEventListener("click", function () { tbLoadPreset(false); });
+  $("#tb-preset2").addEventListener("click", function () { tbLoadPreset2(false); });
   $("#tb-new").addEventListener("click", tbNewZug);
+  $("#tb-mat-toggle").addEventListener("click", function () {
+    var row = $("#tb-mat-row");
+    row.hidden = !row.hidden;
+    this.setAttribute("aria-pressed", String(!row.hidden));
+  });
+  $$(".mat-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var n = tb.tokens.filter(function (t) { return t.kind === "mat"; }).length;
+      var cx = tb.field === "half" ? 30 : 20;
+      var p = tbClamp([cx + (n % 3 - 1) * 2.6, 10 + (Math.floor(n / 3) % 3 - 1) * 2.4]);
+      tbAddMat(b.dataset.mat, p[0], p[1], false);
+    });
+  });
   $("#tb-rec").addEventListener("click", function () {
     tb.mode = tb.mode === "record" ? "move" : "record";
     var on = tb.mode === "record";
@@ -2787,28 +3231,29 @@ body.no-select { user-select: none; -webkit-user-select: none; }
 
   /* ---------- Vereinsfarben-Schalter ---------- */
   var clubs = {
-    blauweiss: {
-      name: "HSG Blauweiß Elbtal", short: "Blauweiß Elbtal", mono: "BE",
-      sw: [["Königsblau", "#14418F"], ["Tiefblau", "#0B2158"], ["Akzent hell", "#7AA3E8"]]
+    tus: {
+      name: "TuS Köln-Ehrenfeld", short: "Köln-Ehrenfeld", mono: "TuS", year: "1865",
+      sw: [["Ehrenfeld-Blau", "#14418F"], ["Tiefblau", "#0B2158"], ["Vereinsgelb", "#FFC72C"]]
     },
     rotersand: {
-      name: "HSV Roter Sand", short: "Roter Sand", mono: "RS",
-      sw: [["Sandrot", "#9E1B2C"], ["Tiefrot", "#45090F"], ["Akzent hell", "#E4818C"]]
+      name: "HSV Roter Sand", short: "Roter Sand", mono: "RS", year: "1921",
+      sw: [["Sandrot", "#9E1B2C"], ["Tiefrot", "#45090F"], ["Sandton", "#E8C892"]]
     },
     gruenhof: {
-      name: "TSV Grünhof", short: "Grünhof", mono: "GH",
-      sw: [["Waldgrün", "#1B6B38"], ["Tiefgrün", "#0C3A1D"], ["Akzent hell", "#74C592"]]
+      name: "TSV Grünhof", short: "Grünhof", mono: "GH", year: "1907",
+      sw: [["Waldgrün", "#1B6B38"], ["Tiefgrün", "#0C3A1D"], ["Vereinsweiß", "#F4FBF6"]]
     }
   };
   $$(".club-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var key = btn.dataset.club, c = clubs[key];
-      if (key === "blauweiss") document.documentElement.removeAttribute("data-club");
+      if (key === "tus") document.documentElement.removeAttribute("data-club");
       else document.documentElement.setAttribute("data-club", key);
       $$(".club-btn").forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); });
       $(".club-name").textContent = c.name;
       $(".club-name-poster").textContent = c.short;
       $$(".mono-home").forEach(function (t) { t.textContent = c.mono; });
+      $$(".year-home").forEach(function (t) { t.textContent = c.year; });
       for (var i = 0; i < 3; i++) {
         $("#swn-" + (i + 1)).textContent = c.sw[i][0];
         $("#swx-" + (i + 1)).textContent = c.sw[i][1];
