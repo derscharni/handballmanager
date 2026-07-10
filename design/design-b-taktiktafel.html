@@ -1,0 +1,1500 @@
+<title>Taktiktafel — Design B</title>
+<style>
+/* ============================================================
+   RICHTUNG B — TAKTIKTAFEL
+   Die App als laminierte Trainer-Tafel: Papiergrund, Marker-
+   blau, Hallenlinien als Struktur. Dunkles Thema = Hallenabend.
+   ============================================================ */
+
+:root {
+  /* Grund */
+  --bg:        #E7EAE5;   /* Umfeld ausserhalb des Telefons */
+  --paper:     #FBFBF8;   /* Tafelgrund */
+  --card:      #FFFFFF;
+  --ink:       #1B2A33;   /* Tinte */
+  --ink-2:     #5C6B75;   /* gedämpft */
+  --line:      #D6DDE0;   /* Hairline */
+  --court:     #B9C7CE;   /* Hallenlinien-Motiv */
+  /* Marker */
+  --blue:      #1156C2;   /* Markerblau, Primärfarbe */
+  --blue-deep: #0C3E8E;
+  --blue-soft: #E4ECF9;
+  --on-blue:   #FFFFFF;
+  /* Warnung (eine warme Signalfarbe) */
+  --warn:      #D9531E;
+  --warn-soft: #FBE9DF;
+  --on-warn:   #FFFFFF;
+
+  --shadow: 0 1px 2px rgba(27,42,51,.06), 0 8px 28px rgba(27,42,51,.08);
+  --r-card: 10px;
+  --r-chip: 4px;
+
+  --f-display: 'Franklin Gothic Medium','ITC Franklin Gothic','Franklin Gothic','Arial Narrow Bold','Arial Narrow',Arial,sans-serif;
+  --f-body: 'Trebuchet MS','Segoe UI',Tahoma,Verdana,sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #070C10;
+    --paper:     #111A21;
+    --card:      #18232C;
+    --ink:       #E9EEF1;
+    --ink-2:     #93A4AF;
+    --line:      #26333C;
+    --court:     #35464F;
+    --blue:      #5C9BF5;
+    --blue-deep: #A7C8F8;
+    --blue-soft: #17293F;
+    --on-blue:   #07131F;
+    --warn:      #F0793B;
+    --warn-soft: #3B2213;
+    --on-warn:   #1D0E05;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 32px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #070C10;
+  --paper:     #111A21;
+  --card:      #18232C;
+  --ink:       #E9EEF1;
+  --ink-2:     #93A4AF;
+  --line:      #26333C;
+  --court:     #35464F;
+  --blue:      #5C9BF5;
+  --blue-deep: #A7C8F8;
+  --blue-soft: #17293F;
+  --on-blue:   #07131F;
+  --warn:      #F0793B;
+  --warn-soft: #3B2213;
+  --on-warn:   #1D0E05;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 32px rgba(0,0,0,.45);
+}
+:root[data-theme="light"] {
+  --bg:        #E7EAE5;
+  --paper:     #FBFBF8;
+  --card:      #FFFFFF;
+  --ink:       #1B2A33;
+  --ink-2:     #5C6B75;
+  --line:      #D6DDE0;
+  --court:     #B9C7CE;
+  --blue:      #1156C2;
+  --blue-deep: #0C3E8E;
+  --blue-soft: #E4ECF9;
+  --on-blue:   #FFFFFF;
+  --warn:      #D9531E;
+  --warn-soft: #FBE9DF;
+  --on-warn:   #FFFFFF;
+  --shadow: 0 1px 2px rgba(27,42,51,.06), 0 8px 28px rgba(27,42,51,.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body { background: var(--bg); }
+
+.stage {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 36px 20px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Telefonrahmen ---------- */
+.phone {
+  width: 390px;
+  max-width: 100%;
+  height: 820px;
+  max-height: calc(100dvh - 24px);
+  background: var(--paper);
+  border-radius: 44px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow), 0 0 0 10px var(--ink), 0 0 0 11px rgba(27,42,51,.25);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .stage { padding: 0; gap: 0; }
+  .phone {
+    width: 100%; height: 100dvh; max-height: none;
+    border-radius: 0; border: none; box-shadow: none;
+  }
+  .rationale { margin: 20px 16px 32px; }
+}
+
+/* ---------- App-Kopfleiste ---------- */
+.appbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+  z-index: 5;
+}
+.clubmark {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border: 2px solid var(--blue); border-radius: 8px;
+  color: var(--blue);
+  font-family: var(--f-display); font-size: 13px; letter-spacing: .04em;
+  display: grid; place-items: center;
+}
+.appbar-name {
+  font-family: var(--f-display);
+  font-size: 15px; letter-spacing: .02em; line-height: 1.1;
+}
+.appbar-sub { font-size: 10.5px; color: var(--ink-2); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+.appbar-spacer { flex: 1; }
+.iconbtn {
+  width: 40px; height: 40px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card);
+  color: var(--ink-2); cursor: pointer;
+  display: grid; place-items: center;
+}
+.iconbtn:hover { color: var(--blue); border-color: var(--blue); }
+
+/* ---------- Screens ---------- */
+.screens { flex: 1; position: relative; overflow: hidden; }
+.screen {
+  position: absolute; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 0 16px 28px;
+  display: none;
+  scrollbar-width: thin;
+}
+.screen.active { display: block; }
+
+/* Hallenlinien-Motiv im Screen-Kopf: 6m-Bogen (durchgezogen)
+   + 9m-Bogen (gestrichelt), von der oberen Kante haengend. */
+.screenhead {
+  position: relative;
+  margin: 0 -16px 14px;
+  padding: 22px 16px 18px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.screenhead::before, .screenhead::after {
+  content: ""; position: absolute; left: 50%; border-radius: 50%;
+  transform: translateX(-50%); pointer-events: none;
+}
+.screenhead::before { /* 9m, gestrichelt */
+  width: 620px; height: 620px; top: -540px;
+  border: 1.5px dashed var(--court);
+}
+.screenhead::after { /* 6m, durchgezogen */
+  width: 430px; height: 430px; top: -368px;
+  border: 1.5px solid var(--court);
+}
+.eyebrow {
+  font-family: var(--f-display); font-size: 10.5px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--blue); margin: 0 0 4px;
+}
+.screenhead h1 {
+  position: relative; z-index: 1;
+  font-family: var(--f-display); font-weight: 500;
+  font-size: 26px; line-height: 1.05; letter-spacing: .01em;
+  margin: 0; text-wrap: balance;
+}
+.screenhead .headnote { font-size: 12px; color: var(--ink-2); margin: 6px 0 0; position: relative; z-index: 1; }
+
+/* Abschnittslabel + 7m-Strich-Trenner */
+.seclabel {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--f-display); font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-2); margin: 22px 0 10px;
+}
+.seclabel::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.courtrule { /* Anwurflinie mit 7m-Strich */
+  position: relative; height: 1px; background: var(--line); margin: 24px 0;
+}
+.courtrule::after {
+  content: ""; position: absolute; left: 50%; top: -4px;
+  width: 2px; height: 9px; background: var(--court);
+  transform: translateX(-50%);
+}
+
+/* ---------- Karten & Chips ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 14px;
+  position: relative;
+}
+.card + .card { margin-top: 10px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid var(--line); border-radius: var(--r-chip);
+  padding: 2px 7px;
+  font-family: var(--f-display); font-size: 10.5px;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-2); background: transparent;
+  white-space: nowrap;
+}
+.chip.blue  { color: var(--blue);  border-color: var(--blue);  background: var(--blue-soft); }
+.chip.warn  { color: var(--warn);  border-color: var(--warn);  background: var(--warn-soft); }
+.chip.solid { color: var(--on-blue); background: var(--blue); border-color: var(--blue); }
+.chip.wsolid{ color: var(--on-warn); background: var(--warn); border-color: var(--warn); }
+
+.num { font-variant-numeric: tabular-nums; }
+
+/* Festspiel-Ampel: ein Marker, drei Zustaende */
+.dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.dot.free { border: 2px solid var(--court); background: transparent; }
+.dot.half { border: 2px solid var(--warn); background: linear-gradient(90deg, var(--warn) 50%, transparent 50%); }
+.dot.full { border: 2px solid var(--warn); background: var(--warn); }
+
+/* ---------- START ---------- */
+.hero {
+  background: var(--card);
+  border: 1px solid var(--line); border-radius: var(--r-card);
+  padding: 16px 14px 14px; position: relative; overflow: hidden;
+}
+.hero::before { /* 6m-Bogen als Kartenmotiv, rechte Ecke */
+  content: ""; position: absolute; right: -110px; top: -110px;
+  width: 240px; height: 240px; border-radius: 50%;
+  border: 1.5px solid var(--court); pointer-events: none;
+}
+.hero::after {
+  content: ""; position: absolute; right: -160px; top: -160px;
+  width: 340px; height: 340px; border-radius: 50%;
+  border: 1.5px dashed var(--court); pointer-events: none;
+}
+.hero .opp { font-family: var(--f-display); font-size: 23px; line-height: 1.1; margin: 4px 0 2px; position: relative; z-index: 1; }
+.hero .where { font-size: 12.5px; color: var(--ink-2); position: relative; z-index: 1; }
+.hero-foot { display: flex; align-items: center; gap: 8px; margin-top: 12px; position: relative; z-index: 1; flex-wrap: wrap; }
+.hero-when { font-family: var(--f-display); font-size: 14px; letter-spacing: .02em; }
+
+.micbtn {
+  width: 100%; margin-top: 12px;
+  min-height: 56px; border-radius: var(--r-card);
+  border: none; cursor: pointer;
+  background: var(--blue); color: var(--on-blue);
+  font-family: var(--f-display); font-size: 15px; letter-spacing: .06em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 2px 0 var(--blue-deep);
+}
+.micbtn:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--blue-deep); }
+.micbtn small { font-family: var(--f-body); text-transform: none; letter-spacing: 0; font-size: 11px; opacity: .85; }
+
+.alert {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--warn); border-left: 4px solid var(--warn);
+  background: var(--warn-soft);
+  border-radius: var(--r-card); padding: 12px;
+}
+.alert.mild { border-color: var(--line); border-left-color: var(--warn); background: var(--card); }
+.alert + .alert { margin-top: 8px; }
+.alert b { font-family: var(--f-display); font-weight: 500; letter-spacing: .01em; }
+.alert p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.45; }
+.alert .dot { margin-top: 3px; }
+
+.linkbtn {
+  background: none; border: none; cursor: pointer; padding: 8px 0 0;
+  color: var(--blue); font-family: var(--f-display);
+  font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+}
+.linkbtn:hover { text-decoration: underline; }
+
+.rsvp { display: flex; gap: 8px; margin-top: 10px; }
+.rsvp .cell {
+  flex: 1; border: 1px solid var(--line); border-radius: var(--r-chip);
+  padding: 8px 6px; text-align: center;
+}
+.rsvp .n { font-family: var(--f-display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.rsvp .t { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-top: 2px; }
+.rsvp .cell.zu { border-color: var(--blue); } .rsvp .cell.zu .n { color: var(--blue); }
+.rsvp .cell.ab { border-color: var(--warn); } .rsvp .cell.ab .n { color: var(--warn); }
+.rsvpbar { height: 6px; border-radius: 3px; background: var(--line); margin-top: 10px; overflow: hidden; display: flex; }
+.rsvpbar i { display: block; height: 100%; }
+.rsvpbar .b1 { background: var(--blue); width: 68.75%; }
+.rsvpbar .b2 { background: var(--warn); width: 12.5%; }
+
+.note { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.note:last-child { border-bottom: none; padding-bottom: 2px; }
+.note .meta { display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--ink-2); margin-bottom: 3px; }
+.note p { margin: 0; font-size: 13px; line-height: 1.45; }
+
+/* ---------- SPIELPLAN ---------- */
+.importbar {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px dashed var(--court); border-radius: var(--r-card);
+  padding: 9px 12px; font-size: 11.5px; color: var(--ink-2);
+}
+.importbar button {
+  margin-left: auto; border: 1px solid var(--blue); background: transparent;
+  color: var(--blue); border-radius: var(--r-chip); cursor: pointer;
+  font-family: var(--f-display); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; padding: 6px 10px; min-height: 32px;
+}
+.importbar button:hover { background: var(--blue-soft); }
+
+.match { display: flex; gap: 12px; align-items: center; }
+.badge {
+  width: 42px; height: 42px; flex-shrink: 0; border-radius: 8px;
+  border: 1.5px solid var(--court); color: var(--ink-2);
+  font-family: var(--f-display); font-size: 13px; letter-spacing: .04em;
+  display: grid; place-items: center; background: var(--paper);
+}
+.match .mid { flex: 1; min-width: 0; }
+.match .opp { font-family: var(--f-display); font-size: 15px; letter-spacing: .01em; }
+.match .sub { font-size: 11.5px; color: var(--ink-2); margin-top: 2px; }
+.match .end { text-align: right; flex-shrink: 0; }
+.score { font-family: var(--f-display); font-size: 17px; font-variant-numeric: tabular-nums; }
+.score.win { color: var(--blue); }
+.score.loss { color: var(--warn); }
+.result-tag { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin-top: 2px; }
+
+/* ---------- KADER ---------- */
+.seg {
+  display: flex; border: 1px solid var(--line); border-radius: 8px;
+  overflow: hidden; background: var(--card);
+}
+.seg button {
+  flex: 1; min-height: 44px; border: none; background: transparent; cursor: pointer;
+  font-family: var(--f-display); font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-2); padding: 6px 4px;
+}
+.seg button small { display: block; font-family: var(--f-body); text-transform: none; letter-spacing: 0; font-size: 10px; opacity: .8; }
+.seg button[aria-pressed="true"] { background: var(--blue); color: var(--on-blue); }
+.legend { font-size: 10.5px; color: var(--ink-2); margin: 10px 2px 0; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+
+.player {
+  width: 100%; text-align: left;
+  display: flex; align-items: center; gap: 11px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r-card); padding: 11px 12px;
+  cursor: pointer; color: var(--ink); font-family: var(--f-body);
+  min-height: 60px;
+}
+.player + .player { margin-top: 8px; }
+.player:hover { border-color: var(--blue); }
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid var(--court); color: var(--ink-2);
+  background: var(--paper);
+  font-family: var(--f-display); font-size: 12.5px;
+  display: grid; place-items: center;
+}
+.player .pmid { flex: 1; min-width: 0; }
+.player .pname { font-family: var(--f-display); font-size: 14.5px; letter-spacing: .01em; display: flex; align-items: center; gap: 7px; }
+.player .pstat { font-size: 11.5px; color: var(--ink-2); margin-top: 3px; }
+.player .pstat.bad { color: var(--warn); }
+.poschips { display: flex; gap: 4px; flex-shrink: 0; }
+.pos {
+  font-family: var(--f-display); font-size: 10px; letter-spacing: .06em;
+  border: 1px solid var(--court); border-radius: 3px; padding: 1px 5px;
+  color: var(--ink-2);
+}
+.player .chev { color: var(--court); flex-shrink: 0; }
+.player.dim { opacity: .55; }
+
+/* ---------- PROFIL ---------- */
+.backbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer; padding: 10px 0;
+  color: var(--blue); font-family: var(--f-display);
+  font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  position: relative; z-index: 1;
+}
+.profhead { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+.avatar.big { width: 52px; height: 52px; font-size: 17px; border-color: var(--blue); color: var(--blue); }
+.profhead h1 { margin: 0; }
+.profchips { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+.spark { width: 100%; height: auto; display: block; }
+.spark .grid { stroke: var(--line); stroke-width: 1; }
+.spark .lbl { fill: var(--ink-2); font-family: var(--f-body); font-size: 9px; }
+.spark .curve { stroke: var(--blue); stroke-width: 2; fill: none; }
+.spark .area { fill: var(--blue); opacity: .09; }
+.spark .pt { fill: var(--card); stroke: var(--blue); stroke-width: 2; }
+.spark .pt.last { fill: var(--blue); }
+
+.kv { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.kv:last-child { border-bottom: none; }
+.kv .k { color: var(--ink-2); }
+.kv .v { font-variant-numeric: tabular-nums; text-align: right; }
+
+/* ---------- PLANUNG ---------- */
+.planctx { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; position: relative; z-index: 1; }
+.hint { font-size: 11.5px; color: var(--ink-2); margin: 8px 2px 10px; }
+
+.field {
+  position: relative;
+  aspect-ratio: 360 / 252;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.field svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.field .cl { stroke: var(--court); fill: none; }
+.field .goal { stroke: var(--blue); }
+
+.slot {
+  position: absolute; transform: translate(-50%, -50%);
+  min-width: 58px; min-height: 48px;
+  border: 1.5px dashed var(--court); border-radius: 8px;
+  background: color-mix(in srgb, var(--card) 82%, transparent);
+  color: var(--ink-2); cursor: pointer;
+  font-family: var(--f-display);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; padding: 4px 6px;
+}
+.slot .sp { font-size: 10px; letter-spacing: .1em; }
+.slot .sn { font-family: var(--f-body); font-size: 10px; max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot.filled { border-style: solid; border-color: var(--blue); color: var(--ink); background: var(--blue-soft); }
+.slot.filled .sp { color: var(--blue); }
+.slot.target { border-color: var(--blue); border-style: dashed; box-shadow: 0 0 0 3px var(--blue-soft); }
+
+.bench { display: flex; gap: 8px; margin-top: 10px; }
+.bench .slot { position: static; transform: none; flex: 1; }
+
+.pool { display: flex; flex-wrap: wrap; gap: 7px; }
+.pchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1.5px solid var(--court); border-radius: 999px;
+  background: var(--card); color: var(--ink);
+  padding: 8px 12px; min-height: 40px; cursor: pointer;
+  font-family: var(--f-body); font-size: 12.5px;
+}
+.pchip .pos { pointer-events: none; }
+.pchip:hover { border-color: var(--blue); }
+.pchip.sel { border-color: var(--blue); background: var(--blue); color: var(--on-blue); }
+.pchip.sel .pos { border-color: var(--on-blue); color: var(--on-blue); }
+.pchip.used { border-style: dashed; opacity: .5; }
+.pchip.off { opacity: .45; border-style: dashed; cursor: not-allowed; }
+.pchip .why {
+  font-family: var(--f-display); font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--warn); border: 1px solid var(--warn); border-radius: 3px; padding: 1px 4px;
+}
+
+/* ---------- STATISTIK ---------- */
+.statrow { display: grid; grid-template-columns: 92px 1fr auto; gap: 8px; align-items: center; padding: 6px 0; }
+.statrow .sname { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.statrow .bars { display: grid; gap: 3px; }
+.bar { height: 7px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--blue); }
+.bar.thin { height: 4px; }
+.bar.thin i { background: var(--court); }
+.statrow .nums { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+.bignum { font-family: var(--f-display); font-size: 34px; line-height: 1; color: var(--blue); font-variant-numeric: tabular-nums; }
+.bignum small { font-size: 16px; }
+
+.covrow { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.covrow:last-child { border-bottom: none; }
+.covrow .pos { min-width: 34px; text-align: center; }
+.covdots { display: flex; gap: 4px; flex: 1; }
+.covdots i { width: 14px; height: 8px; border-radius: 2px; background: var(--blue); display: block; }
+.covdots i.o { background: var(--line); }
+.covdots i.w { background: var(--warn); }
+.covnote { font-size: 10.5px; color: var(--ink-2); text-align: right; max-width: 46%; }
+.covnote.bad { color: var(--warn); }
+
+/* ---------- Tab-Leiste ---------- */
+.tabbar {
+  display: flex; border-top: 1px solid var(--line);
+  background: var(--card); padding: 4px 6px 14px;
+  z-index: 6;
+}
+.tab {
+  flex: 1; min-height: 52px; border: none; background: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--ink-2); border-radius: 8px; position: relative;
+  font-family: var(--f-display); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+  padding-top: 6px;
+}
+.tab::before { /* Markerstrich als aktiver Indikator */
+  content: ""; position: absolute; top: 0; left: 26%; right: 26%;
+  height: 3px; border-radius: 0 0 2px 2px; background: transparent;
+}
+.tab[aria-selected="true"] { color: var(--blue); }
+.tab[aria-selected="true"]::before { background: var(--blue); }
+
+/* ---------- Aufnahme-Overlay ---------- */
+.rec {
+  position: absolute; inset: 0; z-index: 20;
+  background: color-mix(in srgb, var(--paper) 94%, var(--blue));
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 32px; text-align: center;
+}
+.rec.open { display: flex; }
+.rec::before {
+  content: ""; position: absolute; left: 50%; top: -540px; transform: translateX(-50%);
+  width: 620px; height: 620px; border-radius: 50%;
+  border: 1.5px dashed var(--court); pointer-events: none;
+}
+.recring {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 2px solid var(--warn); color: var(--warn);
+  display: grid; place-items: center; position: relative;
+}
+.recring::after {
+  content: ""; position: absolute; inset: -12px; border-radius: 50%;
+  border: 2px solid var(--warn); opacity: .35;
+  animation: pulse 1.6s ease-out infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(.92); opacity: .5; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+.rec h2 { font-family: var(--f-display); font-weight: 500; font-size: 20px; margin: 0; }
+.rectime { font-family: var(--f-display); font-size: 30px; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.rec p { font-size: 12.5px; color: var(--ink-2); margin: 0; max-width: 260px; line-height: 1.5; }
+.recbtns { display: flex; gap: 10px; width: 100%; max-width: 300px; }
+.btn {
+  flex: 1; min-height: 48px; border-radius: var(--r-card); cursor: pointer;
+  font-family: var(--f-display); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+}
+.btn.primary { background: var(--blue); border-color: var(--blue); color: var(--on-blue); box-shadow: 0 2px 0 var(--blue-deep); }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: absolute; left: 16px; right: 16px; bottom: 86px; z-index: 30;
+  background: var(--ink); color: var(--paper);
+  border-radius: var(--r-card); padding: 11px 14px;
+  font-size: 12.5px; line-height: 1.4;
+  opacity: 0; transform: translateY(8px); pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.toast.show { opacity: 1; transform: none; }
+
+/* ---------- Rationale-Panel (Desktop) ---------- */
+.rationale {
+  max-width: 330px; font-size: 13px; line-height: 1.55; color: var(--ink);
+}
+.rationale h2 { font-family: var(--f-display); font-weight: 500; font-size: 19px; margin: 0 0 4px; }
+.rationale .tagline { color: var(--ink-2); font-size: 12px; margin: 0 0 16px; }
+.swatches { display: flex; gap: 6px; margin: 0 0 14px; }
+.sw { flex: 1; }
+.sw i { display: block; height: 44px; border-radius: 6px; border: 1px solid var(--line); }
+.sw span { display: block; font-size: 9.5px; color: var(--ink-2); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.rationale p { margin: 0 0 10px; }
+.rationale .typo { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; font-size: 12px; color: var(--ink-2); }
+.rationale .typo b { font-family: var(--f-display); font-weight: 500; color: var(--ink); }
+
+/* ---------- Fokus & Bewegung ---------- */
+:where(button, a):focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="stage">
+  <div class="phone" id="phone">
+
+    <!-- Kopfleiste -->
+    <header class="appbar">
+      <div class="clubmark" aria-hidden="true">BW</div>
+      <div>
+        <div class="appbar-name">HSG Blauweiß Elbtal</div>
+        <div class="appbar-sub">Damen · Saison 26/27</div>
+      </div>
+      <div class="appbar-spacer"></div>
+      <button class="iconbtn" id="themeBtn" aria-label="Hallenmodus (dunkles Thema) umschalten" title="Hallenmodus umschalten">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5 5l1.8 1.8M17.2 17.2 19 19M19 5l-1.8 1.8M6.8 17.2 5 19"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="screens">
+
+      <!-- ============ 1 · START ============ -->
+      <section class="screen active" id="scr-start" role="tabpanel" aria-label="Start">
+        <div class="screenhead">
+          <p class="eyebrow">Donnerstag · 10.07.2026</p>
+          <h1>Moin, Trainer.</h1>
+          <p class="headnote">2 Festspiel-Hinweise · Training am Dienstag</p>
+        </div>
+
+        <div class="hero">
+          <span class="chip blue">Nächstes Spiel · Landesliga</span>
+          <div class="opp">TSV Harburg-Nord</div>
+          <div class="where">Auswärts · Sporthalle Am Sandberg</div>
+          <div class="hero-foot">
+            <span class="hero-when num">Sa 05.09. · 18:00</span>
+            <span class="chip solid num">in 57 Tagen</span>
+          </div>
+        </div>
+
+        <button class="micbtn" id="micBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+            <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"></path>
+          </svg>
+          Eindruck festhalten
+          <small>Sprachnotiz</small>
+        </button>
+
+        <h2 class="seclabel">Festspiel-Radar · §55</h2>
+        <div class="alert">
+          <span class="dot full" aria-hidden="true"></span>
+          <div>
+            <b>Lena Brandt ist festgespielt</b>
+            <p>2. Einsatz in Folge in Damen 1. Für Damen 2 gesperrt bis <span class="num">21.08.2026</span>.</p>
+          </div>
+        </div>
+        <div class="alert mild">
+          <span class="dot half" aria-hidden="true"></span>
+          <div>
+            <b>Emma Richter: 1. Einsatz in Damen 1</b>
+            <p>Beim nächsten D1-Einsatz wird sie festgespielt — vor der Aufstellung prüfen.</p>
+          </div>
+        </div>
+        <button class="linkbtn" data-goto="scr-kader">Im Kader prüfen →</button>
+
+        <h2 class="seclabel">Training · Di 14.07.</h2>
+        <div class="card">
+          <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <b style="font-family:var(--f-display);font-weight:500">Halle Süd</b>
+            <span class="num" style="font-size:12.5px;color:var(--ink-2)">19:30 Uhr · Damen 1 + 2</span>
+          </div>
+          <div class="rsvp">
+            <div class="cell zu"><div class="n">11</div><div class="t">Zugesagt</div></div>
+            <div class="cell ab"><div class="n">2</div><div class="t">Abgesagt</div></div>
+            <div class="cell"><div class="n">3</div><div class="t">Offen</div></div>
+          </div>
+          <div class="rsvpbar" aria-hidden="true"><i class="b1"></i><i class="b2"></i></div>
+        </div>
+
+        <h2 class="seclabel">Letzte Notizen</h2>
+        <div class="card">
+          <div class="note">
+            <div class="meta"><span class="chip">Training</span><span class="num">Gestern · 09.07.</span></div>
+            <p><b>Nina Petrovic</b> — Tempogegenstoß deutlich verbessert. Als erste Anspielerin testen.</p>
+          </div>
+          <div class="note">
+            <div class="meta"><span class="chip">Training</span><span class="num">08.07.</span></div>
+            <p><b>Frieda Albers</b> — Wurfquote aus dem Rückraum schwach. Extra-Wurftraining vereinbart.</p>
+          </div>
+          <div class="note">
+            <div class="meta"><span class="chip">Spiel</span><span class="num">05.07.</span></div>
+            <p>Abwehr 3:2:1 stand stabil, Umschalten nach Ballgewinn noch zu langsam.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2 · SPIELPLAN ============ -->
+      <section class="screen" id="scr-spielplan" role="tabpanel" aria-label="Spielplan">
+        <div class="screenhead">
+          <p class="eyebrow">Damen 1 · Landesliga</p>
+          <h1>Spielplan</h1>
+        </div>
+
+        <div class="importbar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v11m0 0 4-4m-4 4-4-4M4.5 17v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V17"></path>
+          </svg>
+          <span>Von <b>handball.net</b> importiert · Stand <span class="num">10.07., 06:00</span></span>
+          <button id="importBtn">Aktualisieren</button>
+        </div>
+
+        <h2 class="seclabel">Diese Woche</h2>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">TR</div>
+          <div class="mid">
+            <div class="opp">Training · Halle Süd</div>
+            <div class="sub">Damen 1 + 2 · Schwerpunkt Abwehr</div>
+          </div>
+          <div class="end">
+            <div class="score num" style="font-size:14px">Di 14.07.</div>
+            <div class="result-tag num">19:30</div>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Kommende Spiele</h2>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">EC</div>
+          <div class="mid">
+            <div class="opp">Elbe-Cup <span class="chip" style="margin-left:4px">Turnier</span></div>
+            <div class="sub">Vorbereitungsturnier · ganztägig</div>
+          </div>
+          <div class="end">
+            <div class="score num" style="font-size:14px">Sa 15.08.</div>
+            <div class="result-tag">Vorbereitung</div>
+          </div>
+        </div>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">TH</div>
+          <div class="mid">
+            <div class="opp">TSV Harburg-Nord <span class="chip warn" style="margin-left:4px">A</span></div>
+            <div class="sub">Sporthalle Am Sandberg · Landesliga, 1. Spieltag</div>
+          </div>
+          <div class="end">
+            <div class="score num" style="font-size:14px">Sa 05.09.</div>
+            <div class="result-tag num">18:00</div>
+          </div>
+        </div>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">SF</div>
+          <div class="mid">
+            <div class="opp">SG Findorff <span class="chip blue" style="margin-left:4px">H</span></div>
+            <div class="sub">Heimspiel · Landesliga, 2. Spieltag</div>
+          </div>
+          <div class="end">
+            <div class="score num" style="font-size:14px">Sa 12.09.</div>
+            <div class="result-tag num">17:00</div>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Vergangene Spiele</h2>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">TH</div>
+          <div class="mid">
+            <div class="opp">TSV Harburg-Nord <span class="chip blue" style="margin-left:4px">H</span></div>
+            <div class="sub">Testspiel · Heim</div>
+          </div>
+          <div class="end">
+            <div class="score win num">24:21</div>
+            <div class="result-tag">Sieg</div>
+          </div>
+        </div>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">HW</div>
+          <div class="mid">
+            <div class="opp">HC Weserbergland <span class="chip warn" style="margin-left:4px">A</span></div>
+            <div class="sub">Testspiel · Auswärts</div>
+          </div>
+          <div class="end">
+            <div class="score loss num">19:27</div>
+            <div class="result-tag">Niederlage</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 · KADER ============ -->
+      <section class="screen" id="scr-kader" role="tabpanel" aria-label="Kader">
+        <div class="screenhead">
+          <p class="eyebrow">14 Spielerinnen · 2 Teams</p>
+          <h1>Kader</h1>
+        </div>
+
+        <div class="seg" role="group" aria-label="Team wählen">
+          <button id="segD1" aria-pressed="true">Damen 1 <small>Landesliga</small></button>
+          <button id="segD2" aria-pressed="false">Damen 2 <small>Bezirksliga</small></button>
+        </div>
+        <p class="legend">
+          §55-Ampel:
+          <span><i class="dot free"></i> frei</span>
+          <span><i class="dot half"></i> Warnung</span>
+          <span><i class="dot full"></i> festgespielt</span>
+        </p>
+
+        <h2 class="seclabel" id="kaderLabel">Damen 1</h2>
+        <div id="kaderList">
+
+          <!-- Damen 1 -->
+          <button class="player" data-team="d1">
+            <span class="avatar" aria-hidden="true">MK</span>
+            <span class="pmid">
+              <span class="pname">Marie Köhler <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">TW</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d1">
+            <span class="avatar" aria-hidden="true">AD</span>
+            <span class="pmid">
+              <span class="pname">Aylin Demir <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">LA</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player dim" data-team="d1">
+            <span class="avatar" aria-hidden="true">CW</span>
+            <span class="pmid">
+              <span class="pname">Carla Weiß <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat bad num">Verletzt (Bänderriss) · bis 30.07.</span>
+            </span>
+            <span class="poschips"><span class="pos">KM</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d1">
+            <span class="avatar" aria-hidden="true">NP</span>
+            <span class="pmid">
+              <span class="pname">Nina Petrovic <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Formkurve steigend</span>
+            </span>
+            <span class="poschips"><span class="pos">RM</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d1">
+            <span class="avatar" aria-hidden="true">JF</span>
+            <span class="pmid">
+              <span class="pname">Johanna Falk <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · einzige RR im Verein</span>
+            </span>
+            <span class="poschips"><span class="pos">RR</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player dim" data-team="d1">
+            <span class="avatar" aria-hidden="true">MS</span>
+            <span class="pmid">
+              <span class="pname">Merle Sanders <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat bad num">Urlaub · 12.–26.07.</span>
+            </span>
+            <span class="poschips"><span class="pos">RA</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d1">
+            <span class="avatar" aria-hidden="true">PV</span>
+            <span class="pmid">
+              <span class="pname">Paula Vogt <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">RL</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+
+          <!-- Damen 2 -->
+          <button class="player" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">SO</span>
+            <span class="pmid">
+              <span class="pname">Svenja Ott <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">TW</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d2" id="rowLena" hidden>
+            <span class="avatar" aria-hidden="true">LB</span>
+            <span class="pmid">
+              <span class="pname">Lena Brandt <i class="dot full" title="§55: festgespielt"></i></span>
+              <span class="pstat bad num">Festgespielt in D1 · bis 21.08.2026</span>
+            </span>
+            <span class="poschips"><span class="pos">RL</span><span class="pos">RM</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">ER</span>
+            <span class="pmid">
+              <span class="pname">Emma Richter <i class="dot half" title="§55: Warnung"></i></span>
+              <span class="pstat bad">1. D1-Einsatz registriert — Warnung</span>
+            </span>
+            <span class="poschips"><span class="pos">LA</span><span class="pos">RA</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">SL</span>
+            <span class="pmid">
+              <span class="pname">Sarah Lindner <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">KM</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">FA</span>
+            <span class="pmid">
+              <span class="pname">Frieda Albers <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Rückmeldung offen</span>
+            </span>
+            <span class="poschips"><span class="pos">RM</span><span class="pos">RL</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">ZK</span>
+            <span class="pmid">
+              <span class="pname">Zoe Krüger <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat">Verfügbar · Training zugesagt</span>
+            </span>
+            <span class="poschips"><span class="pos">RA</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+          <button class="player dim" data-team="d2" hidden>
+            <span class="avatar" aria-hidden="true">HB</span>
+            <span class="pmid">
+              <span class="pname">Hanna Busch <i class="dot free" title="§55: frei"></i></span>
+              <span class="pstat bad">Langzeitverletzt (Knie-OP)</span>
+            </span>
+            <span class="poschips"><span class="pos">RL</span></span>
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ 3b · PROFIL LENA BRANDT ============ -->
+      <section class="screen" id="scr-profil" role="tabpanel" aria-label="Spielerinnen-Profil">
+        <div class="screenhead">
+          <button class="backbtn" id="backBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+            Kader
+          </button>
+          <div class="profhead">
+            <span class="avatar big" aria-hidden="true">LB</span>
+            <div>
+              <h1 style="font-size:23px">Lena Brandt</h1>
+              <div class="profchips">
+                <span class="pos">RL</span><span class="pos">RM</span>
+                <span class="chip">Damen 2 · Nr. 14</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert">
+          <span class="dot full" aria-hidden="true"></span>
+          <div>
+            <b>Festgespielt in Damen 1 · bis <span class="num">21.08.2026</span></b>
+            <p>Lena hat zweimal in Folge in der höherklassigen Damen&nbsp;1 gespielt (§55 SpO). Sie ist damit für die Damen&nbsp;2 <b>gesperrt</b> und darf dort erst wieder auflaufen, wenn sie an zwei aufeinanderfolgenden Pflichtspielen der Damen&nbsp;1 nicht teilgenommen hat — frühestens ab dem <span class="num">21.08.2026</span>. Für die Damen&nbsp;1 bleibt sie uneingeschränkt spielberechtigt.</p>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Formkurve · Bewertungen 1–5</h2>
+        <div class="card">
+          <svg class="spark" viewBox="0 0 280 104" role="img" aria-label="Formkurve: Bewertungen 3, 4, 4, 3, 5, 4 zwischen dem 12. Juni und dem 8. Juli">
+            <line class="grid" x1="26" y1="10" x2="272" y2="10"></line>
+            <line class="grid" x1="26" y1="46" x2="272" y2="46"></line>
+            <line class="grid" x1="26" y1="82" x2="272" y2="82"></line>
+            <text class="lbl" x="10" y="13">5</text>
+            <text class="lbl" x="10" y="49">3</text>
+            <text class="lbl" x="10" y="85">1</text>
+            <polygon class="area" points="36,46 84,28 132,28 180,46 228,10 268,28 268,82 36,82"></polygon>
+            <polyline class="curve" points="36,46 84,28 132,28 180,46 228,10 268,28"></polyline>
+            <circle class="pt" cx="36" cy="46" r="3.5"></circle>
+            <circle class="pt" cx="84" cy="28" r="3.5"></circle>
+            <circle class="pt" cx="132" cy="28" r="3.5"></circle>
+            <circle class="pt" cx="180" cy="46" r="3.5"></circle>
+            <circle class="pt" cx="228" cy="10" r="3.5"></circle>
+            <circle class="pt last" cx="268" cy="28" r="4"></circle>
+            <text class="lbl" x="30" y="98">12.06.</text>
+            <text class="lbl" x="250" y="98">08.07.</text>
+          </svg>
+        </div>
+
+        <h2 class="seclabel">Notizen-Historie</h2>
+        <div class="card">
+          <div class="note">
+            <div class="meta"><span class="chip">Training</span><span class="num">08.07.</span></div>
+            <p>Rückraum links: Ansage in der Abwehr top, übernimmt zunehmend Verantwortung.</p>
+          </div>
+          <div class="note">
+            <div class="meta"><span class="chip blue">Spiel</span><span class="num">27.06. · D1</span></div>
+            <p>2. D1-Einsatz — ruhig im Angriff, 4 Tore. <b>Festspiel-Folge damit ausgelöst.</b></p>
+          </div>
+          <div class="note">
+            <div class="meta"><span class="chip">Training</span><span class="num">19.06.</span></div>
+            <p>Sprungwurf über den Block wird stabiler, Timing beim Einlaufen weiter üben.</p>
+          </div>
+          <div class="note">
+            <div class="meta"><span class="chip blue">Spiel</span><span class="num">07.06. · D1</span></div>
+            <p>1. D1-Einsatz: nervös gestartet, nach 15 Minuten angekommen. 2 Tore.</p>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Abwesenheiten</h2>
+        <div class="card">
+          <div class="kv"><span class="k">Spätschicht</span><span class="v num">dienstags erst ab 20:15 · bis Ende Juli</span></div>
+          <div class="kv"><span class="k">Urlaub</span><span class="v">keiner eingetragen</span></div>
+        </div>
+      </section>
+
+      <!-- ============ 4 · PLANUNG ============ -->
+      <section class="screen" id="scr-planung" role="tabpanel" aria-label="Planung">
+        <div class="screenhead">
+          <p class="eyebrow">Aufstellung</p>
+          <h1>Damen 1 · Sa 05.09.</h1>
+          <div class="planctx" style="margin-top:8px">
+            <span class="chip warn">Auswärts</span>
+            <span class="chip">TSV Harburg-Nord</span>
+            <span class="chip num">18:00</span>
+          </div>
+        </div>
+
+        <p class="hint">Spielerin antippen, dann Position antippen. Belegte Position antippen = entfernen.</p>
+
+        <div class="field" aria-label="Stilisierte Handballfeld-Hälfte mit Positions-Slots">
+          <svg viewBox="0 0 360 252" aria-hidden="true" preserveAspectRatio="none">
+            <!-- Seitenlinien + Torauslinie -->
+            <path class="cl" d="M4 252 V4 H356 V252" stroke-width="1.5"></path>
+            <!-- Tor -->
+            <line class="goal" x1="153" y1="4" x2="207" y2="4" stroke-width="5"></line>
+            <!-- 6m-Torraum (durchgezogen) -->
+            <path class="cl" stroke-width="2" d="M45 4 A108 108 0 0 0 153 112 L207 112 A108 108 0 0 0 315 4"></path>
+            <!-- 9m-Freiwurflinie (gestrichelt) -->
+            <path class="cl" stroke-width="1.5" stroke-dasharray="9 7" d="M-9 4 A162 162 0 0 0 153 166 L207 166 A162 162 0 0 0 369 4"></path>
+            <!-- 7m-Strich -->
+            <line class="cl" x1="171" y1="130" x2="189" y2="130" stroke-width="2"></line>
+            <!-- 4m-Torwartgrenze -->
+            <line class="cl" x1="175" y1="76" x2="185" y2="76" stroke-width="2"></line>
+          </svg>
+          <button class="slot" data-slot="TW" style="left:50%; top:15%"><span class="sp">TW</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="LA" style="left:14%; top:31%"><span class="sp">LA</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="RA" style="left:86%; top:31%"><span class="sp">RA</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="KM" style="left:50%; top:48%"><span class="sp">KM</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="RL" style="left:23%; top:80%"><span class="sp">RL</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="RM" style="left:50%; top:87%"><span class="sp">RM</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="RR" style="left:77%; top:80%"><span class="sp">RR</span><span class="sn">frei</span></button>
+        </div>
+
+        <div class="bench" aria-label="Bank">
+          <button class="slot" data-slot="Bank 1"><span class="sp">Bank</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="Bank 2"><span class="sp">Bank</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="Bank 3"><span class="sp">Bank</span><span class="sn">frei</span></button>
+          <button class="slot" data-slot="Bank 4"><span class="sp">Bank</span><span class="sn">frei</span></button>
+        </div>
+
+        <h2 class="seclabel">Verfügbar · Damen 1</h2>
+        <div class="pool">
+          <button class="pchip" data-name="M. Köhler"><span class="pos">TW</span>Marie Köhler</button>
+          <button class="pchip" data-name="A. Demir"><span class="pos">LA</span>Aylin Demir</button>
+          <button class="pchip" data-name="N. Petrovic"><span class="pos">RM</span>Nina Petrovic</button>
+          <button class="pchip" data-name="J. Falk"><span class="pos">RR</span>Johanna Falk</button>
+          <button class="pchip" data-name="P. Vogt"><span class="pos">RL</span>Paula Vogt</button>
+          <button class="pchip off" data-reason="Carla Weiß ist verletzt (Bänderriss, bis 30.07.) — Status heute." aria-disabled="true"><span class="pos">KM</span>Carla Weiß<span class="why">Verletzt</span></button>
+          <button class="pchip off" data-reason="Merle Sanders ist im Urlaub (12.–26.07.) — Status heute." aria-disabled="true"><span class="pos">RA</span>Merle Sanders<span class="why">Urlaub</span></button>
+        </div>
+
+        <h2 class="seclabel">Aushilfe · Damen 2</h2>
+        <div class="pool">
+          <button class="pchip" data-name="L. Brandt"><span class="pos">RL</span>Lena Brandt</button>
+          <button class="pchip" data-name="S. Lindner"><span class="pos">KM</span>Sarah Lindner</button>
+          <button class="pchip" data-name="E. Richter" data-warn="Achtung: Für Emma Richter wäre das der 2. D1-Einsatz — sie wird damit festgespielt (§55)."><span class="pos">LA</span>Emma Richter<span class="why">§55</span></button>
+          <button class="pchip" data-name="Z. Krüger"><span class="pos">RA</span>Zoe Krüger</button>
+          <button class="pchip" data-name="F. Albers"><span class="pos">RM</span>Frieda Albers</button>
+          <button class="pchip off" data-reason="Hanna Busch ist langzeitverletzt (Knie-OP)." aria-disabled="true"><span class="pos">RL</span>Hanna Busch<span class="why">Verletzt</span></button>
+        </div>
+      </section>
+
+      <!-- ============ 5 · STATISTIK ============ -->
+      <section class="screen" id="scr-statistik" role="tabpanel" aria-label="Statistik">
+        <div class="screenhead">
+          <p class="eyebrow">Damen 1 · Saison 2025/26</p>
+          <h1>Statistik</h1>
+        </div>
+
+        <h2 class="seclabel">Einsätze &amp; Tore</h2>
+        <div class="card">
+          <div class="statrow">
+            <span class="sname">Nina Petrovic</span>
+            <span class="bars">
+              <span class="bar"><i style="width:100%"></i></span>
+              <span class="bar thin"><i style="width:95%"></i></span>
+            </span>
+            <span class="nums">84 T · 21 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Aylin Demir</span>
+            <span class="bars">
+              <span class="bar"><i style="width:73%"></i></span>
+              <span class="bar thin"><i style="width:100%"></i></span>
+            </span>
+            <span class="nums">61 T · 22 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Johanna Falk</span>
+            <span class="bars">
+              <span class="bar"><i style="width:57%"></i></span>
+              <span class="bar thin"><i style="width:86%"></i></span>
+            </span>
+            <span class="nums">48 T · 19 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Paula Vogt</span>
+            <span class="bars">
+              <span class="bar"><i style="width:52%"></i></span>
+              <span class="bar thin"><i style="width:91%"></i></span>
+            </span>
+            <span class="nums">44 T · 20 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Merle Sanders</span>
+            <span class="bars">
+              <span class="bar"><i style="width:46%"></i></span>
+              <span class="bar thin"><i style="width:82%"></i></span>
+            </span>
+            <span class="nums">39 T · 18 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Carla Weiß</span>
+            <span class="bars">
+              <span class="bar"><i style="width:39%"></i></span>
+              <span class="bar thin"><i style="width:68%"></i></span>
+            </span>
+            <span class="nums">33 T · 15 E</span>
+          </div>
+          <div class="statrow">
+            <span class="sname">Marie Köhler</span>
+            <span class="bars">
+              <span class="bar"><i style="width:2%"></i></span>
+              <span class="bar thin"><i style="width:100%"></i></span>
+            </span>
+            <span class="nums">1 T · 22 E</span>
+          </div>
+          <p class="legend" style="margin-top:8px">Balken: <span><i style="width:14px;height:7px;border-radius:2px;background:var(--blue);display:inline-block"></i> Tore</span> <span><i style="width:14px;height:4px;border-radius:2px;background:var(--court);display:inline-block"></i> Einsätze</span></p>
+        </div>
+
+        <h2 class="seclabel">Formkurve · Nina Petrovic</h2>
+        <div class="card">
+          <svg class="spark" viewBox="0 0 300 104" role="img" aria-label="Formkurve von Nina Petrovic: Bewertungen 3, 3, 4, 4, 5, 4, 5, 5 über die letzten acht Einheiten">
+            <line class="grid" x1="12" y1="10" x2="290" y2="10"></line>
+            <line class="grid" x1="12" y1="46" x2="290" y2="46"></line>
+            <line class="grid" x1="12" y1="82" x2="290" y2="82"></line>
+            <polygon class="area" points="15,46 54,46 92,28 131,28 169,10 208,28 246,10 285,10 285,82 15,82"></polygon>
+            <polyline class="curve" points="15,46 54,46 92,28 131,28 169,10 208,28 246,10 285,10"></polyline>
+            <circle class="pt" cx="15" cy="46" r="3"></circle>
+            <circle class="pt" cx="54" cy="46" r="3"></circle>
+            <circle class="pt" cx="92" cy="28" r="3"></circle>
+            <circle class="pt" cx="131" cy="28" r="3"></circle>
+            <circle class="pt" cx="169" cy="10" r="3"></circle>
+            <circle class="pt" cx="208" cy="28" r="3"></circle>
+            <circle class="pt" cx="246" cy="10" r="3"></circle>
+            <circle class="pt last" cx="285" cy="10" r="4"></circle>
+            <text class="lbl" x="12" y="98">8 Einheiten</text>
+            <text class="lbl" x="243" y="98">zuletzt 5</text>
+          </svg>
+        </div>
+
+        <h2 class="seclabel">Verfügbarkeit</h2>
+        <div class="card" style="display:flex;align-items:center;gap:16px">
+          <div class="bignum num">84<small>%</small></div>
+          <div style="flex:1">
+            <div style="font-size:12.5px;line-height:1.4">Trainingsbeteiligung, letzte 4 Wochen</div>
+            <div class="bar" style="margin-top:6px"><i style="width:84%"></i></div>
+            <div style="font-size:10.5px;color:var(--ink-2);margin-top:4px" class="num">Damen 2: 71 % — Tendenz fallend</div>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Positionsabdeckung · Verein</h2>
+        <div class="card">
+          <div class="covrow">
+            <span class="pos">TW</span>
+            <span class="covdots"><i></i><i></i></span>
+            <span class="covnote">2 Torhüterinnen</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">LA</span>
+            <span class="covdots"><i></i><i></i></span>
+            <span class="covnote">Aylin, Emma</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">KM</span>
+            <span class="covdots"><i></i><i class="w"></i></span>
+            <span class="covnote bad">Carla verletzt — nur Sarah fit</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">RL</span>
+            <span class="covdots"><i></i><i></i><i class="w"></i><i class="o"></i></span>
+            <span class="covnote">Hanna langzeitverletzt</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">RM</span>
+            <span class="covdots"><i></i><i></i><i></i></span>
+            <span class="covnote">gut besetzt</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">RR</span>
+            <span class="covdots"><i class="w"></i></span>
+            <span class="covnote bad">Nur Johanna Falk — dünn!</span>
+          </div>
+          <div class="covrow">
+            <span class="pos">RA</span>
+            <span class="covdots"><i></i><i></i><i class="w"></i></span>
+            <span class="covnote">Merle im Urlaub (bis 26.07.)</span>
+          </div>
+        </div>
+
+        <h2 class="seclabel">Gegner-Bilanz</h2>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">TH</div>
+          <div class="mid">
+            <div class="opp">TSV Harburg-Nord</div>
+            <div class="sub num">Letztes Duell: 24:21 (H)</div>
+          </div>
+          <div class="end">
+            <div class="score win num">1–0–0</div>
+            <div class="result-tag">S–U–N</div>
+          </div>
+        </div>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">HW</div>
+          <div class="mid">
+            <div class="opp">HC Weserbergland</div>
+            <div class="sub num">Letztes Duell: 19:27 (A)</div>
+          </div>
+          <div class="end">
+            <div class="score loss num">0–0–1</div>
+            <div class="result-tag">S–U–N</div>
+          </div>
+        </div>
+        <div class="card match">
+          <div class="badge" aria-hidden="true">SF</div>
+          <div class="mid">
+            <div class="opp">SG Findorff</div>
+            <div class="sub num">Erstes Duell am 12.09.</div>
+          </div>
+          <div class="end">
+            <div class="score num" style="color:var(--ink-2)">–</div>
+            <div class="result-tag">Neu</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Aufnahme-Overlay -->
+    <div class="rec" id="recOverlay" role="dialog" aria-modal="true" aria-label="Sprachnotiz aufnehmen">
+      <div class="recring">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+          <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"></path>
+        </svg>
+      </div>
+      <h2>Aufnahme läuft</h2>
+      <div class="rectime num" id="recTime">0:00</div>
+      <p>Sprich einfach — die Notiz wird transkribiert, einer Spielerin zugeordnet und in dein Zweitgedächtnis einsortiert.</p>
+      <div class="recbtns">
+        <button class="btn" id="recCancel">Verwerfen</button>
+        <button class="btn primary" id="recSave">Speichern</button>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Tab-Leiste -->
+    <nav class="tabbar" role="tablist" aria-label="Hauptnavigation">
+      <button class="tab" role="tab" aria-selected="true" data-target="scr-start">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 11.5 12 4l8 7.5M6 10.5V20h12v-9.5"></path>
+        </svg>
+        Start
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-target="scr-spielplan">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="5.5" width="16" height="15" rx="2"></rect>
+          <path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"></path>
+        </svg>
+        Spielplan
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-target="scr-kader">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="8.5" r="3.2"></circle>
+          <path d="M3.5 20c.5-3.6 2.8-5.5 5.5-5.5s5 1.9 5.5 5.5M15.5 5.7a3.2 3.2 0 1 1 .8 6.3M17.5 14.7c2 .7 3.2 2.5 3.5 5.3"></path>
+        </svg>
+        Kader
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-target="scr-planung">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+          <path d="M8 4a4 4 0 0 0 8 0M8 20a4 4 0 0 1 8 0" stroke-dasharray="2.5 2.5"></path>
+          <circle cx="12" cy="12" r="1.4"></circle>
+        </svg>
+        Planung
+      </button>
+      <button class="tab" role="tab" aria-selected="false" data-target="scr-statistik">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4.5 20V13M10 20V6.5M15.5 20v-9M21 20V4"></path>
+        </svg>
+        Statistik
+      </button>
+    </nav>
+  </div>
+
+  <!-- Design-Rationale (Desktop) -->
+  <aside class="rationale">
+    <h2>Richtung B — Taktiktafel</h2>
+    <p class="tagline">Die App als laminierte Trainer-Tafel: hell, ruhig, präzise.</p>
+    <div class="swatches" aria-label="Farbpalette">
+      <div class="sw"><i style="background:#FBFBF8"></i><span>Papier #FBFBF8</span></div>
+      <div class="sw"><i style="background:#1156C2"></i><span>Marker #1156C2</span></div>
+      <div class="sw"><i style="background:#1B2A33"></i><span>Tinte #1B2A33</span></div>
+      <div class="sw"><i style="background:#D9531E"></i><span>Signal #D9531E</span></div>
+      <div class="sw"><i style="background:#B9C7CE"></i><span>Linie #B9C7CE</span></div>
+    </div>
+    <p>Der Grund ist Papierweiß wie das laminierte Board, beschriftet mit genau einem Markerblau — alles Warnende (Festspielen, Verletzung, dünne Besetzung) bekommt die eine warme Signalfarbe und sonst nichts. Die Hallenlinien selbst tragen die Struktur: 6m- und 9m-Bogen hängen als Motiv in jedem Screen-Kopf, der 7m-Strich trennt Abschnitte, und die Aufstellung wird direkt auf der Feldhälfte gesteckt.</p>
+    <p>Keine Handschrift, sondern Präzision: Franklin Gothic für Beschriftungen wie mit der Schablone gezogen, Trebuchet MS als ruhiger Lesetext, Tabellenziffern überall dort, wo gezählt wird. Das dunkle Thema ist die Abendhalle — gleiche Tafel, Licht aus, Marker leuchtet.</p>
+    <p class="typo"><b>Typo:</b> Franklin Gothic Medium (Display/Labels, versal mit Sperrung) + Trebuchet MS (Lauftext). <b>Themes:</b> Hell &amp; Hallenabend, umschaltbar über den Sonnen-Button oben rechts im Gerät.</p>
+  </aside>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
+  var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
+
+  /* ---------- Toast ---------- */
+  var toastEl = $("#toast");
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2800);
+  }
+
+  /* ---------- Tab-Navigation ---------- */
+  var tabs = $$(".tab");
+  var screens = $$(".screen");
+  function showScreen(id) {
+    screens.forEach(function (s) {
+      var on = s.id === id;
+      s.classList.toggle("active", on);
+      if (on) s.scrollTop = 0;
+    });
+    // Profil zaehlt zur Kader-Sektion
+    var tabId = id === "scr-profil" ? "scr-kader" : id;
+    tabs.forEach(function (t) {
+      t.setAttribute("aria-selected", t.dataset.target === tabId ? "true" : "false");
+    });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { showScreen(t.dataset.target); });
+  });
+  $$("[data-goto]").forEach(function (b) {
+    b.addEventListener("click", function () { showScreen(b.dataset.goto); });
+  });
+
+  /* ---------- Thema (Hallenabend) ---------- */
+  var themeBtn = $("#themeBtn");
+  themeBtn.addEventListener("click", function () {
+    var root = document.documentElement;
+    var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var cur = root.getAttribute("data-theme") || (prefersDark ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    toast(next === "dark" ? "Hallenabend-Modus an." : "Tageslicht-Modus an.");
+  });
+
+  /* ---------- Kader: Segmented Control ---------- */
+  var segD1 = $("#segD1"), segD2 = $("#segD2");
+  var kaderLabel = $("#kaderLabel");
+  function setTeam(team) {
+    segD1.setAttribute("aria-pressed", team === "d1" ? "true" : "false");
+    segD2.setAttribute("aria-pressed", team === "d2" ? "true" : "false");
+    kaderLabel.textContent = team === "d1" ? "Damen 1" : "Damen 2";
+    $$("#kaderList .player").forEach(function (p) {
+      p.hidden = p.dataset.team !== team;
+    });
+  }
+  segD1.addEventListener("click", function () { setTeam("d1"); });
+  segD2.addEventListener("click", function () { setTeam("d2"); });
+
+  /* ---------- Kader: Profil oeffnen ---------- */
+  $$("#kaderList .player").forEach(function (p) {
+    p.addEventListener("click", function () {
+      if (p.id === "rowLena") {
+        showScreen("scr-profil");
+      } else {
+        toast("Im Prototyp ist nur das Profil von Lena Brandt ausgearbeitet (Damen 2).");
+      }
+    });
+  });
+  $("#backBtn").addEventListener("click", function () { showScreen("scr-kader"); });
+
+  /* ---------- Spielplan: Import ---------- */
+  $("#importBtn").addEventListener("click", function () {
+    toast("handball.net geprüft — Spielplan ist aktuell (Stand 10.07., 14:32).");
+  });
+
+  /* ---------- Aufnahme-Overlay ---------- */
+  var rec = $("#recOverlay");
+  var recTime = $("#recTime");
+  var recTimer = null, recSecs = 0;
+  function openRec() {
+    recSecs = 0;
+    recTime.textContent = "0:00";
+    rec.classList.add("open");
+    recTimer = setInterval(function () {
+      recSecs++;
+      recTime.textContent = Math.floor(recSecs / 60) + ":" + String(recSecs % 60).padStart(2, "0");
+    }, 1000);
+    $("#recSave").focus();
+  }
+  function closeRec() {
+    rec.classList.remove("open");
+    clearInterval(recTimer);
+  }
+  $("#micBtn").addEventListener("click", openRec);
+  $("#recCancel").addEventListener("click", function () {
+    closeRec();
+    toast("Aufnahme verworfen.");
+  });
+  $("#recSave").addEventListener("click", function () {
+    closeRec();
+    toast("Sprachnotiz gespeichert · Vorschlag: Nina Petrovic, Kategorie Training.");
+  });
+
+  /* ---------- Planung: Tippen-Zuweisen ---------- */
+  var selectedChip = null;
+  var chips = $$(".pchip");
+  var slots = $$(".slot");
+
+  function clearSelection() {
+    if (selectedChip) selectedChip.classList.remove("sel");
+    selectedChip = null;
+    slots.forEach(function (s) { s.classList.remove("target"); });
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      if (c.classList.contains("off")) {
+        toast(c.dataset.reason || "Nicht verfügbar.");
+        return;
+      }
+      if (c.classList.contains("used")) {
+        toast(c.dataset.name + " steht bereits auf der Tafel. Position antippen, um sie zu entfernen.");
+        return;
+      }
+      if (selectedChip === c) { clearSelection(); return; }
+      clearSelection();
+      selectedChip = c;
+      c.classList.add("sel");
+      slots.forEach(function (s) {
+        if (!s.classList.contains("filled")) s.classList.add("target");
+      });
+      if (c.dataset.warn) toast(c.dataset.warn);
+    });
+  });
+
+  slots.forEach(function (s) {
+    s.addEventListener("click", function () {
+      var nameEl = s.querySelector(".sn");
+      if (s.classList.contains("filled")) {
+        // entfernen, Chip freigeben
+        var freed = s.dataset.assigned;
+        chips.forEach(function (c) {
+          if (c.dataset.name === freed) c.classList.remove("used");
+        });
+        s.classList.remove("filled");
+        delete s.dataset.assigned;
+        nameEl.textContent = "frei";
+        toast(freed + " von der Tafel genommen.");
+        if (selectedChip) s.classList.add("target");
+        return;
+      }
+      if (!selectedChip) {
+        toast("Erst unten eine Spielerin antippen, dann die Position.");
+        return;
+      }
+      var n = selectedChip.dataset.name;
+      s.classList.add("filled");
+      s.dataset.assigned = n;
+      nameEl.textContent = n;
+      selectedChip.classList.add("used");
+      toast(n + " → " + s.dataset.slot + ".");
+      clearSelection();
+    });
+  });
+})();
+</script>
