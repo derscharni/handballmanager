@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0B2158"/>
+  <path d="M256 56 448 116v160c0 108-82 180-192 214C146 456 64 384 64 276V116Z" fill="#14418F" stroke="#FFC72C" stroke-width="18"/>
+  <rect x="70" y="212" width="372" height="66" fill="#FFC72C"/>
+  <text x="256" y="188" text-anchor="middle" font-family="Arial Narrow, Helvetica, sans-serif" font-weight="800" font-size="104" fill="#F5F8FF">TuS</text>
+  <text x="256" y="392" text-anchor="middle" font-family="Arial Narrow, Helvetica, sans-serif" font-weight="800" font-size="92" fill="#F5F8FF">1865</text>
+</svg>

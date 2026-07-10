@@ -1,0 +1,185 @@
+@import 'tailwindcss';
+
+/* ================================================================
+   HANDBALL MANAGER — Design "Vereinsfarben" (aus Design C V4)
+   Token-Ebenen:
+   1) Club-Töne (--club-*)  — pro Verein, via :root[data-club=…]
+   2) Semantik  (--bg, --ink, --accent …) — pro Theme (hell/dunkel)
+   ================================================================ */
+
+:root {
+  /* TuS Köln-Ehrenfeld 1865 — Königsblau + Vereinsgelb.
+     Blau führt (Flächen, Buttons, Poster), Gelb ist Energie-Akzent
+     (Wappenband, CTA, Gast-Badges) — nie Gelb-Text auf Weiß. */
+  --club-950: #071230;
+  --club-900: #0b2158;
+  --club-700: #14418f;
+  --club-500: #2e64c0;
+  --club-300: #7aa3e8;
+  --club-150: #d9e4f7;
+  --club-on: #f5f8ff;
+  --club-acc: #ffc72c;
+  --club-acc-ink: #172b5e;
+}
+
+/* ---------- Semantik — HELL (Basis) ---------- */
+:root {
+  --bg: color-mix(in srgb, var(--club-700) 6%, #f5f6f8);
+  --card: #ffffff;
+  --card-2: color-mix(in srgb, var(--club-700) 4%, #ffffff);
+  --ink: color-mix(in srgb, var(--club-950) 60%, #14161b);
+  --muted: color-mix(in srgb, var(--club-700) 30%, #676f7d);
+  --line: color-mix(in srgb, var(--club-700) 13%, #e4e6ea);
+  --accent: var(--club-700);
+  --accent-soft: color-mix(in srgb, var(--club-700) 11%, #ffffff);
+  --btn-bg: var(--club-700);
+  --btn-ink: var(--club-on);
+  --poster-a: var(--club-900);
+  --poster-b: var(--club-950);
+  --poster-ink: var(--club-on);
+  --ok: #25834f;
+  --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
+  --warn: #b26e06;
+  --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
+  --crit: #c2372c;
+  --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);
+  --shadow: 0 1px 2px rgba(10, 20, 40, 0.05), 0 8px 24px rgba(10, 20, 40, 0.07);
+  --font-display: 'Helvetica Neue Condensed', 'HelveticaNeue-CondensedBold',
+    'Arial Narrow', 'Avenir Next Condensed', 'Roboto Condensed',
+    'Liberation Sans Narrow', 'DejaVu Sans Condensed', sans-serif-condensed,
+    sans-serif;
+  --font-body: 'Helvetica Neue', Helvetica, 'Segoe UI', Roboto, Arial,
+    sans-serif;
+}
+
+/* ---------- Semantik — DUNKEL via OS ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: color-mix(in srgb, var(--club-900) 22%, #0b0d12);
+    --card: color-mix(in srgb, var(--club-900) 32%, #13161d);
+    --card-2: color-mix(in srgb, var(--club-900) 42%, #171b24);
+    --ink: color-mix(in srgb, var(--club-150) 42%, #eceef2);
+    --muted: color-mix(in srgb, var(--club-300) 32%, #969eac);
+    --line: color-mix(in srgb, var(--club-500) 20%, #272c37);
+    --accent: var(--club-300);
+    --accent-soft: color-mix(in srgb, var(--club-500) 26%, #14171f);
+    --btn-bg: var(--club-500);
+    --btn-ink: var(--club-on);
+    --ok: #4cc282;
+    --ok-soft: color-mix(in srgb, #4cc282 18%, #12151c);
+    --warn: #e9a23b;
+    --warn-soft: color-mix(in srgb, #e9a23b 16%, #12151c);
+    --crit: #e5695c;
+    --crit-soft: color-mix(in srgb, #e5695c 16%, #12151c);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ---------- Theme-Schalter gewinnt in beide Richtungen ---------- */
+:root[data-theme='light'] {
+  --bg: color-mix(in srgb, var(--club-700) 6%, #f5f6f8);
+  --card: #ffffff;
+  --card-2: color-mix(in srgb, var(--club-700) 4%, #ffffff);
+  --ink: color-mix(in srgb, var(--club-950) 60%, #14161b);
+  --muted: color-mix(in srgb, var(--club-700) 30%, #676f7d);
+  --line: color-mix(in srgb, var(--club-700) 13%, #e4e6ea);
+  --accent: var(--club-700);
+  --accent-soft: color-mix(in srgb, var(--club-700) 11%, #ffffff);
+  --btn-bg: var(--club-700);
+  --btn-ink: var(--club-on);
+  --ok: #25834f;
+  --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
+  --warn: #b26e06;
+  --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
+  --crit: #c2372c;
+  --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);
+  --shadow: 0 1px 2px rgba(10, 20, 40, 0.05), 0 8px 24px rgba(10, 20, 40, 0.07);
+}
+:root[data-theme='dark'] {
+  --bg: color-mix(in srgb, var(--club-900) 22%, #0b0d12);
+  --card: color-mix(in srgb, var(--club-900) 32%, #13161d);
+  --card-2: color-mix(in srgb, var(--club-900) 42%, #171b24);
+  --ink: color-mix(in srgb, var(--club-150) 42%, #eceef2);
+  --muted: color-mix(in srgb, var(--club-300) 32%, #969eac);
+  --line: color-mix(in srgb, var(--club-500) 20%, #272c37);
+  --accent: var(--club-300);
+  --accent-soft: color-mix(in srgb, var(--club-500) 26%, #14171f);
+  --btn-bg: var(--club-500);
+  --btn-ink: var(--club-on);
+  --ok: #4cc282;
+  --ok-soft: color-mix(in srgb, #4cc282 18%, #12151c);
+  --warn: #e9a23b;
+  --warn-soft: color-mix(in srgb, #e9a23b 16%, #12151c);
+  --crit: #e5695c;
+  --crit-soft: color-mix(in srgb, #e5695c 16%, #12151c);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Tailwind-Anbindung: Tokens als Theme-Farben ---------- */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-btn-bg: var(--btn-bg);
+  --color-btn-ink: var(--btn-ink);
+  --color-poster-a: var(--poster-a);
+  --color-poster-b: var(--poster-b);
+  --color-poster-ink: var(--poster-ink);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+  --color-club-950: var(--club-950);
+  --color-club-900: var(--club-900);
+  --color-club-700: var(--club-700);
+  --color-club-500: var(--club-500);
+  --color-club-300: var(--club-300);
+  --color-club-150: var(--club-150);
+  --color-club-on: var(--club-on);
+  --color-club-acc: var(--club-acc);
+  --color-club-acc-ink: var(--club-acc-ink);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --shadow-card: var(--shadow);
+}
+
+/* ---------- Basis ---------- */
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
