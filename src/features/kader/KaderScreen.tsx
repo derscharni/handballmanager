@@ -1,10 +1,15 @@
 import type { KaderScreenProps } from '../props'
+import { KaderListe } from './KaderListe'
+import { KaderProfil } from './KaderProfil'
 
-// Platzhalter — wird durch die Feature-Implementierung ersetzt.
-export default function KaderScreen(_props: KaderScreenProps) {
-  return (
-    <div className="flex h-[50dvh] items-center justify-center text-muted font-display uppercase tracking-wide">
-      Kader — in Arbeit
-    </div>
-  )
+/**
+ * Kader-Screen: zwei Zustände über Props der Shell —
+ * detailPlayerId === null → Liste (Stammkader / Gäste / Weitere),
+ * sonst → Profil der Spielerin (Zurück-Button setzt auf null).
+ */
+export default function KaderScreen({ detailPlayerId, setDetailPlayerId }: KaderScreenProps) {
+  if (detailPlayerId === null) {
+    return <KaderListe openPlayer={setDetailPlayerId} />
+  }
+  return <KaderProfil playerId={detailPlayerId} onBack={() => setDetailPlayerId(null)} />
 }
