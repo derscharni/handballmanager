@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { db, todayIso, uid } from '../../lib/db'
-import type { Note, NoteCategory, Player } from '../../lib/types'
+import type { MatchEvent, Note, NoteCategory, Opponent, Player } from '../../lib/types'
+import { EVENT_KIND_LABEL } from '../../lib/types'
+import { fmtDayDate } from '../../lib/format'
 import { Avatar } from '../../components/Avatar'
 import { Badge, Button, Segmented, Sheet } from '../../components/ui'
 
@@ -56,23 +58,67 @@ function fmtSeconds(s: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
+/** ISO-Datum um `days` Tage verschieben (UTC-sicher). */
+function isoAddDays(iso: string, days: number): string {
+  const d = new Date(iso + 'T12:00:00Z')
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
+/** Chip-Label: "Di 14.07. Training" / "Sa 05.09. SVZ". */
+function eventChipLabel(e: MatchEvent, opponentById: Map<string, Opponent>): string {
+  let what: string
+  if (e.kind === 'match') {
+    const opp = e.opponentId ? opponentById.get(e.opponentId) : undefined
+    what = opp?.shortName || opp?.name || EVENT_KIND_LABEL.match
+  } else if (e.kind === 'sonstiges') {
+    what = e.title || EVENT_KIND_LABEL.sonstiges
+  } else {
+    what = EVENT_KIND_LABEL[e.kind]
+  }
+  return `${fmtDayDate(e.date)} ${what}`
+}
+
+/**
+ * Termine im Fenster heute ±7 Tage: vergangene (inkl. heute) zuerst —
+ * jüngste voran —, danach die kommenden aufsteigend.
+ */
+export function relevantCaptureEvents(events: MatchEvent[], today: string): MatchEvent[] {
+  const min = isoAddDays(today, -7)
+  const max = isoAddDays(today, 7)
+  const inRange = events.filter((e) => e.date >= min && e.date <= max)
+  const key = (e: MatchEvent) => `${e.date}T${e.time ?? '00:00'}`
+  const pastAndToday = inRange
+    .filter((e) => e.date <= today)
+    .sort((a, b) => key(b).localeCompare(key(a)))
+  const future = inRange
+    .filter((e) => e.date > today)
+    .sort((a, b) => key(a).localeCompare(key(b)))
+  return [...pastAndToday, ...future]
+}
+
 type RecPhase = 'idle' | 'recording' | 'stopped'
 
 export function QuickCaptureSheet({
   open,
   onClose,
   players,
+  events,
+  opponents,
   onSaved,
 }: {
   open: boolean
   onClose: () => void
   players: Player[]
+  events: MatchEvent[]
+  opponents: Opponent[]
   onSaved: () => void
 }) {
   const [text, setText] = useState('')
   const [interim, setInterim] = useState('')
   const [category, setCategory] = useState<NoteCategory>('allgemein')
   const [playerId, setPlayerId] = useState<string | null>(null)
+  const [eventId, setEventId] = useState<string | null>(null)
   const [manualPick, setManualPick] = useState(false)
   const [rating, setRating] = useState<Note['rating'] | undefined>(undefined)
   const [phase, setPhase] = useState<RecPhase>('idle')
@@ -126,9 +172,21 @@ export function QuickCaptureSheet({
     // Formular zurücksetzen
     setText('')
     setInterim('')
-    setCategory('allgemein')
     setPlayerId(null)
     setManualPick(false)
+    // Liegt heute ein Termin, ist er vorselektiert (Kategorie folgt der Termin-Art).
+    const today = todayIso()
+    const todayEvent = [...events]
+      .filter((e) => e.date === today)
+      .sort((a, b) => (a.time ?? '00:00').localeCompare(b.time ?? '00:00'))[0]
+    setEventId(todayEvent?.id ?? null)
+    setCategory(
+      todayEvent?.kind === 'training'
+        ? 'training'
+        : todayEvent?.kind === 'match'
+          ? 'spiel'
+          : 'allgemein',
+    )
     setRating(undefined)
     setElapsed(0)
     setAudioBlob(null)
@@ -270,8 +328,31 @@ export function QuickCaptureSheet({
     })
   }, [players, suggestedIds])
 
+  /* ---------- Termin-Auswahl (heute ±7 Tage) ---------- */
+  const relevantEvents = useMemo(
+    () => relevantCaptureEvents(events, todayIso()),
+    [events],
+  )
+  const opponentById = useMemo(
+    () => new Map(opponents.map((o) => [o.id, o])),
+    [opponents],
+  )
+
+  /** Termin wählen/abwählen; Kategorie folgt der Termin-Art (überschreibbar). */
+  function toggleEvent(e: MatchEvent) {
+    if (eventId === e.id) {
+      setEventId(null)
+      return
+    }
+    setEventId(e.id)
+    if (e.kind === 'training') setCategory('training')
+    else if (e.kind === 'match') setCategory('spiel')
+  }
+
   /* ---------- Speichern ---------- */
-  const canSave = text.trim().length > 0 || audioBlob !== null
+  // Regel A: eine Notiz braucht mindestens einen Bezug — Spielerin und/oder Termin.
+  const hasReference = playerId !== null || eventId !== null
+  const canSave = (text.trim().length > 0 || audioBlob !== null) && hasReference
   async function save() {
     if (!canSave || saving) return
     setSaving(true)
@@ -281,6 +362,7 @@ export function QuickCaptureSheet({
     const note: Note = {
       id: uid(),
       playerId: playerId ?? undefined,
+      eventId: eventId ?? undefined,
       category,
       date: todayIso(),
       rating,
@@ -296,6 +378,12 @@ export function QuickCaptureSheet({
   return (
     <Sheet open={open} onClose={onClose} title="Eindruck festhalten">
       <div className="flex flex-col gap-4">
+        {/* --- Sichtbarkeits-Hinweis (Regel B) --- */}
+        <p className="-mt-2 flex items-center gap-1.5 px-1 text-[12px] text-muted">
+          <LockIcon className="h-3.5 w-3.5 shrink-0" />
+          Nur für das Trainerteam sichtbar
+        </p>
+
         {/* --- Aufnahme-Status --- */}
         {recordingNow ? (
           <div className="flex items-center gap-3 rounded-xl bg-gradient-to-br from-poster-a to-poster-b px-3 py-2.5 text-poster-ink">
@@ -417,6 +505,34 @@ export function QuickCaptureSheet({
           </div>
         </div>
 
+        {/* --- Termin (heute ±7 Tage) --- */}
+        {relevantEvents.length > 0 && (
+          <div>
+            <p className="mb-1.5 px-1 font-display text-[12px] font-bold uppercase tracking-wide text-muted">
+              Termin <span className="font-normal normal-case">(optional)</span>
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+              {relevantEvents.map((e) => {
+                const selected = eventId === e.id
+                return (
+                  <button
+                    key={e.id}
+                    onClick={() => toggleEvent(e)}
+                    aria-pressed={selected}
+                    className={`tnum flex min-h-11 shrink-0 items-center rounded-full border px-3.5 text-[13px] font-semibold ${
+                      selected
+                        ? 'border-accent bg-accent-soft text-accent'
+                        : 'border-line bg-card-2 text-ink'
+                    }`}
+                  >
+                    <span className="whitespace-nowrap">{eventChipLabel(e, opponentById)}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* --- Bewertung (optional) --- */}
         <div>
           <p className="mb-1.5 px-1 font-display text-[12px] font-bold uppercase tracking-wide text-muted">
@@ -444,6 +560,13 @@ export function QuickCaptureSheet({
           </div>
         </div>
 
+        {/* --- Pflicht-Bezug (Regel A) --- */}
+        {!hasReference && (
+          <p className="rounded-xl bg-card-2 px-3 py-2.5 text-[13px] leading-snug text-muted">
+            Wähle eine Spielerin oder einen Termin — Eindrücke brauchen einen Bezug.
+          </p>
+        )}
+
         {/* --- Aktionen --- */}
         <div className="flex gap-2 pt-1">
           <Button variant="ghost" className="flex-1" onClick={onClose}>
@@ -460,6 +583,25 @@ export function QuickCaptureSheet({
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/** Kleines Schloss — Kennzeichnung "nur Trainerteam" (Regel B). */
+export function LockIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="5" y="11" width="14" height="10" rx="2.5" />
+      <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+    </svg>
+  )
 }
 
 export function MicIcon({ className = 'h-5 w-5' }: { className?: string }) {

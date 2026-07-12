@@ -199,6 +199,11 @@ function ProfilInner({
                 <Badge tone="neutral">{TEAM_LABEL[player.team]}</Badge>
               )}
             </div>
+            {player.birthday && (
+              <p className="mt-1 text-[12px] text-muted tnum">
+                {ageOf(player.birthday)} Jahre · *{fmtDate(player.birthday)}
+              </p>
+            )}
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <button
                 onClick={() => photoInputRef.current?.click()}
@@ -427,7 +432,12 @@ function ProfilInner({
           </button>
         }
       >
-        Notizen · Teamleitung
+        <span className="inline-flex items-center gap-1.5">
+          Notizen · Teamleitung
+          <span title="Nur für das Trainerteam sichtbar">
+            <LockIcon />
+          </span>
+        </span>
       </SectionTitle>
       <NotesCard notes={notes} appearances={appearances} />
 
@@ -644,5 +654,36 @@ function Sparkline({ points }: { points: { date: string; rating: number }[] }) {
         {points.length > 1 && <span>{fmtDateShort(points[points.length - 1].date)}</span>}
       </div>
     </div>
+  )
+}
+
+/** Alter in vollen Jahren am heutigen Tag. */
+function ageOf(birthdayIso: string): number {
+  const today = new Date()
+  const [y, m, d] = birthdayIso.split('-').map(Number)
+  let age = today.getFullYear() - y
+  const beforeBirthday =
+    today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)
+  if (beforeBirthday) age -= 1
+  return age
+}
+
+/** Kleines Schloss — Notizen sind nur fürs Trainerteam (Regel B). */
+function LockIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-3 w-3"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-label="Nur Trainerteam"
+      role="img"
+    >
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+      <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+    </svg>
   )
 }

@@ -26,6 +26,7 @@ export function PlayerFormSheet({
   const [mainPosition, setMainPosition] = useState<Position>('TW')
   const [altPosition, setAltPosition] = useState<'' | Position>('')
   const [team, setTeam] = useState<TeamId>('D1')
+  const [birthday, setBirthday] = useState('')
   const [comment, setComment] = useState('')
   const [photo, setPhoto] = useState<Blob | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
@@ -40,6 +41,7 @@ export function PlayerFormSheet({
     setMainPosition(player?.mainPosition ?? 'TW')
     setAltPosition(player?.altPosition ?? '')
     setTeam(player?.team ?? 'D1')
+    setBirthday(player?.birthday ?? '')
     setComment(player?.comment ?? '')
     setPhoto(player?.photo ?? null)
     setPhotoError(null)
@@ -69,6 +71,7 @@ export function PlayerFormSheet({
       mainPosition,
       altPosition: altPosition === '' ? undefined : altPosition,
       team,
+      birthday: birthday === '' ? undefined : birthday,
       comment: comment.trim() === '' ? undefined : comment.trim(),
       photo,
     }
@@ -162,6 +165,15 @@ export function PlayerFormSheet({
             </select>
           </Field>
         </div>
+
+        <Field label="Geburtstag">
+          <input
+            type="date"
+            className={`${inputCls} tnum`}
+            value={birthday}
+            onChange={(e) => setBirthday(e.target.value)}
+          />
+        </Field>
 
         <Field label="Kommentar">
           <textarea

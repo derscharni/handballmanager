@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { db, todayIso, uid } from '../../lib/db'
 import type { EventKind, MatchEvent, Opponent } from '../../lib/types'
 import { EVENT_KIND_LABEL } from '../../lib/types'
 import { Button, Segmented, Sheet } from '../../components/ui'
 import { Field, SelectWrap, fieldBase, inputCls, selectCls, textareaCls } from './inputs'
+import { WEEKDAY_SHORT, generateSeriesDates, weekdayOf } from './serien'
 
 const NEW_OPPONENT = '__new__'
 
@@ -17,17 +18,26 @@ export default function EventEditorSheet({
   event,
   opponents,
   onClose,
+  onImportSpielbericht,
 }: {
   open: boolean
   /** null = neuer Termin. */
   event: MatchEvent | null
   opponents: Opponent[]
   onClose: () => void
+  /** Öffnet den PDF-Spielbericht-Import für diesen Termin. */
+  onImportSpielbericht?: (event: MatchEvent) => void
 }) {
   return (
     <Sheet open={open} onClose={onClose} title={event ? 'Termin bearbeiten' : 'Neuer Termin'}>
       {open && (
-        <EditorForm key={event?.id ?? 'new'} event={event} opponents={opponents} onClose={onClose} />
+        <EditorForm
+          key={event?.id ?? 'new'}
+          event={event}
+          opponents={opponents}
+          onClose={onClose}
+          onImportSpielbericht={onImportSpielbericht}
+        />
       )}
     </Sheet>
   )
@@ -37,10 +47,12 @@ function EditorForm({
   event,
   opponents,
   onClose,
+  onImportSpielbericht,
 }: {
   event: MatchEvent | null
   opponents: Opponent[]
   onClose: () => void
+  onImportSpielbericht?: (event: MatchEvent) => void
 }) {
   const [kind, setKind] = useState<EventKind>(event?.kind ?? 'match')
   const [title, setTitle] = useState(event?.title ?? '')
@@ -58,11 +70,33 @@ function EditorForm({
     event?.goalsThem != null ? String(event.goalsThem) : '',
   )
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [confirmSeriesDelete, setConfirmSeriesDelete] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  // Serie (nur bei Neuanlage von Training/Event)
+  const [repeat, setRepeat] = useState(false)
+  const [repeatDays, setRepeatDays] = useState<Set<number>>(new Set())
+  const [repeatUntil, setRepeatUntil] = useState('')
 
   const isMatch = kind === 'match'
   const isSonstiges = kind === 'sonstiges'
   const isPast = date !== '' && date <= todayIso()
+  const canRepeat = event == null && (kind === 'training' || isSonstiges)
+
+  const seriesDates = useMemo(() => {
+    if (!canRepeat || !repeat || date === '' || repeatUntil === '') return []
+    const days = repeatDays.size > 0 ? repeatDays : new Set([weekdayOf(date)])
+    return generateSeriesDates(date, days, repeatUntil)
+  }, [canRepeat, repeat, date, repeatDays, repeatUntil])
+
+  function toggleRepeatDay(d: number) {
+    setRepeatDays((prev) => {
+      const next = new Set(prev)
+      if (next.has(d)) next.delete(d)
+      else next.add(d)
+      return next
+    })
+  }
   const showResult = isMatch && (isPast || event?.goalsUs != null)
   const sortedOpponents = [...opponents].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
@@ -107,6 +141,28 @@ function EditorForm({
         externalId: event?.externalId,
       }
       await db.events.put(next)
+
+      // Serie: weitere Einzeltermine erzeugen, Duplikate (Datum+Art+Uhrzeit) überspringen
+      if (seriesDates.length > 0) {
+        const existing = await db.events.toArray()
+        const taken = new Set(
+          existing.map((e) => `${e.date}|${e.kind}|${e.time ?? ''}`),
+        )
+        const extra = seriesDates
+          .filter((d) => !taken.has(`${d}|${kind}|${time || ''}`))
+          .map(
+            (d): MatchEvent => ({
+              ...next,
+              id: uid(),
+              date: d,
+              goalsUs: null,
+              goalsThem: null,
+              externalId: undefined,
+            }),
+          )
+        if (extra.length > 0) await db.events.bulkAdd(extra)
+      }
+
       onClose()
     } finally {
       setSaving(false)
@@ -116,6 +172,17 @@ function EditorForm({
   async function remove() {
     if (!event) return
     await db.events.delete(event.id)
+    onClose()
+  }
+
+  /** Pragmatische Serien-Löschung: alle künftigen Trainings mit gleicher Uhrzeit. */
+  async function removeFutureSeries() {
+    if (!event || event.kind !== 'training') return
+    await db.events
+      .where('date')
+      .aboveOrEqual(event.date)
+      .and((e) => e.kind === 'training' && (e.time ?? '') === (event.time ?? ''))
+      .delete()
     onClose()
   }
 
@@ -237,6 +304,72 @@ function EditorForm({
         />
       </Field>
 
+      {canRepeat && (
+        <fieldset className="rounded-xl border border-line bg-card-2 p-3">
+          <legend className="px-1 font-display text-[12px] font-semibold uppercase tracking-wide text-muted">
+            Wiederholen
+          </legend>
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-semibold">Wöchentliche Serie</span>
+            <button
+              role="switch"
+              aria-checked={repeat}
+              onClick={() => {
+                setRepeat((r) => !r)
+                if (!repeat && repeatDays.size === 0 && date !== '') {
+                  setRepeatDays(new Set([weekdayOf(date)]))
+                }
+              }}
+              className={`relative h-7 w-12 rounded-full transition-colors ${
+                repeat ? 'bg-accent' : 'bg-line'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 h-6 w-6 rounded-full bg-card shadow-card transition-all ${
+                  repeat ? 'left-[calc(100%-1.625rem)]' : 'left-0.5'
+                }`}
+              />
+            </button>
+          </div>
+          {repeat && (
+            <div className="mt-3 flex flex-col gap-3">
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label="Wochentage">
+                {[1, 2, 3, 4, 5, 6, 0].map((d) => {
+                  const active = repeatDays.has(d)
+                  return (
+                    <button
+                      key={d}
+                      aria-pressed={active}
+                      onClick={() => toggleRepeatDay(d)}
+                      className={`min-h-10 min-w-11 rounded-lg px-2 font-display text-[13px] font-bold ${
+                        active ? 'bg-accent text-btn-ink' : 'bg-card text-muted border border-line'
+                      }`}
+                    >
+                      {WEEKDAY_SHORT[d]}
+                    </button>
+                  )
+                })}
+              </div>
+              <Field label="Bis einschließlich">
+                <input
+                  type="date"
+                  className={`${inputCls} tnum`}
+                  value={repeatUntil}
+                  min={date}
+                  onChange={(e) => setRepeatUntil(e.target.value)}
+                />
+              </Field>
+              {repeatUntil !== '' && (
+                <p className="text-[12px] text-muted tnum">
+                  Erzeugt {seriesDates.length + 1} Termine (inkl. Start-Termin). Duplikate
+                  werden übersprungen.
+                </p>
+              )}
+            </div>
+          )}
+        </fieldset>
+      )}
+
       {showResult && (
         <fieldset className="rounded-xl border border-line bg-card-2 p-3">
           <legend className="px-1 text-[12px] font-semibold uppercase tracking-wide text-muted font-display">
@@ -270,10 +403,33 @@ function EditorForm({
         </fieldset>
       )}
 
+      {event && isMatch && isPast && onImportSpielbericht && (
+        <Button variant="secondary" onClick={() => onImportSpielbericht(event)}>
+          Spielbericht (PDF) importieren
+        </Button>
+      )}
+
       <div className="mt-1 flex flex-col gap-2">
         <Button onClick={() => void save()} disabled={!canSave || saving}>
           {event ? 'Speichern' : 'Termin anlegen'}
         </Button>
+
+        {event && event.kind === 'training' && event.date >= todayIso() && (
+          confirmSeriesDelete ? (
+            <div className="flex gap-2">
+              <Button variant="danger" className="flex-1" onClick={() => void removeFutureSeries()}>
+                Künftige Serie wirklich löschen?
+              </Button>
+              <Button variant="ghost" className="flex-1" onClick={() => setConfirmSeriesDelete(false)}>
+                Abbrechen
+              </Button>
+            </div>
+          ) : (
+            <Button variant="ghost" onClick={() => setConfirmSeriesDelete(true)}>
+              Alle künftigen Trainings gleicher Uhrzeit löschen
+            </Button>
+          )
+        )}
 
         {event &&
           (confirmDelete ? (

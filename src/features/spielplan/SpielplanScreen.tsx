@@ -6,6 +6,7 @@ import type { SpielplanScreenProps } from '../props'
 import { Badge, Button, EmptyState, SectionTitle } from '../../components/ui'
 import { fmtDateShort, fmtDayDate, fmtWeekday } from '../../lib/format'
 import EventEditorSheet from './EventEditorSheet'
+import SpielberichtSheet from './SpielberichtSheet'
 import ImportSheet from './ImportSheet'
 import AttendanceRow from './AttendanceRow'
 import RueckmeldungenSheet from './RueckmeldungenSheet'
@@ -188,6 +189,7 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
   const [importOpen, setImportOpen] = useState(false)
   const [showAllPast, setShowAllPast] = useState(false)
   const [rueckEvent, setRueckEvent] = useState<MatchEvent | null>(null)
+  const [berichtEvent, setBerichtEvent] = useState<MatchEvent | null>(null)
 
   const today = todayIso()
   const oppById = useMemo(
@@ -328,7 +330,12 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
         event={editEvent}
         opponents={opponents ?? []}
         onClose={() => setEditorOpen(false)}
+        onImportSpielbericht={(e) => {
+          setEditorOpen(false)
+          setBerichtEvent(e)
+        }}
       />
+      <SpielberichtSheet event={berichtEvent} onClose={() => setBerichtEvent(null)} />
       <RueckmeldungenSheet
         open={rueckEvent != null}
         event={rueckEvent}

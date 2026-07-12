@@ -10,7 +10,8 @@ import { fmtDate, fmtDayDate, playerName } from '../../lib/format'
 import { Avatar } from '../../components/Avatar'
 import { Crest } from '../../components/Crest'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
-import { MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
+import { LockIcon, MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
+import { daysUntilLabel, upcomingBirthdays, type BirthdayEntry } from './birthdays'
 import { countAttendance, isRosterPlayer, type AttendanceCounts } from '../spielplan/attendance'
 import { AttendanceBar } from '../spielplan/AttendanceRow'
 
@@ -173,6 +174,16 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
     () => new Map((opponents ?? []).map((o) => [o.id, o])),
     [opponents],
   )
+  const eventById = useMemo(
+    () => new Map((events ?? []).map((e) => [e.id, e])),
+    [events],
+  )
+
+  /* ---------- Geburtstage (heute + 14 Tage) ---------- */
+  const birthdayEntries = useMemo(
+    () => upcomingBirthdays(players ?? [], today),
+    [players, today],
+  )
 
   const loading = !players || !events || !appearances || !absences || !notes || !attendance
 
@@ -304,7 +315,23 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
         </Card>
       )}
 
-      {/* ================= 5) LETZTE NOTIZEN ================= */}
+      {/* ================= 5) GEBURTSTAGE ================= */}
+      {birthdayEntries.length > 0 && (
+        <>
+          <SectionTitle>Geburtstage</SectionTitle>
+          <Card className="divide-y divide-line overflow-hidden">
+            {birthdayEntries.map((entry) => (
+              <BirthdayRow
+                key={entry.player.id}
+                entry={entry}
+                onOpen={() => openPlayer(entry.player.id)}
+              />
+            ))}
+          </Card>
+        </>
+      )}
+
+      {/* ================= 6) LETZTE NOTIZEN ================= */}
       <SectionTitle
         action={
           lastNotes.length > 0 ? (
@@ -312,12 +339,23 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
           ) : undefined
         }
       >
-        Letzte Notizen
+        <span className="inline-flex items-center gap-1.5">
+          Letzte Notizen
+          <span title="Nur Trainerteam">
+            <LockIcon className="h-3 w-3" />
+          </span>
+        </span>
       </SectionTitle>
       {lastNotes.length > 0 ? (
         <Card className="divide-y divide-line overflow-hidden">
           {lastNotes.map((n) => (
-            <NoteRow key={n.id} note={n} player={n.playerId ? playerById.get(n.playerId) : undefined} teamName={teamName} />
+            <NoteRow
+              key={n.id}
+              note={n}
+              player={n.playerId ? playerById.get(n.playerId) : undefined}
+              event={n.eventId ? eventById.get(n.eventId) : undefined}
+              teamName={teamName}
+            />
           ))}
         </Card>
       ) : (
@@ -327,7 +365,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
         />
       )}
 
-      {/* ================= 6) QUICK-CAPTURE ================= */}
+      {/* ================= 7) QUICK-CAPTURE ================= */}
       <button
         onClick={() => setCaptureOpen(true)}
         className="sticky bottom-20 z-30 mt-6 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-btn-bg font-display text-[16px] font-bold uppercase tracking-wide text-btn-ink shadow-[0_10px_26px_rgba(7,18,48,0.38)] active:opacity-90"
@@ -342,6 +380,8 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
         open={captureOpen}
         onClose={() => setCaptureOpen(false)}
         players={players}
+        events={events}
+        opponents={opponents ?? []}
         onSaved={() => showToast('Notiz gespeichert')}
       />
 
@@ -574,15 +614,91 @@ function FestspielRow({
 }
 
 /* ==================================================================
+   Geburtstags-Zeile — heute gefeiert, kommende als kompakte Liste
+   ================================================================== */
+function BirthdayRow({
+  entry,
+  onOpen,
+}: {
+  entry: BirthdayEntry<Player>
+  onOpen: () => void
+}) {
+  const { player, daysUntil, turns } = entry
+  if (daysUntil === 0) {
+    return (
+      <button
+        onClick={onOpen}
+        className="flex min-h-14 w-full items-center gap-3 bg-club-acc px-3 py-3 text-left text-club-acc-ink active:opacity-90"
+      >
+        <Avatar player={player} size="md" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-display text-[15px] font-bold uppercase tracking-wide">
+            {player.firstName} wird heute {turns}!
+          </span>
+          <span className="block text-[12px] font-semibold opacity-85">
+            Herzlichen Glückwunsch vom Trainerteam
+          </span>
+        </span>
+        <span
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/20"
+          aria-hidden="true"
+        >
+          <CakeIcon className="h-5 w-5" />
+        </span>
+      </button>
+    )
+  }
+  return (
+    <button
+      onClick={onOpen}
+      className="flex min-h-12 w-full items-center gap-3 px-3 py-2 text-left active:bg-card-2"
+    >
+      <Avatar player={player} size="sm" />
+      <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-ink">
+        {playerName(player)}
+      </span>
+      <span className="tnum shrink-0 text-[12.5px] text-muted">
+        {daysUntilLabel(daysUntil)} · wird {turns}
+      </span>
+    </button>
+  )
+}
+
+/** Kleiner Geburtstagskuchen (Konfetti-frei, aber warm). */
+function CakeIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8" />
+      <path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1" />
+      <path d="M2 21h20" />
+      <path d="M7 8v3M12 8v3M17 8v3" />
+      <path d="M7 4h.01M12 4h.01M17 4h.01" />
+    </svg>
+  )
+}
+
+/* ==================================================================
    Notiz-Zeile inkl. Audio-Wiedergabe
    ================================================================== */
 function NoteRow({
   note,
   player,
+  event,
   teamName,
 }: {
   note: Note
   player?: Player
+  /** Verknüpfter Termin (falls die Notiz einen eventId-Bezug hat). */
+  event?: MatchEvent
   teamName: string
 }) {
   return (
@@ -606,6 +722,12 @@ function NoteRow({
           </span>
           <Badge tone={CATEGORY_TONE[note.category]}>{CATEGORY_LABEL[note.category]}</Badge>
           {note.rating && <RatingDots rating={note.rating} />}
+          {event && (
+            <span className="tnum text-[11.5px] text-muted">
+              → {event.kind === 'sonstiges' ? event.title || EVENT_KIND_LABEL.sonstiges : EVENT_KIND_LABEL[event.kind]}{' '}
+              {fmtDayDate(event.date)}
+            </span>
+          )}
         </p>
         {note.text && <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-ink">{note.text}</p>}
       </div>
