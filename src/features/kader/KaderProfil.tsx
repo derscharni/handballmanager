@@ -17,6 +17,7 @@ import {
   TwoStepDelete,
   WarnIcon,
 } from './shared'
+import { TeamProfilCard } from '../team/kasse/TeamProfilCard'
 import { PlayerFormSheet } from './PlayerFormSheet'
 import { AbsenceSheet, AppearanceSheet, NoteSheet, NOTE_CATEGORY_LABEL } from './ProfilSheets'
 import { downscalePhoto } from './photo'
@@ -411,6 +412,9 @@ function ProfilInner({
         Abwesenheiten
       </SectionTitle>
       <AbsenceList absences={absences} today={today} />
+
+      {/* ---------- Team: Ämter & offene Strafen ---------- */}
+      <TeamProfilCard playerId={player.id} />
 
       {/* ---------- Notizen (Teamleitung) ---------- */}
       <SectionTitle

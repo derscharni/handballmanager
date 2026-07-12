@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { db, uid } from '../../lib/db'
 import type { EventKind, EventSource, MatchEvent, Opponent, Settings } from '../../lib/types'
+import { EVENT_KIND_LABEL } from '../../lib/types'
 import { Badge, Button, Segmented, Sheet } from '../../components/ui'
 import { fmtDayDate } from '../../lib/format'
 import { icsToCandidates, parseIcs, type ImportCandidate } from './ics'
@@ -20,12 +21,7 @@ interface PreviewRow {
   duplicate: boolean
 }
 
-const KIND_LABEL: Record<EventKind, string> = {
-  match: 'Spiel',
-  training: 'Training',
-  tournament: 'Turnier',
-  sonstiges: 'Event',
-}
+const KIND_LABEL = EVENT_KIND_LABEL
 
 function normName(s: string): string {
   return s.trim().toLowerCase().replace(/\s+/g, ' ')

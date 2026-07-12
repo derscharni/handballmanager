@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, todayIso } from '../../lib/db'
-import type { MatchEvent, Opponent } from '../../lib/types'
+import type { AttendanceResponse, MatchEvent, Opponent } from '../../lib/types'
 import type { SpielplanScreenProps } from '../props'
 import { Badge, Button, EmptyState, SectionTitle } from '../../components/ui'
 import { fmtDateShort, fmtDayDate, fmtWeekday } from '../../lib/format'
 import EventEditorSheet from './EventEditorSheet'
 import ImportSheet from './ImportSheet'
+import AttendanceRow from './AttendanceRow'
+import RueckmeldungenSheet from './RueckmeldungenSheet'
+import { countAttendance, isRosterPlayer } from './attendance'
 
 const PAST_PREVIEW_COUNT = 5
 
@@ -58,7 +61,7 @@ function MatchCard({
   return (
     <button
       onClick={onOpen}
-      className="flex min-h-16 w-full items-center gap-3 rounded-2xl border border-line bg-card p-3 text-left shadow-card active:bg-card-2"
+      className="flex min-h-16 w-full items-center gap-3 p-3 text-left active:bg-card-2"
     >
       <span className="w-11 flex-none text-center">
         <span className="block font-display text-[17px] font-bold leading-none tnum">
@@ -108,7 +111,7 @@ function CompactRow({ event, onOpen }: { event: MatchEvent; onOpen: () => void }
   return (
     <button
       onClick={onOpen}
-      className="flex min-h-11 w-full items-center gap-2.5 rounded-xl border border-line bg-card px-3 py-2 text-left active:bg-card-2"
+      className="flex min-h-11 w-full items-center gap-2.5 px-3 py-2 text-left active:bg-card-2"
     >
       <span className="w-[74px] flex-none text-[12.5px] text-muted tnum">
         {fmtDayDate(event.date)}
@@ -123,21 +126,84 @@ function CompactRow({ event, onOpen }: { event: MatchEvent; onOpen: () => void }
   )
 }
 
+/** Zeile für sonstige Events (Mannschaftsabend, Helfereinsatz, …): Titel prominent. */
+function SonstigesRow({ event, onOpen }: { event: MatchEvent; onOpen: () => void }) {
+  return (
+    <button
+      onClick={onOpen}
+      className="flex min-h-14 w-full items-center gap-3 p-3 text-left active:bg-card-2"
+    >
+      <span className="w-11 flex-none text-center">
+        <span className="block font-display text-[17px] font-bold leading-none tnum">
+          {fmtDateShort(event.date)}
+        </span>
+        <span className="mt-0.5 block text-[10px] uppercase tracking-[0.1em] text-muted">
+          {fmtWeekday(event.date)}
+        </span>
+      </span>
+      <span
+        aria-hidden="true"
+        className="grid h-9 w-9 flex-none place-items-center rounded-[10px] border border-line bg-card-2 text-muted"
+      >
+        {/* dezentes Kalender-Stern-Icon für Events */}
+        <svg
+          viewBox="0 0 24 24"
+          className="h-4.5 w-4.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3.5" y="5" width="17" height="15" rx="2" />
+          <path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" />
+          <path d="m12 12 .9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3Z" />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[14.5px] font-semibold">
+          {event.title?.trim() || 'Event'}
+        </span>
+        <span className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[12px] text-muted tnum">
+          {event.time && <span>{event.time}</span>}
+          {event.hall && <span className="truncate">{event.time ? '· ' : ''}{event.hall}</span>}
+        </span>
+      </span>
+      <Badge tone="neutral" className="font-display uppercase">
+        Event
+      </Badge>
+    </button>
+  )
+}
+
 export default function SpielplanScreen(_props: SpielplanScreenProps) {
   const events = useLiveQuery(() => db.events.toArray(), [])
   const opponents = useLiveQuery(() => db.opponents.toArray(), [])
   const settings = useLiveQuery(() => db.settings.get('app'), [])
+  const players = useLiveQuery(() => db.players.toArray(), [])
+  const attendance = useLiveQuery(() => db.attendance.toArray(), [])
 
   const [editorOpen, setEditorOpen] = useState(false)
   const [editEvent, setEditEvent] = useState<MatchEvent | null>(null)
   const [importOpen, setImportOpen] = useState(false)
   const [showAllPast, setShowAllPast] = useState(false)
+  const [rueckEvent, setRueckEvent] = useState<MatchEvent | null>(null)
 
   const today = todayIso()
   const oppById = useMemo(
     () => new Map((opponents ?? []).map((o) => [o.id, o])),
     [opponents],
   )
+  const roster = useMemo(() => (players ?? []).filter(isRosterPlayer), [players])
+  const responsesByEvent = useMemo(() => {
+    const map = new Map<string, AttendanceResponse[]>()
+    for (const r of attendance ?? []) {
+      const list = map.get(r.eventId)
+      if (list) list.push(r)
+      else map.set(r.eventId, [r])
+    }
+    return map
+  }, [attendance])
   const { upcoming, past } = useMemo(() => {
     const all = events ?? []
     return {
@@ -167,12 +233,35 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
 
   const visiblePast = showAllPast ? past : past.slice(0, PAST_PREVIEW_COUNT)
 
-  const renderEvent = (e: MatchEvent) =>
-    e.kind === 'match' ? (
-      <MatchCard key={e.id} event={e} opponent={e.opponentId ? oppById.get(e.opponentId) : undefined} onOpen={() => openEdit(e)} />
-    ) : (
-      <CompactRow key={e.id} event={e} onOpen={() => openEdit(e)} />
+  /** Card-Hülle: Termin-Inhalt oben, kompakte Rückmeldungs-Zeile darunter.
+      Bei vergangenen Terminen nur, wenn Rückmeldungen existieren. */
+  const renderEvent = (e: MatchEvent) => {
+    const inner =
+      e.kind === 'match' ? (
+        <MatchCard event={e} opponent={e.opponentId ? oppById.get(e.opponentId) : undefined} onOpen={() => openEdit(e)} />
+      ) : e.kind === 'sonstiges' ? (
+        <SonstigesRow event={e} onOpen={() => openEdit(e)} />
+      ) : (
+        <CompactRow event={e} onOpen={() => openEdit(e)} />
+      )
+    const eventResponses = responsesByEvent.get(e.id) ?? []
+    const showAttendance =
+      roster.length > 0 && (e.date >= today || eventResponses.length > 0)
+    return (
+      <div
+        key={e.id}
+        className="overflow-hidden rounded-2xl border border-line bg-card shadow-card"
+      >
+        {inner}
+        {showAttendance && (
+          <AttendanceRow
+            counts={countAttendance(roster, eventResponses)}
+            onOpen={() => setRueckEvent(e)}
+          />
+        )}
+      </div>
     )
+  }
 
   return (
     <div className="pb-6">
@@ -239,6 +328,14 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
         event={editEvent}
         opponents={opponents ?? []}
         onClose={() => setEditorOpen(false)}
+      />
+      <RueckmeldungenSheet
+        open={rueckEvent != null}
+        event={rueckEvent}
+        opponentName={
+          rueckEvent?.opponentId ? oppById.get(rueckEvent.opponentId)?.name : undefined
+        }
+        onClose={() => setRueckEvent(null)}
       />
       {importOpen && (
         <ImportSheet

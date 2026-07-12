@@ -11,6 +11,8 @@ import { Avatar } from '../../components/Avatar'
 import { Crest } from '../../components/Crest'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
 import { MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
+import { countAttendance, isRosterPlayer, type AttendanceCounts } from '../spielplan/attendance'
+import { AttendanceBar } from '../spielplan/AttendanceRow'
 
 const CATEGORY_LABEL: Record<NoteCategory, string> = {
   allgemein: 'Allgemein',
@@ -70,6 +72,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
   const absences = useLiveQuery(() => db.absences.toArray(), [])
   const notes = useLiveQuery(() => db.notes.toArray(), [])
   const opponents = useLiveQuery(() => db.opponents.toArray(), [])
+  const attendance = useLiveQuery(() => db.attendance.toArray(), [])
 
   const [captureOpen, setCaptureOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -124,16 +127,35 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
 
   /* ---------- Nächstes Training ---------- */
   const nextTraining = upcoming.find((e) => e.kind === 'training')
-  const roster = useMemo(
-    () => (players ?? []).filter((p) => p.team === 'D1' || p.isGuest),
-    [players],
-  )
+  const roster = useMemo(() => (players ?? []).filter(isRosterPlayer), [players])
   const trainingAbsent = useMemo(() => {
     if (!nextTraining || !absences) return []
     return roster
       .map((p) => ({ player: p, avail: availabilityOn(p, absences, nextTraining.date) }))
       .filter((x) => !x.avail.available)
   }, [nextTraining, roster, absences])
+
+  /* ---------- Rückmeldungs-Zähler (Zu-/Absagen aus db.attendance) ---------- */
+  const trainingCounts = useMemo(
+    () =>
+      nextTraining
+        ? countAttendance(
+            roster,
+            (attendance ?? []).filter((r) => r.eventId === nextTraining.id),
+          )
+        : null,
+    [nextTraining, roster, attendance],
+  )
+  const heroCounts = useMemo(
+    () =>
+      heroEvent
+        ? countAttendance(
+            roster,
+            (attendance ?? []).filter((r) => r.eventId === heroEvent.id),
+          )
+        : null,
+    [heroEvent, roster, attendance],
+  )
 
   /* ---------- Letzte Notizen ---------- */
   const lastNotes = useMemo(
@@ -152,7 +174,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
     [opponents],
   )
 
-  const loading = !players || !events || !appearances || !absences || !notes
+  const loading = !players || !events || !appearances || !absences || !notes || !attendance
 
   const clubName = settings?.clubName ?? 'TuS Köln-Ehrenfeld 1865'
   const teamName = settings?.teamName ?? '1. Damen'
@@ -191,6 +213,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
           }
           clubName={clubName}
           squad={heroSquad ?? null}
+          counts={heroCounts}
           onCta={() => goTo(heroEvent.kind === 'match' ? 'planung' : 'spielplan')}
         />
       ) : (
@@ -245,6 +268,21 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
               {nextTraining.time ? ` · ${nextTraining.time}` : ''}
             </p>
           </div>
+          {trainingCounts && roster.length > 0 && (
+            <div className="mt-2.5 flex items-center gap-1.5">
+              <Badge tone="ok">
+                <span className="tnum">{trainingCounts.zugesagt}</span>&nbsp;zugesagt
+              </Badge>
+              <Badge tone="crit">
+                <span className="tnum">{trainingCounts.abgesagt}</span>&nbsp;abgesagt
+              </Badge>
+              <Badge tone="neutral">
+                <span className="tnum">{trainingCounts.offen + trainingCounts.unsicher}</span>
+                &nbsp;offen
+              </Badge>
+              <AttendanceBar counts={trainingCounts} />
+            </div>
+          )}
           <div className="mt-2 flex items-center gap-2">
             {trainingAbsent.length === 0 ? (
               <Badge tone="ok">Alle {roster.length} verfügbar</Badge>
@@ -328,12 +366,15 @@ function PosterHero({
   opponentName,
   clubName,
   squad,
+  counts,
   onCta,
 }: {
   event: MatchEvent
   opponentName?: string
   clubName: string
   squad: { status: 'entwurf' | 'freigegeben'; nominations: unknown[] } | null
+  /** Rückmeldungs-Zähler des Termins; Zeile erscheint nur, wenn Rückmeldungen existieren. */
+  counts?: AttendanceCounts | null
   onCta: () => void
 }) {
   const isMatch = event.kind === 'match'
@@ -397,7 +438,9 @@ function PosterHero({
       ) : (
         <div className="relative my-4 text-center">
           <p className="font-display text-[22px] font-bold uppercase leading-tight tracking-wide [text-wrap:balance]">
-            {event.note || EVENT_KIND_LABEL[event.kind]}
+            {event.kind === 'sonstiges'
+              ? event.title || EVENT_KIND_LABEL.sonstiges
+              : event.note || EVENT_KIND_LABEL[event.kind]}
           </p>
         </div>
       )}
@@ -441,6 +484,17 @@ function PosterHero({
       ) : (
         <p className="tnum relative mt-3.5 text-center font-display text-[27px] font-bold uppercase leading-none tracking-wide">
           {days === 0 ? 'Heute' : days === 1 ? 'Morgen' : `in ${days} Tagen`}
+        </p>
+      )}
+
+      {/* Rückmeldungen (Zu-/Absagen), falls schon welche vorliegen */}
+      {counts && counts.responses > 0 && (
+        <p className="tnum relative mt-2.5 flex items-center justify-center gap-x-1.5 text-center text-[11.5px] font-bold uppercase tracking-[0.08em] opacity-90">
+          <span className="text-club-acc">{counts.zugesagt} zugesagt</span>
+          <span aria-hidden="true" className="opacity-50">·</span>
+          <span>{counts.abgesagt} abgesagt</span>
+          <span aria-hidden="true" className="opacity-50">·</span>
+          <span className="opacity-75">{counts.offen + counts.unsicher} offen</span>
         </p>
       )}
 

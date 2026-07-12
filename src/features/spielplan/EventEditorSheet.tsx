@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import { db, todayIso, uid } from '../../lib/db'
 import type { EventKind, MatchEvent, Opponent } from '../../lib/types'
+import { EVENT_KIND_LABEL } from '../../lib/types'
 import { Button, Segmented, Sheet } from '../../components/ui'
 import { Field, SelectWrap, fieldBase, inputCls, selectCls, textareaCls } from './inputs'
 
 const NEW_OPPONENT = '__new__'
 
-const KIND_OPTIONS: { value: EventKind; label: string }[] = [
-  { value: 'match', label: 'Spiel' },
-  { value: 'training', label: 'Training' },
-  { value: 'tournament', label: 'Turnier' },
-]
+const KIND_OPTIONS: { value: EventKind; label: string }[] = (
+  ['match', 'training', 'tournament', 'sonstiges'] as const
+).map((value) => ({ value, label: EVENT_KIND_LABEL[value] }))
 
 /** Sheet zum Anlegen/Bearbeiten eines Termins. */
 export default function EventEditorSheet({
@@ -44,6 +43,7 @@ function EditorForm({
   onClose: () => void
 }) {
   const [kind, setKind] = useState<EventKind>(event?.kind ?? 'match')
+  const [title, setTitle] = useState(event?.title ?? '')
   const [date, setDate] = useState(event?.date ?? todayIso())
   const [time, setTime] = useState(event?.time ?? '')
   const [home, setHome] = useState(event?.home ?? true)
@@ -61,12 +61,14 @@ function EditorForm({
   const [saving, setSaving] = useState(false)
 
   const isMatch = kind === 'match'
+  const isSonstiges = kind === 'sonstiges'
   const isPast = date !== '' && date <= todayIso()
   const showResult = isMatch && (isPast || event?.goalsUs != null)
   const sortedOpponents = [...opponents].sort((a, b) => a.name.localeCompare(b.name, 'de'))
 
   const canSave =
     date !== '' &&
+    (!isSonstiges || title.trim() !== '') &&
     (!isMatch || (opponentId !== '' && (opponentId !== NEW_OPPONENT || newOppName.trim() !== '')))
 
   async function save() {
@@ -92,6 +94,7 @@ function EditorForm({
       const next: MatchEvent = {
         id: event?.id ?? uid(),
         kind,
+        title: isSonstiges ? title.trim() : undefined,
         date,
         time: time || undefined,
         home: isMatch ? home : undefined,
@@ -119,6 +122,18 @@ function EditorForm({
   return (
     <div className="flex flex-col gap-3">
       <Segmented options={KIND_OPTIONS} value={kind} onChange={setKind} />
+
+      {isSonstiges && (
+        <Field label="Titel">
+          <input
+            className={inputCls}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder='z.B. "Mannschaftsabend", "Helfereinsatz Vereinsfest"'
+            required
+          />
+        </Field>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Datum">
@@ -203,12 +218,12 @@ function EditorForm({
         </>
       )}
 
-      <Field label="Halle">
+      <Field label={isSonstiges ? 'Ort' : 'Halle'}>
         <input
           className={inputCls}
           value={hall}
           onChange={(e) => setHall(e.target.value)}
-          placeholder="z.B. Sporthalle Ehrenfeld"
+          placeholder={isSonstiges ? 'z.B. Vereinsheim' : 'z.B. Sporthalle Ehrenfeld'}
         />
       </Field>
 
