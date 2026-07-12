@@ -27,6 +27,7 @@ const EVENT_KIND_LABEL: Record<MatchEvent['kind'], string> = {
   match: 'Spieltag',
   training: 'Training',
   tournament: 'Turnier',
+  sonstiges: 'Event',
 }
 
 /** "TuS Köln-Ehrenfeld 1865" → "Köln-Ehrenfeld" (Poster-Kurzform). */

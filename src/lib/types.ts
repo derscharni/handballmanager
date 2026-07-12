@@ -84,12 +84,21 @@ export interface Opponent {
   logo?: Blob | null
 }
 
-export type EventKind = 'match' | 'training' | 'tournament'
+export type EventKind = 'match' | 'training' | 'tournament' | 'sonstiges'
 export type EventSource = 'manual' | 'ics' | 'handballnet'
+
+export const EVENT_KIND_LABEL: Record<EventKind, string> = {
+  match: 'Spiel',
+  training: 'Training',
+  tournament: 'Turnier',
+  sonstiges: 'Event',
+}
 
 export interface MatchEvent {
   id: string
   kind: EventKind
+  /** Titel für kind='sonstiges' (z.B. "Mannschaftsabend", "Helfereinsatz"). */
+  title?: string
   /** ISO-Datum des Termins. */
   date: string
   /** Uhrzeit HH:MM, optional. */
@@ -211,6 +220,97 @@ export interface TacticsBoard {
   tokens: BoardToken[]
   materials: BoardMaterial[]
   updatedAt: string
+}
+
+/* ---------- Rückmeldungen (Zu-/Absagen) ---------- */
+
+export type AttendanceStatus = 'zugesagt' | 'abgesagt' | 'unsicher'
+
+export const ATTENDANCE_LABEL: Record<AttendanceStatus, string> = {
+  zugesagt: 'Zugesagt',
+  abgesagt: 'Abgesagt',
+  unsicher: 'Unsicher',
+}
+
+/** Rückmeldung einer Spielerin zu einem Termin. Kein Eintrag = offen. */
+export interface AttendanceResponse {
+  id: string
+  eventId: string
+  playerId: string
+  status: AttendanceStatus
+  comment?: string
+  updatedAt: string
+}
+
+/* ---------- Mannschaftskasse & Strafen ---------- */
+
+/** Eintrag im Strafenkatalog (Beträge in Cent). */
+export interface FineTemplate {
+  id: string
+  label: string
+  amount: number
+  active: boolean
+  order: number
+}
+
+/** Verhängte Strafe. */
+export interface Fine {
+  id: string
+  playerId: string
+  /** Katalog-Referenz, falls aus dem Katalog verhängt. */
+  templateId?: string
+  label: string
+  /** Cent. */
+  amount: number
+  /** ISO-Datum. */
+  date: string
+  paid: boolean
+  paidAt?: string
+  note?: string
+}
+
+/** Kassenbewegung außerhalb von Strafen (Cent; negativ = Ausgabe). */
+export interface CashTransaction {
+  id: string
+  date: string
+  amount: number
+  label: string
+}
+
+/* ---------- Ämter ---------- */
+
+/** Team-Amt (Bierwartin, Kassenwartin, Trikotwäsche, …). */
+export interface Duty {
+  id: string
+  label: string
+  /** Zugewiesene Spielerinnen (mehrere möglich). */
+  playerIds: string[]
+  note?: string
+  order: number
+}
+
+/* ---------- Umfragen ---------- */
+
+export interface PollOption {
+  id: string
+  label: string
+}
+
+export interface PollVote {
+  playerId: string
+  optionId: string
+}
+
+export interface Poll {
+  id: string
+  question: string
+  options: PollOption[]
+  votes: PollVote[]
+  /** Mehrfachauswahl erlaubt? */
+  multi: boolean
+  status: 'offen' | 'geschlossen'
+  createdAt: string
+  note?: string
 }
 
 /* ---------- Einstellungen ---------- */

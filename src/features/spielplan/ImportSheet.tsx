@@ -24,6 +24,7 @@ const KIND_LABEL: Record<EventKind, string> = {
   match: 'Spiel',
   training: 'Training',
   tournament: 'Turnier',
+  sonstiges: 'Event',
 }
 
 function normName(s: string): string {

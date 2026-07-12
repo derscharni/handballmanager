@@ -1,5 +1,5 @@
 import { db, todayIso, uid } from './db'
-import type { MatchEvent, Opponent, Player, Settings } from './types'
+import type { AttendanceResponse, MatchEvent, Opponent, Player, Settings } from './types'
 
 /**
  * Befüllt die Datenbank beim allerersten Start mit realistischen Demo-Daten
@@ -171,6 +171,101 @@ export async function seedIfEmpty(): Promise<void> {
       await db.settings.put(settings)
     },
   )
+}
+
+/**
+ * Team-Grunddaten (Strafenkatalog, Ämter, Beispiel-Umfrage, Rückmeldungen).
+ * Läuft auch für bestehende Installationen nach dem v2-Schema-Upgrade —
+ * jede Tabelle wird nur befüllt, wenn sie leer ist.
+ */
+export async function seedTeamDefaults(): Promise<void> {
+  if ((await db.fineTemplates.count()) === 0) {
+    await db.fineTemplates.bulkAdd(
+      [
+        'Zu spät zum Training — 5 €|500',
+        'Unentschuldigt gefehlt — 10 €|1000',
+        'Handy in der Kabinenbesprechung — 5 €|500',
+        'Trikot vergessen — 5 €|500',
+        'Zu spät zum Treffpunkt am Spieltag — 10 €|1000',
+        'Geburtstag: Kuchen vergessen — 10 €|1000',
+      ].map((s, i) => {
+        const [label, amount] = s.split('|')
+        return {
+          id: uid(),
+          label: label.replace(/ — .*$/, ''),
+          amount: Number(amount),
+          active: true,
+          order: i,
+        }
+      }),
+    )
+  }
+
+  if ((await db.duties.count()) === 0) {
+    await db.duties.bulkAdd(
+      [
+        'Bierwartin',
+        'Kassenwartin',
+        'Trikotwäsche',
+        'Fahrdienst-Koordination',
+        'Zeitnehmerin / Kampfgericht',
+        'Social Media',
+      ].map((label, i) => ({ id: uid(), label, playerIds: [], order: i })),
+    )
+  }
+
+  if ((await db.polls.count()) === 0) {
+    const players = await db.players.toArray()
+    const byName = (last: string) => players.find((p) => p.lastName === last)?.id
+    const optKegeln = uid()
+    const optKanu = uid()
+    const optGrill = uid()
+    const votes = [
+      { playerId: byName('Köhler'), optionId: optKanu },
+      { playerId: byName('Demir'), optionId: optKegeln },
+      { playerId: byName('Petrovic'), optionId: optKanu },
+      { playerId: byName('Falk'), optionId: optGrill },
+      { playerId: byName('Vogt'), optionId: optKanu },
+    ].filter((v): v is { playerId: string; optionId: string } => Boolean(v.playerId))
+    await db.polls.add({
+      id: uid(),
+      question: 'Saisonabschluss: Was machen wir?',
+      options: [
+        { id: optKegeln, label: 'Kegeln + Pizza' },
+        { id: optKanu, label: 'Kanutour auf der Sieg' },
+        { id: optGrill, label: 'Grillen am Rhein' },
+      ],
+      votes,
+      multi: false,
+      status: 'offen',
+      createdAt: new Date().toISOString(),
+    })
+  }
+
+  if ((await db.attendance.count()) === 0) {
+    const players = await db.players.where('team').equals('D1').toArray()
+    const training = await db.events
+      .where('date')
+      .aboveOrEqual(todayIso())
+      .and((e) => e.kind === 'training')
+      .first()
+    if (training && players.length > 0) {
+      const now = new Date().toISOString()
+      await db.attendance.bulkAdd(
+        players.slice(0, 9).map((p, i) => {
+          const status: AttendanceResponse['status'] =
+            i < 7 ? 'zugesagt' : i < 8 ? 'abgesagt' : 'unsicher'
+          return {
+            id: uid(),
+            eventId: training.id,
+            playerId: p.id,
+            status,
+            updatedAt: now,
+          }
+        }),
+      )
+    }
+  }
 }
 
 export { todayIso }

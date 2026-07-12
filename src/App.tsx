@@ -6,8 +6,16 @@ const KaderScreen = lazy(() => import('./features/kader/KaderScreen'))
 const PlanungScreen = lazy(() => import('./features/planung/PlanungScreen'))
 const StatistikScreen = lazy(() => import('./features/statistik/StatistikScreen'))
 const TaktikScreen = lazy(() => import('./features/taktik/TaktikScreen'))
+const TeamScreen = lazy(() => import('./features/team/TeamScreen'))
 
-export type TabId = 'start' | 'spielplan' | 'kader' | 'planung' | 'statistik' | 'taktik'
+export type TabId =
+  | 'start'
+  | 'spielplan'
+  | 'kader'
+  | 'planung'
+  | 'statistik'
+  | 'taktik'
+  | 'team'
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   {
@@ -72,6 +80,16 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
       </svg>
     ),
   },
+  {
+    id: 'team',
+    label: 'Team',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 3 20 6v6c0 5-3.6 8.4-8 9.5C7.6 20.4 4 17 4 12V6Z" />
+        <path d="M8.5 12h7M12 8.5v7" />
+      </svg>
+    ),
+  },
 ]
 
 export default function App() {
@@ -103,6 +121,9 @@ export default function App() {
             <StatistikScreen openPlayer={(id) => { setDetailPlayerId(id); setTab('kader') }} />
           )}
           {tab === 'taktik' && <TaktikScreen />}
+          {tab === 'team' && (
+            <TeamScreen openPlayer={(id) => { setDetailPlayerId(id); setTab('kader') }} />
+          )}
         </Suspense>
       </main>
 

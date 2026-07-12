@@ -20,3 +20,12 @@ export interface KaderScreenProps {
 export interface StatistikScreenProps {
   openPlayer: (playerId: string) => void
 }
+
+export interface TeamScreenProps {
+  openPlayer: (playerId: string) => void
+}
+
+/** Props der Team-Sektionen (Kasse, Ämter, Umfragen, Einstellungen). */
+export interface TeamSectionProps {
+  openPlayer: (playerId: string) => void
+}

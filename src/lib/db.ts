@@ -2,11 +2,17 @@ import Dexie, { type EntityTable } from 'dexie'
 import type {
   Absence,
   Appearance,
+  AttendanceResponse,
+  CashTransaction,
+  Duty,
+  Fine,
+  FineTemplate,
   MatchEvent,
   MatchdaySquad,
   Note,
   Opponent,
   Player,
+  Poll,
   Settings,
   TacticsBoard,
 } from './types'
@@ -25,6 +31,12 @@ export class HbmDatabase extends Dexie {
   squads!: EntityTable<MatchdaySquad, 'id'>
   boards!: EntityTable<TacticsBoard, 'id'>
   settings!: EntityTable<Settings, 'id'>
+  attendance!: EntityTable<AttendanceResponse, 'id'>
+  fineTemplates!: EntityTable<FineTemplate, 'id'>
+  fines!: EntityTable<Fine, 'id'>
+  cash!: EntityTable<CashTransaction, 'id'>
+  duties!: EntityTable<Duty, 'id'>
+  polls!: EntityTable<Poll, 'id'>
 
   constructor() {
     super('handball-manager')
@@ -38,6 +50,15 @@ export class HbmDatabase extends Dexie {
       squads: 'id, eventId, status',
       boards: 'id, updatedAt',
       settings: 'id',
+    })
+    // v2: Rückmeldungen, Mannschaftskasse/Strafen, Ämter, Umfragen
+    this.version(2).stores({
+      attendance: 'id, eventId, playerId, [eventId+playerId]',
+      fineTemplates: 'id, order',
+      fines: 'id, playerId, date, paid',
+      cash: 'id, date',
+      duties: 'id, order',
+      polls: 'id, status, createdAt',
     })
   }
 }
