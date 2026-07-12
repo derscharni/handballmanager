@@ -5,9 +5,10 @@ import type { TeamScreenProps } from '../props'
 const KasseSection = lazy(() => import('./kasse/KasseSection'))
 const AemterSection = lazy(() => import('./aemter/AemterSection'))
 const UmfragenSection = lazy(() => import('./umfragen/UmfragenSection'))
+const GegnerSection = lazy(() => import('./gegner/GegnerSection'))
 const EinstellungenSection = lazy(() => import('./einstellungen/EinstellungenSection'))
 
-type Section = 'kasse' | 'aemter' | 'umfragen' | 'einstellungen'
+type Section = 'kasse' | 'aemter' | 'umfragen' | 'gegner' | 'einstellungen'
 
 export default function TeamScreen({ openPlayer }: TeamScreenProps) {
   const [section, setSection] = useState<Section>('kasse')
@@ -22,6 +23,7 @@ export default function TeamScreen({ openPlayer }: TeamScreenProps) {
           { value: 'kasse', label: 'Kasse' },
           { value: 'aemter', label: 'Ämter' },
           { value: 'umfragen', label: 'Umfragen' },
+          { value: 'gegner', label: 'Gegner' },
           { value: 'einstellungen', label: 'Mehr' },
         ]}
         value={section}
@@ -38,6 +40,7 @@ export default function TeamScreen({ openPlayer }: TeamScreenProps) {
           {section === 'kasse' && <KasseSection openPlayer={openPlayer} />}
           {section === 'aemter' && <AemterSection openPlayer={openPlayer} />}
           {section === 'umfragen' && <UmfragenSection openPlayer={openPlayer} />}
+          {section === 'gegner' && <GegnerSection openPlayer={openPlayer} />}
           {section === 'einstellungen' && <EinstellungenSection openPlayer={openPlayer} />}
         </div>
       </Suspense>

@@ -47,6 +47,8 @@ export interface Player {
   guestUntil?: string
   /** Trikotnummer, optional. */
   number?: number
+  /** Geburtstag (ISO-Datum), optional — für Reminder und Altersanzeige. */
+  birthday?: string
   photo?: Blob | null
   /** Genereller Verfügbarkeitsschalter (unabhängig von Abwesenheiten). */
   available: boolean
@@ -143,12 +145,23 @@ export interface Appearance {
 
 export type NoteCategory = 'training' | 'spiel' | 'allgemein'
 
-/** Trainer-Notiz (nur Teamleitung sichtbar). Second-Brain-Einträge. */
+/**
+ * Trainer-Notiz (Second-Brain-Eintrag).
+ *
+ * SICHTBARKEIT: Notizen sind ausschließlich für das Trainerteam bestimmt.
+ * Sie dürfen NIEMALS in Spielerinnen-Ansichten (Kader-Freigabe-Vorschau),
+ * WhatsApp-/Share-Texten oder anderen nach außen gerichteten Flächen
+ * gerendert werden. Phase 2 (Multi-User) erzwingt das serverseitig über
+ * die Trainer-Rolle.
+ *
+ * VERKNÜPFUNG: Jede Notiz braucht mindestens eine Bezugsgröße —
+ * playerId und/oder eventId (UI erzwingt das beim Erfassen).
+ */
 export interface Note {
   id: string
-  /** Bezugs-Spielerin; ohne = Team-Notiz. */
+  /** Bezugs-Spielerin; ohne = Team-Notiz (dann ist eventId Pflicht). */
   playerId?: string
-  /** Bezugs-Termin (Training/Spiel), optional. */
+  /** Bezugs-Termin (Training/Spiel/Event); ohne ist playerId Pflicht. */
   eventId?: string
   category: NoteCategory
   /** ISO-Datum, auf das sich die Notiz bezieht. */
