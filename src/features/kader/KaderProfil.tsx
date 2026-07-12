@@ -18,6 +18,7 @@ import {
   WarnIcon,
 } from './shared'
 import { TeamProfilCard } from '../team/kasse/TeamProfilCard'
+import { TrainerGate } from '../../components/TrainerGate'
 import { PlayerFormSheet } from './PlayerFormSheet'
 import { AbsenceSheet, AppearanceSheet, NoteSheet, NOTE_CATEGORY_LABEL } from './ProfilSheets'
 import { downscalePhoto } from './photo'
@@ -439,7 +440,9 @@ function ProfilInner({
           </span>
         </span>
       </SectionTitle>
-      <NotesCard notes={notes} appearances={appearances} />
+      <TrainerGate compact>
+        <NotesCard notes={notes} appearances={appearances} />
+      </TrainerGate>
 
       {/* ---------- Sheets ---------- */}
       <PlayerFormSheet open={showEdit} onClose={() => setShowEdit(false)} player={player} />

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Button, Card, SectionTitle, Segmented, Sheet } from '../../../components/ui'
+import { FarbenCard } from './FarbenCard'
+import { TrainerteamCard } from './TrainerteamCard'
 import { db, todayIso } from '../../../lib/db'
 import { fmtDate } from '../../../lib/format'
 import { seedIfEmpty, seedTeamDefaults } from '../../../lib/seed'
@@ -304,6 +306,12 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
           Auto folgt der System-Einstellung des Geräts.
         </p>
       </Card>
+
+      <SectionTitle>Vereinsfarben</SectionTitle>
+      <FarbenCard settings={settings} />
+
+      <SectionTitle>Trainerteam &amp; Schutz</SectionTitle>
+      <TrainerteamCard settings={settings} />
 
       <SectionTitle>Backup</SectionTitle>
       <Card className="flex flex-col gap-3 p-4">

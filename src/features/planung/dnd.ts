@@ -123,12 +123,19 @@ function createController(
   function autoScroll() {
     rafId = null
     if (!state) return
-    const h = window.innerHeight
+    // Gescrollt wird der App-Frame-Container (#app-scroll), nicht die Seite —
+    // die Seite selbst ist seit dem Sticky-Nav-Fix nicht mehr scrollbar.
+    const scroller = document.getElementById('app-scroll')
+    const rect = scroller?.getBoundingClientRect()
+    const top = rect?.top ?? 0
+    const bottom = rect?.bottom ?? window.innerHeight
     let v = 0
-    if (state.y < SCROLL_EDGE_PX) v = -Math.ceil((SCROLL_EDGE_PX - state.y) / 6)
-    else if (state.y > h - SCROLL_EDGE_PX) v = Math.ceil((state.y - (h - SCROLL_EDGE_PX)) / 6)
+    if (state.y < top + SCROLL_EDGE_PX) v = -Math.ceil((top + SCROLL_EDGE_PX - state.y) / 6)
+    else if (state.y > bottom - SCROLL_EDGE_PX)
+      v = Math.ceil((state.y - (bottom - SCROLL_EDGE_PX)) / 6)
     if (v !== 0) {
-      window.scrollBy(0, v)
+      if (scroller) scroller.scrollBy(0, v)
+      else window.scrollBy(0, v)
       set({ ...state, over: hitTest(state.x, state.y, state.from !== null) })
     }
     rafId = requestAnimationFrame(autoScroll)

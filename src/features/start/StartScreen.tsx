@@ -11,6 +11,7 @@ import { Avatar } from '../../components/Avatar'
 import { Crest } from '../../components/Crest'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
 import { LockIcon, MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
+import { TrainerGate } from '../../components/TrainerGate'
 import { daysUntilLabel, upcomingBirthdays, type BirthdayEntry } from './birthdays'
 import { countAttendance, isRosterPlayer, type AttendanceCounts } from '../spielplan/attendance'
 import { AttendanceBar } from '../spielplan/AttendanceRow'
@@ -346,29 +347,31 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
           </span>
         </span>
       </SectionTitle>
-      {lastNotes.length > 0 ? (
-        <Card className="divide-y divide-line overflow-hidden">
-          {lastNotes.map((n) => (
-            <NoteRow
-              key={n.id}
-              note={n}
-              player={n.playerId ? playerById.get(n.playerId) : undefined}
-              event={n.eventId ? eventById.get(n.eventId) : undefined}
-              teamName={teamName}
-            />
-          ))}
-        </Card>
-      ) : (
-        <EmptyState
-          title="Noch keine Notizen"
-          hint="Halte Eindrücke aus Training und Spiel direkt per Sprache fest."
-        />
-      )}
+      <TrainerGate compact>
+        {lastNotes.length > 0 ? (
+          <Card className="divide-y divide-line overflow-hidden">
+            {lastNotes.map((n) => (
+              <NoteRow
+                key={n.id}
+                note={n}
+                player={n.playerId ? playerById.get(n.playerId) : undefined}
+                event={n.eventId ? eventById.get(n.eventId) : undefined}
+                teamName={teamName}
+              />
+            ))}
+          </Card>
+        ) : (
+          <EmptyState
+            title="Noch keine Notizen"
+            hint="Halte Eindrücke aus Training und Spiel direkt per Sprache fest."
+          />
+        )}
+      </TrainerGate>
 
       {/* ================= 7) QUICK-CAPTURE ================= */}
       <button
         onClick={() => setCaptureOpen(true)}
-        className="sticky bottom-20 z-30 mt-6 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-btn-bg font-display text-[16px] font-bold uppercase tracking-wide text-btn-ink shadow-[0_10px_26px_rgba(7,18,48,0.38)] active:opacity-90"
+        className="sticky bottom-3 z-30 mt-6 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-btn-bg font-display text-[16px] font-bold uppercase tracking-wide text-btn-ink shadow-[0_10px_26px_rgba(7,18,48,0.38)] active:opacity-90"
       >
         <span className="grid h-9 w-9 place-items-center rounded-full bg-white/15">
           <MicIcon className="h-5 w-5" />

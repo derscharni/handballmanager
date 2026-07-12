@@ -97,8 +97,11 @@ export default function App() {
   const [detailPlayerId, setDetailPlayerId] = useState<string | null>(null)
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-lg flex-col">
-      <main className="flex-1 px-3 pb-24 pt-2">
+    // App-Frame: die Seite selbst scrollt nie — nur <main>. So kann die
+    // Bottom-Navigation auf iOS/Android nicht aus dem Viewport scrollen
+    // (position:fixed ist dort bei Rubber-Band/Tastatur unzuverlässig).
+    <div className="mx-auto flex h-dvh max-w-lg flex-col">
+      <main id="app-scroll" className="flex-1 overflow-y-auto overscroll-contain px-3 pb-8 pt-2">
         <Suspense
           fallback={
             <div className="flex h-[50dvh] items-center justify-center text-muted font-display uppercase tracking-wide">
@@ -129,7 +132,7 @@ export default function App() {
 
       <nav
         aria-label="Hauptnavigation"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-card/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
+        className="z-40 shrink-0 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
       >
         <div className="mx-auto flex max-w-lg">
           {TABS.map((t) => (

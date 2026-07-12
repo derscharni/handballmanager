@@ -334,6 +334,16 @@ export interface Settings {
   clubName: string
   teamName: string
   theme: 'auto' | 'light' | 'dark'
+  /** Vereinsfarben (Hex): Hauptfarbe + Akzent. Fehlt = TuS-Standard. */
+  colors?: { primary: string; accent: string }
+  /**
+   * Trainerteam: Admin verwaltet die Liste; nur Trainer:innen sehen
+   * Notizen/Bewertungen. In V1 lokal über die Trainer-PIN geschützt,
+   * in Phase 2 (Multi-User) serverseitig über Rollen erzwungen.
+   */
+  trainerTeam?: { admin: string; trainers: string[] }
+  /** SHA-256-Hash der Trainer-PIN; fehlt = keine Sperre aktiv. */
+  trainerPinHash?: string
   /** Saisonstart (ISO-Datum) für Saison-Statistiken. */
   seasonStart: string
   /** handball.net-Team-URL für den Spielplan-Import, optional. */

@@ -158,6 +158,14 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
+  /* App-Frame: Seite scrollt nie — nur #app-scroll in der Shell.
+     Hält die Bottom-Navigation auf Mobilgeräten zuverlässig im Viewport. */
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
 }
 
 .font-display {
