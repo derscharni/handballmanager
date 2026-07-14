@@ -81,7 +81,14 @@ function createController(
   let rafId: number | null = null
   let suppressClick = false
 
-  const guard = (ev: TouchEvent) => ev.preventDefault()
+  // WICHTIG (iOS Safari): Der non-passive touchmove-Listener muss schon beim
+  // pointerdown registriert sein — WebKit ignoriert mitten in der Geste
+  // angehängte Listener und kapert den Zug sonst für den Container-Scroll
+  // (pointercancel). Er blockt aber erst, wenn der Drag wirklich läuft,
+  // damit normales Scrollen von den Zeilen aus intakt bleibt.
+  const guard = (ev: TouchEvent) => {
+    if (state) ev.preventDefault()
+  }
   const guardCtx = (ev: Event) => ev.preventDefault()
 
   function set(next: DragState | null) {
@@ -109,6 +116,8 @@ function createController(
     document.removeEventListener('contextmenu', guardCtx)
     document.body.style.userSelect = ''
     document.body.style.removeProperty('-webkit-user-select')
+    const scroller = document.getElementById('app-scroll')
+    if (scroller) scroller.style.overflowY = ''
     if (press) {
       try {
         press.el.releasePointerCapture(press.pointerId)
@@ -150,10 +159,11 @@ function createController(
     } catch {
       /* nicht unterstützt — Dokument-Listener reichen */
     }
-    document.addEventListener('touchmove', guard, { passive: false })
     document.addEventListener('contextmenu', guardCtx)
     document.body.style.userSelect = 'none'
     document.body.style.setProperty('-webkit-user-select', 'none')
+    const scroller = document.getElementById('app-scroll')
+    if (scroller) scroller.style.overflowY = 'hidden'
     set({
       playerId: press.playerId,
       from: press.from,
@@ -212,7 +222,10 @@ function createController(
     document.addEventListener('pointermove', onMove)
     document.addEventListener('pointerup', onUp)
     document.addEventListener('pointercancel', onCancel)
-    if (press.touch) holdT = window.setTimeout(begin, HOLD_MS)
+    if (press.touch) {
+      document.addEventListener('touchmove', guard, { passive: false })
+      holdT = window.setTimeout(begin, HOLD_MS)
+    }
   }
 
   function consumeClick(): boolean {
