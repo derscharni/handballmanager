@@ -134,7 +134,7 @@ export function Sheet({
         className="absolute inset-0 bg-black/45"
         onClick={onClose}
       />
-      <div className="absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-card">
+      <div className="absolute inset-x-0 bottom-0 mx-auto max-h-[88dvh] w-full max-w-xl overflow-y-auto rounded-t-3xl bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-card">
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-line" aria-hidden="true" />
         {title && (
           <h3 className="mb-3 font-display uppercase tracking-wide text-[15px] font-bold">

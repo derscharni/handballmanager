@@ -22,7 +22,8 @@ export default defineConfig({
           'Teammanagement für Handball-Trainer: Kader, Spieltagsplanung, Festspiel-Tracker (§55), Taktikboard, Notizen.',
         lang: 'de',
         display: 'standalone',
-        orientation: 'portrait',
+        // Landscape/Tablet erlaubt — keine Orientierungs-Sperre
+        orientation: 'any',
         theme_color: '#0B2158',
         background_color: '#F5F6F8',
         start_url: base,

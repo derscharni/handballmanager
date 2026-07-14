@@ -98,10 +98,38 @@ export default function App() {
 
   return (
     // App-Frame: die Seite selbst scrollt nie — nur <main>. So kann die
-    // Bottom-Navigation auf iOS/Android nicht aus dem Viewport scrollen
+    // Navigation auf iOS/Android nicht aus dem Viewport scrollen
     // (position:fixed ist dort bei Rubber-Band/Tastatur unzuverlässig).
-    <div className="mx-auto flex h-dvh max-w-lg flex-col">
-      <main id="app-scroll" className="flex-1 overflow-y-auto overscroll-contain px-3 pb-8 pt-2">
+    // Ab lg (Tablet quer, Webview, Desktop) wird die Navigation zur
+    // Seitenleiste links; darunter bleibt die Bottom-Bar.
+    <div className="mx-auto flex h-dvh max-w-lg flex-col lg:max-w-none lg:flex-row">
+      <nav
+        aria-label="Hauptnavigation"
+        className="hidden shrink-0 flex-col gap-1 border-r border-line bg-card p-3 pl-[max(0.75rem,env(safe-area-inset-left))] lg:flex lg:w-56"
+      >
+        <div className="mb-3 px-2 pt-1 font-display text-[15px] font-bold uppercase tracking-wide">
+          HB Manager
+        </div>
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            aria-current={tab === t.id ? 'page' : undefined}
+            className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-left font-display text-[14px] font-bold uppercase tracking-wide ${
+              tab === t.id ? 'bg-accent-soft text-accent' : 'text-muted active:bg-card-2'
+            }`}
+          >
+            {t.icon}
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      <main
+        id="app-scroll"
+        className="flex-1 overflow-y-auto overscroll-contain px-3 pb-8 pt-2 lg:px-8"
+      >
+        <div className="mx-auto w-full lg:max-w-2xl">
         <Suspense
           fallback={
             <div className="flex h-[50dvh] items-center justify-center text-muted font-display uppercase tracking-wide">
@@ -128,11 +156,12 @@ export default function App() {
             <TeamScreen openPlayer={(id) => { setDetailPlayerId(id); setTab('kader') }} />
           )}
         </Suspense>
+        </div>
       </main>
 
       <nav
         aria-label="Hauptnavigation"
-        className="z-40 shrink-0 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
+        className="z-40 shrink-0 border-t border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
         <div className="mx-auto flex max-w-lg">
           {TABS.map((t) => (
