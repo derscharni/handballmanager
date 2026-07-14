@@ -10,7 +10,7 @@ import { fmtDate, fmtDayDate, playerName } from '../../lib/format'
 import { Avatar } from '../../components/Avatar'
 import { Crest } from '../../components/Crest'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
-import { LockIcon, MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
+import { LockIcon } from './QuickCaptureSheet'
 import { TrainerGate } from '../../components/TrainerGate'
 import { PosterShareOverlay } from './PosterShare'
 import { daysUntilLabel, upcomingBirthdays, type BirthdayEntry } from './birthdays'
@@ -77,19 +77,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
   const opponents = useLiveQuery(() => db.opponents.toArray(), [])
   const attendance = useLiveQuery(() => db.attendance.toArray(), [])
 
-  const [captureOpen, setCaptureOpen] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => () => {
-    if (toastTimer.current) clearTimeout(toastTimer.current)
-  }, [])
-
-  function showToast(msg: string) {
-    setToast(msg)
-    if (toastTimer.current) clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 2600)
-  }
 
   /* ---------- Nächster Spieltag / nächster Termin ---------- */
   const upcoming = useMemo(
@@ -383,35 +371,6 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
         )}
       </TrainerGate>
 
-      {/* ================= 7) QUICK-CAPTURE ================= */}
-      <button
-        onClick={() => setCaptureOpen(true)}
-        className="sticky bottom-3 z-30 mt-6 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-btn-bg font-display text-[16px] font-bold uppercase tracking-wide text-btn-ink shadow-[0_10px_26px_rgba(7,18,48,0.38)] active:opacity-90"
-      >
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-white/15">
-          <MicIcon className="h-5 w-5" />
-        </span>
-        Eindruck festhalten
-      </button>
-
-      <QuickCaptureSheet
-        open={captureOpen}
-        onClose={() => setCaptureOpen(false)}
-        players={players}
-        events={events}
-        opponents={opponents ?? []}
-        onSaved={() => showToast('Notiz gespeichert')}
-      />
-
-      {/* ---------- Inline-Toast ---------- */}
-      {toast && (
-        <div
-          role="status"
-          className="fixed bottom-24 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-club-900 px-4 py-2.5 text-[13px] font-semibold text-club-on shadow-card"
-        >
-          {toast}
-        </div>
-      )}
     </div>
   )
 }
