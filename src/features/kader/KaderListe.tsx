@@ -7,6 +7,7 @@ import { availabilityOn } from '../../lib/availability'
 import { computeFestspielStatus } from '../../lib/festspiel'
 import { fmtDateShort } from '../../lib/format'
 import { Avatar } from '../../components/Avatar'
+import { QuickCaptureButton } from '../start/QuickCaptureButton'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
 import { byPositionThenName, matchesQuery, PositionChips, WarnIcon } from './shared'
 import { PlayerFormSheet } from './PlayerFormSheet'
@@ -266,10 +267,10 @@ function PlayerRow({
   const availTone = absCat === 'verletzung' || absCat === 'krankheit' ? 'crit' : 'warn'
 
   return (
-    <li>
+    <li className="flex items-center">
       <button
         onClick={() => onOpen(player.id)}
-        className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-left active:bg-card-2"
+        className="flex min-h-14 w-full min-w-0 flex-1 items-center gap-3 py-2 pl-3 pr-1 text-left active:bg-card-2"
       >
         <Avatar player={player} size="md" />
         <span className="w-6 shrink-0 text-right text-[13px] font-bold text-muted tnum">
@@ -311,6 +312,7 @@ function PlayerRow({
           )}
         </span>
       </button>
+      <QuickCaptureButton playerId={player.id} className="mr-1" />
     </li>
   )
 }

@@ -64,7 +64,7 @@ export default function AttendanceRow({
     <button
       onClick={onOpen}
       aria-label={`Rückmeldungen: ${counts.zugesagt} zugesagt, ${counts.abgesagt} abgesagt, ${undecided} offen`}
-      className="flex min-h-11 w-full items-center gap-2 border-t border-line px-3 py-1.5 text-left active:bg-card-2"
+      className="flex min-h-11 w-full items-center gap-2 px-3 py-1.5 text-left active:bg-card-2"
     >
       <MiniPill tone="ok" value={counts.zugesagt} label="zu" />
       <MiniPill tone="crit" value={counts.abgesagt} label="ab" />

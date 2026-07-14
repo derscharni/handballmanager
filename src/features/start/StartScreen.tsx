@@ -12,6 +12,7 @@ import { Crest } from '../../components/Crest'
 import { Badge, Card, EmptyState, SectionTitle } from '../../components/ui'
 import { LockIcon, MicIcon, QuickCaptureSheet } from './QuickCaptureSheet'
 import { TrainerGate } from '../../components/TrainerGate'
+import { PosterShareOverlay } from './PosterShare'
 import { daysUntilLabel, upcomingBirthdays, type BirthdayEntry } from './birthdays'
 import { countAttendance, isRosterPlayer, type AttendanceCounts } from '../spielplan/attendance'
 import { AttendanceBar } from '../spielplan/AttendanceRow'
@@ -190,6 +191,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
 
   const clubName = settings?.clubName ?? 'TuS Köln-Ehrenfeld 1865'
   const teamName = settings?.teamName ?? '1. Damen'
+  const [posterOpen, setPosterOpen] = useState(false)
 
   if (loading) {
     return (
@@ -214,6 +216,18 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
         </div>
       </header>
 
+      {posterOpen && heroEvent && (
+        <PosterShareOverlay
+          event={heroEvent}
+          opponentName={
+            heroEvent.opponentId ? opponentById.get(heroEvent.opponentId)?.name : undefined
+          }
+          clubName={clubName}
+          teamName={teamName}
+          onClose={() => setPosterOpen(false)}
+        />
+      )}
+
       {/* ================= 2) SPIELTAG-POSTER ================= */}
       {heroEvent ? (
         <PosterHero
@@ -227,6 +241,7 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
           squad={heroSquad ?? null}
           counts={heroCounts}
           onCta={() => goTo(heroEvent.kind === 'match' ? 'planung' : 'spielplan')}
+          onShare={() => setPosterOpen(true)}
         />
       ) : (
         <EmptyState
@@ -411,6 +426,7 @@ function PosterHero({
   squad,
   counts,
   onCta,
+  onShare,
 }: {
   event: MatchEvent
   opponentName?: string
@@ -419,6 +435,8 @@ function PosterHero({
   /** Rückmeldungs-Zähler des Termins; Zeile erscheint nur, wenn Rückmeldungen existieren. */
   counts?: AttendanceCounts | null
   onCta: () => void
+  /** Öffnet das Vollbild-Poster zum Teilen. */
+  onShare?: () => void
 }) {
   const isMatch = event.kind === 'match'
   const now = useNow(30_000)
@@ -448,11 +466,24 @@ function PosterHero({
 
       <div className="relative flex items-center justify-between font-display text-[11.5px] font-bold uppercase tracking-[0.14em] opacity-80">
         <span>{EVENT_KIND_LABEL[event.kind]}</span>
-        {isMatch && (
-          <span className="rounded-full border border-white/40 px-2.5 py-0.5 tracking-[0.1em]">
-            {event.home ? 'Heim' : 'Auswärts'}
-          </span>
-        )}
+        <span className="flex items-center gap-1.5">
+          {isMatch && (
+            <span className="rounded-full border border-white/40 px-2.5 py-0.5 tracking-[0.1em]">
+              {event.home ? 'Heim' : 'Auswärts'}
+            </span>
+          )}
+          {onShare && (
+            <button
+              aria-label="Poster im Vollbild öffnen und teilen"
+              onClick={onShare}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 active:bg-white/10"
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7" />
+              </svg>
+            </button>
+          )}
+        </span>
       </div>
 
       {isMatch && opponentName ? (

@@ -39,6 +39,7 @@ type FestInfo = { forecast: FestspielForecast; current: FestspielStatus }
 type SheetState =
   | { type: 'nominate'; playerId: string }
   | { type: 'chip'; playerId: string }
+  | { type: 'position'; position: Position }
   | { type: 'release' }
   | null
 
@@ -470,12 +471,16 @@ export default function PlanungScreen() {
                         boxShadow: hot ? '0 0 0 1.5px var(--accent) inset' : undefined,
                       }}
                     >
-                      <div className="w-11 shrink-0 text-center">
+                      <button
+                        className="w-11 shrink-0 text-center"
+                        aria-label={`Verfügbare Spielerinnen für ${POSITION_LABEL[pos]} anzeigen`}
+                        onClick={() => setSheet({ type: 'position', position: pos })}
+                      >
                         <span className="block font-display text-[15px] font-bold text-accent">{pos}</span>
                         <span className="block whitespace-nowrap text-[8px] uppercase text-muted">
                           {POS_SHORT[pos]}
                         </span>
-                      </div>
+                      </button>
                       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
                         {members.map((n) => {
                           const p = playersById.get(n.playerId)
@@ -498,12 +503,13 @@ export default function PlanungScreen() {
                             Hier ablegen
                           </span>
                         ) : members.length === 0 ? (
-                          <span
-                            className="rounded-full border-[1.5px] border-dashed px-3 py-1 text-[11.5px] text-muted"
+                          <button
+                            className="min-h-9 rounded-full border-[1.5px] border-dashed px-3 py-1 text-[11.5px] text-muted active:bg-accent-soft active:text-accent"
                             style={{ borderColor: 'color-mix(in srgb, var(--muted) 45%, transparent)' }}
+                            onClick={() => setSheet({ type: 'position', position: pos })}
                           >
-                            + unbesetzt
-                          </span>
+                            + besetzen
+                          </button>
                         ) : null}
                       </div>
                       {members.length > 1 && (
@@ -671,6 +677,18 @@ export default function PlanungScreen() {
           onRemove={() => {
             setSheet(null)
             void removeNomination(sheetPlayer.id)
+          }}
+        />
+      )}
+      {sheet?.type === 'position' && (
+        <PositionPickSheet
+          position={sheet.position}
+          candidates={availableFree}
+          fest={fest}
+          onClose={() => setSheet(null)}
+          onPick={(playerId) => {
+            setSheet(null)
+            void nominate(playerId, sheet.position)
           }}
         />
       )}
@@ -1231,5 +1249,83 @@ function ShareCard({ text, onToast }: { text: string; onToast: (m: string) => vo
         </Button>
       </div>
     </Card>
+  )
+}
+
+/** 4c) Positionsgruppe antippen: verfügbare Spielerinnen für diese Position. */
+function PositionPickSheet({
+  position,
+  candidates,
+  fest,
+  onClose,
+  onPick,
+}: {
+  position: Position
+  candidates: Player[]
+  fest: Map<string, FestInfo>
+  onClose: () => void
+  onPick: (playerId: string) => void
+}) {
+  const main = candidates.filter((p) => p.mainPosition === position)
+  const alt = candidates.filter(
+    (p) => p.altPosition === position && p.mainPosition !== position,
+  )
+  const rest = candidates.filter(
+    (p) => p.mainPosition !== position && p.altPosition !== position,
+  )
+
+  const row = (p: Player) => {
+    const fc = fest.get(p.id)?.forecast
+    return (
+      <button
+        key={p.id}
+        onClick={() => onPick(p.id)}
+        className="flex min-h-13 w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-left active:bg-accent-soft"
+      >
+        <Avatar player={p} size="sm" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[14px] font-semibold">{playerName(p)}</span>
+          <span className="block text-[11px] text-muted">
+            {p.mainPosition}
+            {p.altPosition ? ` / ${p.altPosition}` : ''}
+            {p.isGuest ? ` · Gast · ${TEAM_LABEL[p.team]}` : ''}
+          </span>
+        </span>
+        {fc?.resulting === 'festgespielt' && <Badge tone="crit">2. Einsatz in Folge!</Badge>}
+        {fc?.resulting === 'warnung' && <Badge tone="warn">1. Einsatz höher</Badge>}
+      </button>
+    )
+  }
+
+  const section = (title: string, list: Player[]) =>
+    list.length > 0 && (
+      <>
+        <div className="mb-0.5 mt-3 text-[10.5px] font-bold uppercase tracking-widest text-muted">
+          {title}
+        </div>
+        {list.map(row)}
+      </>
+    )
+
+  return (
+    <Sheet open onClose={onClose} title={`${position} — ${POSITION_LABEL[position]} besetzen`}>
+      {candidates.length === 0 ? (
+        <p className="py-4 text-center text-[13px] text-muted">
+          Keine verfügbaren Spielerinnen mehr — alle sind nominiert oder abwesend.
+        </p>
+      ) : (
+        <>
+          {section('Hauptposition', main)}
+          {section('Alternativposition', alt)}
+          {section('Weitere Verfügbare', rest)}
+        </>
+      )}
+      <button
+        className="mt-3 min-h-11 w-full rounded-xl border border-line text-[13.5px] font-semibold text-muted"
+        onClick={onClose}
+      >
+        Abbrechen
+      </button>
+    </Sheet>
   )
 }

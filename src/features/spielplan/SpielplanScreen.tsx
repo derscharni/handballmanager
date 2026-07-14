@@ -7,6 +7,7 @@ import { Badge, Button, EmptyState, SectionTitle } from '../../components/ui'
 import { fmtDateShort, fmtDayDate, fmtWeekday } from '../../lib/format'
 import EventEditorSheet from './EventEditorSheet'
 import SpielberichtSheet from './SpielberichtSheet'
+import { QuickCaptureButton } from '../start/QuickCaptureButton'
 import ImportSheet from './ImportSheet'
 import AttendanceRow from './AttendanceRow'
 import RueckmeldungenSheet from './RueckmeldungenSheet'
@@ -255,12 +256,19 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
         className="overflow-hidden rounded-2xl border border-line bg-card shadow-card"
       >
         {inner}
-        {showAttendance && (
-          <AttendanceRow
-            counts={countAttendance(roster, eventResponses)}
-            onOpen={() => setRueckEvent(e)}
-          />
-        )}
+        <div className="flex items-center border-t border-line">
+          {showAttendance ? (
+            <div className="min-w-0 flex-1">
+              <AttendanceRow
+                counts={countAttendance(roster, eventResponses)}
+                onOpen={() => setRueckEvent(e)}
+              />
+            </div>
+          ) : (
+            <span className="flex-1 px-3 text-[11px] text-muted">Eindruck festhalten →</span>
+          )}
+          <QuickCaptureButton eventId={e.id} className="mr-1" />
+        </div>
       </div>
     )
   }

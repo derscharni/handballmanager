@@ -106,6 +106,8 @@ export function QuickCaptureSheet({
   events,
   opponents,
   onSaved,
+  initialPlayerId = null,
+  initialEventId = null,
 }: {
   open: boolean
   onClose: () => void
@@ -113,6 +115,10 @@ export function QuickCaptureSheet({
   events: MatchEvent[]
   opponents: Opponent[]
   onSaved: () => void
+  /** Vorverknüpfte Spielerin (Mikro-Button neben einer Spielerin). */
+  initialPlayerId?: string | null
+  /** Vorverknüpfter Termin (Mikro-Button neben einem Termin). */
+  initialEventId?: string | null
 }) {
   const [text, setText] = useState('')
   const [interim, setInterim] = useState('')
@@ -172,18 +178,22 @@ export function QuickCaptureSheet({
     // Formular zurücksetzen
     setText('')
     setInterim('')
-    setPlayerId(null)
-    setManualPick(false)
-    // Liegt heute ein Termin, ist er vorselektiert (Kategorie folgt der Termin-Art).
+    setPlayerId(initialPlayerId)
+    setManualPick(initialPlayerId != null)
+    // Vorverknüpfter Termin gewinnt; sonst ist ein heutiger Termin vorselektiert
+    // (Kategorie folgt der Termin-Art).
     const today = todayIso()
     const todayEvent = [...events]
       .filter((e) => e.date === today)
       .sort((a, b) => (a.time ?? '00:00').localeCompare(b.time ?? '00:00'))[0]
-    setEventId(todayEvent?.id ?? null)
+    const preEvent =
+      (initialEventId != null ? events.find((e) => e.id === initialEventId) : undefined) ??
+      todayEvent
+    setEventId(preEvent?.id ?? null)
     setCategory(
-      todayEvent?.kind === 'training'
+      preEvent?.kind === 'training'
         ? 'training'
-        : todayEvent?.kind === 'match'
+        : preEvent?.kind === 'match'
           ? 'spiel'
           : 'allgemein',
     )

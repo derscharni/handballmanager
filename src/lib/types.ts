@@ -116,6 +116,8 @@ export interface MatchEvent {
   source: EventSource
   /** Externe Referenz (z.B. handball.net-Spiel-ID) zur Import-Deduplizierung. */
   externalId?: string
+  /** Hintergrundbild fürs teilbare Spieltag-Poster (Blob, unindiziert). */
+  posterImage?: Blob | null
 }
 
 /**
