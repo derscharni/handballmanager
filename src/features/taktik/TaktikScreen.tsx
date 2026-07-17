@@ -117,13 +117,50 @@ function BoardsSheet({
   const [renameId, setRenameId] = useState<string | null>(null)
   const [renameVal, setRenameVal] = useState('')
   const [confirmId, setConfirmId] = useState<string | null>(null)
+  const [tagFilter, setTagFilter] = useState<string | null>(null)
+  const [tagEditId, setTagEditId] = useState<string | null>(null)
+  const [tagVal, setTagVal] = useState('')
 
   useEffect(() => {
     if (!open) {
       setRenameId(null)
       setConfirmId(null)
+      setTagFilter(null)
+      setTagEditId(null)
     }
   }, [open])
+
+  /* ---------- Tags: Ordnen der Züge/Übungen ---------- */
+  const allTags = Array.from(
+    new Set((boards ?? []).flatMap((b) => b.tags ?? [])),
+  ).sort((a, b) => a.localeCompare(b, 'de'))
+  const visibleBoards = (boards ?? []).filter(
+    (b) => tagFilter === null || (b.tags ?? []).includes(tagFilter),
+  )
+
+  async function addTag(id: string) {
+    const tag = tagVal.trim()
+    setTagVal('')
+    if (tag === '') {
+      setTagEditId(null)
+      return
+    }
+    const b = await db.boards.get(id)
+    if (!b) return
+    const tags = Array.from(new Set([...(b.tags ?? []), tag]))
+    await db.boards.update(id, { tags })
+    setTagEditId(null)
+  }
+
+  async function removeTag(id: string, tag: string) {
+    const b = await db.boards.get(id)
+    if (!b) return
+    const tags = (b.tags ?? []).filter((t) => t !== tag)
+    await db.boards.update(id, { tags })
+    if (tagFilter === tag && !(boards ?? []).some((x) => x.id !== id && (x.tags ?? []).includes(tag))) {
+      setTagFilter(null)
+    }
+  }
 
   const saveRename = (id: string) => {
     onRename(id, renameVal.trim() || 'Ohne Titel')
@@ -136,10 +173,40 @@ function BoardsSheet({
         <Button variant="secondary" onClick={onNew}>
           <Icon d={IC_PLUS} className="h-4 w-4" /> Neuer Zug
         </Button>
+        {allTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Nach Tag filtern">
+            <button
+              aria-pressed={tagFilter === null}
+              onClick={() => setTagFilter(null)}
+              className={`min-h-9 rounded-full px-3 text-[12px] font-semibold ${
+                tagFilter === null ? 'bg-accent text-btn-ink' : 'border border-line text-muted'
+              }`}
+            >
+              Alle
+            </button>
+            {allTags.map((t) => (
+              <button
+                key={t}
+                aria-pressed={tagFilter === t}
+                onClick={() => setTagFilter(tagFilter === t ? null : t)}
+                className={`min-h-9 rounded-full px-3 text-[12px] font-semibold ${
+                  tagFilter === t ? 'bg-accent text-btn-ink' : 'border border-line text-muted'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        )}
         {boards && boards.length === 0 && (
           <p className="py-2 text-center text-[13px] text-muted">Noch keine gespeicherten Züge.</p>
         )}
-        {boards?.map((b) => (
+        {boards && boards.length > 0 && visibleBoards.length === 0 && (
+          <p className="py-2 text-center text-[13px] text-muted">
+            Kein Zug mit diesem Tag — Filter oben zurücksetzen.
+          </p>
+        )}
+        {visibleBoards.map((b) => (
           <Card key={b.id} className="p-3">
             {renameId === b.id ? (
               <div className="flex items-center gap-2">
@@ -170,6 +237,53 @@ function BoardsSheet({
                     {b.field === 'full' ? ' · ganzes Feld' : ''}
                   </p>
                 </button>
+                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  {(b.tags ?? []).map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex min-h-8 items-center gap-1 rounded-full bg-club-acc px-2.5 text-[11px] font-semibold text-club-acc-ink"
+                    >
+                      {t}
+                      <button
+                        aria-label={`Tag ${t} entfernen`}
+                        className="px-0.5 font-bold"
+                        onClick={() => void removeTag(b.id, t)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {tagEditId === b.id ? (
+                    <form
+                      className="flex items-center gap-1"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        void addTag(b.id)
+                      }}
+                    >
+                      <input
+                        value={tagVal}
+                        onChange={(e) => setTagVal(e.target.value)}
+                        onBlur={() => void addTag(b.id)}
+                        aria-label="Neuer Tag"
+                        placeholder="z.B. Angriff"
+                        autoFocus
+                        maxLength={24}
+                        className="min-h-8 w-28 rounded-full border border-line bg-card-2 px-2.5 text-[12px] outline-none focus:border-accent"
+                      />
+                    </form>
+                  ) : (
+                    <button
+                      className="min-h-8 rounded-full border border-dashed border-line px-2.5 text-[11px] font-semibold text-muted active:bg-accent-soft active:text-accent"
+                      onClick={() => {
+                        setTagEditId(b.id)
+                        setTagVal('')
+                      }}
+                    >
+                      + Tag
+                    </button>
+                  )}
+                </div>
                 <div className="mt-2 flex items-center gap-2">
                   <button
                     className="min-h-9 flex-1 rounded-lg bg-accent-soft px-2 text-[12px] font-semibold text-accent active:opacity-80"

@@ -96,6 +96,7 @@ function MatchCard({
       </span>
       {played ? (
         <Badge tone={outcome!} className="tnum px-2 py-1 text-[14px] font-display">
+          {outcome === 'ok' ? 'S' : outcome === 'crit' ? 'N' : 'U'}{' '}
           {event.goalsUs}:{event.goalsThem}
         </Badge>
       ) : (
@@ -265,7 +266,7 @@ export default function SpielplanScreen(_props: SpielplanScreenProps) {
               />
             </div>
           ) : (
-            <span className="flex-1 px-3 text-[11px] text-muted">Eindruck festhalten →</span>
+            <span className="flex-1 px-3 text-[11px] text-muted">Eindruck festhalten:</span>
           )}
           <QuickCaptureButton eventId={e.id} className="mr-1" />
         </div>

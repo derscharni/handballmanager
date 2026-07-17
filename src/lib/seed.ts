@@ -166,7 +166,7 @@ export async function seedIfEmpty(): Promise<void> {
         clubName: 'TuS Köln-Ehrenfeld 1865',
         teamName: '1. Damen',
         theme: 'auto',
-        seasonStart: '2026-07-01',
+        seasonStart: '2026-06-01',
       }
       await db.settings.put(settings)
     },

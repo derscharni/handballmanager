@@ -234,6 +234,8 @@ export interface TacticsBoard {
   field: 'full' | 'half'
   tokens: BoardToken[]
   materials: BoardMaterial[]
+  /** Freie Tags zum Ordnen der Züge/Übungen (z.B. "Angriff", "Warmup"). */
+  tags?: string[]
   updatedAt: string
 }
 
