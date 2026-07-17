@@ -33,7 +33,7 @@ export function QuickCaptureButton({
           e.stopPropagation()
           setOpen(true)
         }}
-        className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted active:bg-accent-soft active:text-accent ${className}`}
+        className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted active:bg-accent-soft active:text-accent ${className}`}
       >
         <svg
           viewBox="0 0 24 24"

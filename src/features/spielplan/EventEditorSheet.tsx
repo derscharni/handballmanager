@@ -320,7 +320,7 @@ function EditorForm({
                   setRepeatDays(new Set([weekdayOf(date)]))
                 }
               }}
-              className={`relative h-7 w-12 rounded-full transition-colors ${
+              className={`relative box-content h-7 w-12 rounded-full p-2 -m-2 bg-clip-content transition-colors ${
                 repeat ? 'bg-accent' : 'bg-line'
               }`}
             >
@@ -341,7 +341,7 @@ function EditorForm({
                       key={d}
                       aria-pressed={active}
                       onClick={() => toggleRepeatDay(d)}
-                      className={`min-h-10 min-w-11 rounded-lg px-2 font-display text-[13px] font-bold ${
+                      className={`min-h-11 min-w-11 rounded-lg px-2 font-display text-[13px] font-bold ${
                         active ? 'bg-accent text-btn-ink' : 'bg-card text-muted border border-line'
                       }`}
                     >

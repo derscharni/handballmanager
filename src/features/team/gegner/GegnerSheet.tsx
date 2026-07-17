@@ -252,7 +252,7 @@ export function GegnerSheet({
                   href={logoErrorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-0.5 inline-flex min-h-9 items-center text-[13px] font-bold text-accent underline underline-offset-2"
+                  className="mt-0.5 inline-flex min-h-11 items-center text-[13px] font-bold text-accent underline underline-offset-2"
                 >
                   URL im Browser öffnen ↗
                 </a>

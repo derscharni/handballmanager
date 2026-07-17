@@ -183,7 +183,7 @@ export function TwoStepDelete({
   className?: string
 }) {
   const sizeCls = {
-    sm: 'min-h-9 rounded-lg px-2.5 text-[11px]',
+    sm: 'min-h-11 rounded-lg px-2.5 text-[11px]',
     md: 'min-h-11 rounded-xl px-3 text-[13px]',
     lg: 'min-h-11 rounded-xl px-4 font-display uppercase tracking-wide text-[14px]',
   }[size]
@@ -263,7 +263,7 @@ export function AudioButton({ blob }: { blob: Blob }) {
       type="button"
       onClick={toggle}
       aria-label={playing ? 'Sprachnotiz stoppen' : 'Sprachnotiz abspielen'}
-      className="inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-accent-soft px-2.5 text-[12px] font-bold text-accent"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-accent-soft px-2.5 text-[12px] font-bold text-accent"
     >
       {playing ? (
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden="true">

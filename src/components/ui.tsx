@@ -103,7 +103,7 @@ export function Segmented<T extends string>({
           key={o.value}
           onClick={() => onChange(o.value)}
           aria-pressed={o.value === value}
-          className={`flex-1 min-h-9 rounded-[10px] px-2 text-[13px] font-semibold transition-colors ${
+          className={`flex-1 min-h-11 rounded-[10px] px-2 text-[13px] font-semibold transition-colors ${
             o.value === value ? 'bg-card text-ink shadow-card' : 'text-muted'
           }`}
         >

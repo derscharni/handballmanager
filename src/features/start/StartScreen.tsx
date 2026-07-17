@@ -435,7 +435,7 @@ function PosterHero({
             <button
               aria-label="Poster im Vollbild öffnen und teilen"
               onClick={onShare}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 active:bg-white/10"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/40 active:bg-white/10"
             >
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7" />

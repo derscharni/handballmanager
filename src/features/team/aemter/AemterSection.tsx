@@ -79,7 +79,7 @@ function AemterInner({
                   </div>
                   <button
                     onClick={() => setEditing(d)}
-                    className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-card-2 px-2.5 text-[11px] font-bold text-muted"
+                    className="inline-flex min-h-11 shrink-0 items-center rounded-lg bg-card-2 px-2.5 text-[11px] font-bold text-muted"
                   >
                     Bearbeiten
                   </button>
@@ -90,7 +90,7 @@ function AemterInner({
                     <button
                       key={p.id}
                       onClick={() => openPlayer(p.id)}
-                      className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-card-2 py-1 pl-1 pr-2.5"
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-card-2 py-1 pl-1 pr-2.5"
                     >
                       <Avatar player={p} size="sm" />
                       <span className="text-[13px] font-semibold">{p.firstName}</span>
@@ -98,7 +98,7 @@ function AemterInner({
                   ))}
                   <button
                     onClick={() => setAssigning(d)}
-                    className="inline-flex min-h-10 items-center rounded-full bg-accent-soft px-3 text-[12px] font-bold text-accent"
+                    className="inline-flex min-h-11 items-center rounded-full bg-accent-soft px-3 text-[12px] font-bold text-accent"
                   >
                     Zuweisen
                   </button>

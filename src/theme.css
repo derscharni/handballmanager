@@ -39,7 +39,7 @@
   --poster-ink: var(--club-on);
   --ok: #25834f;
   --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
-  --warn: #b26e06;
+  --warn: #8f5804;
   --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
   --crit: #c2372c;
   --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);
@@ -89,7 +89,7 @@
   --btn-ink: var(--club-on);
   --ok: #25834f;
   --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
-  --warn: #b26e06;
+  --warn: #8f5804;
   --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
   --crit: #c2372c;
   --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);

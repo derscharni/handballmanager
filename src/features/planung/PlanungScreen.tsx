@@ -425,7 +425,7 @@ export default function PlanungScreen() {
                   {squad?.releasedAt ? fmtStamp(squad.releasedAt) : '—'}.
                 </span>
                 <button
-                  className="min-h-9 shrink-0 rounded-lg border px-2.5 text-[12px] font-semibold text-warn"
+                  className="min-h-11 shrink-0 rounded-lg border px-2.5 text-[12px] font-semibold text-warn"
                   style={{ borderColor: 'color-mix(in srgb, var(--warn) 55%, transparent)' }}
                   onClick={() => setSheet({ type: 'release' })}
                 >
@@ -504,7 +504,7 @@ export default function PlanungScreen() {
                           </span>
                         ) : members.length === 0 ? (
                           <button
-                            className="min-h-9 rounded-full border-[1.5px] border-dashed px-3 py-1 text-[11.5px] text-muted active:bg-accent-soft active:text-accent"
+                            className="min-h-11 rounded-full border-[1.5px] border-dashed px-3 py-1 text-[11.5px] text-muted active:bg-accent-soft active:text-accent"
                             style={{ borderColor: 'color-mix(in srgb, var(--muted) 45%, transparent)' }}
                             onClick={() => setSheet({ type: 'position', position: pos })}
                           >
@@ -788,7 +788,7 @@ function NomChip({
       style={{ borderColor: 'color-mix(in srgb, var(--accent) 45%, var(--line))' }}
     >
       <button
-        className="flex min-h-9 items-center gap-1.5 py-0.5 pl-1 text-[12px] font-semibold"
+        className="flex min-h-11 items-center gap-1.5 py-0.5 pl-1 text-[12px] font-semibold"
         style={{ cursor: 'grab' }}
         onPointerDown={onPress}
         onClick={onOpen}
@@ -800,7 +800,7 @@ function NomChip({
       </button>
       <button
         aria-label={`${playerName(player)} entfernen`}
-        className="min-h-9 px-2 text-[16px] leading-none text-muted"
+        className="min-h-11 px-2 text-[16px] leading-none text-muted"
         onClick={onRemove}
       >
         ×
@@ -1147,7 +1147,7 @@ function PreviewSection({
                     key={n.playerId}
                     onClick={() => setPvPlayerId(n.playerId)}
                     aria-pressed={sel}
-                    className={`min-h-9 shrink-0 rounded-full border px-2.5 text-[12px] font-semibold ${
+                    className={`min-h-11 shrink-0 rounded-full border px-2.5 text-[12px] font-semibold ${
                       sel ? 'border-accent bg-accent-soft text-accent' : 'border-line bg-card text-muted'
                     }`}
                   >

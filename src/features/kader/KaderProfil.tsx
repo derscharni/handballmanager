@@ -19,6 +19,7 @@ import {
 } from './shared'
 import { TeamProfilCard } from '../team/kasse/TeamProfilCard'
 import { TrainerGate } from '../../components/TrainerGate'
+import { SkillsCard } from './SkillsCard'
 import { PlayerFormSheet } from './PlayerFormSheet'
 import { AbsenceSheet, AppearanceSheet, NoteSheet, NOTE_CATEGORY_LABEL } from './ProfilSheets'
 import { downscalePhoto } from './photo'
@@ -208,7 +209,7 @@ function ProfilInner({
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <button
                 onClick={() => photoInputRef.current?.click()}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-accent-soft px-2.5 text-[12px] font-bold text-accent"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-accent-soft px-2.5 text-[12px] font-bold text-accent"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -228,7 +229,7 @@ function ProfilInner({
               {player.photo && (
                 <button
                   onClick={() => void db.players.update(player.id, { photo: null })}
-                  className="inline-flex min-h-9 items-center rounded-lg bg-crit-soft px-2.5 text-[12px] font-bold text-crit"
+                  className="inline-flex min-h-11 items-center rounded-lg bg-crit-soft px-2.5 text-[12px] font-bold text-crit"
                 >
                   Foto entfernen
                 </button>
@@ -421,6 +422,13 @@ function ProfilInner({
 
       {/* ---------- Team: Ämter & offene Strafen ---------- */}
       <TeamProfilCard playerId={player.id} />
+
+      {/* ---------- Fähigkeiten (Spinnennetz, nur Trainerteam) ---------- */}
+      <div className="mt-3">
+        <TrainerGate compact>
+          <SkillsCard player={player} />
+        </TrainerGate>
+      </div>
 
       {/* ---------- Notizen (Teamleitung) ---------- */}
       <SectionTitle

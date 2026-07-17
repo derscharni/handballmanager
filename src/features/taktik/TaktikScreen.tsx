@@ -178,7 +178,7 @@ function BoardsSheet({
             <button
               aria-pressed={tagFilter === null}
               onClick={() => setTagFilter(null)}
-              className={`min-h-9 rounded-full px-3 text-[12px] font-semibold ${
+              className={`min-h-11 rounded-full px-3 text-[12px] font-semibold ${
                 tagFilter === null ? 'bg-accent text-btn-ink' : 'border border-line text-muted'
               }`}
             >
@@ -189,7 +189,7 @@ function BoardsSheet({
                 key={t}
                 aria-pressed={tagFilter === t}
                 onClick={() => setTagFilter(tagFilter === t ? null : t)}
-                className={`min-h-9 rounded-full px-3 text-[12px] font-semibold ${
+                className={`min-h-11 rounded-full px-3 text-[12px] font-semibold ${
                   tagFilter === t ? 'bg-accent text-btn-ink' : 'border border-line text-muted'
                 }`}
               >
@@ -226,22 +226,25 @@ function BoardsSheet({
               </div>
             ) : (
               <>
-                <button className="block w-full text-left" onClick={() => onLoad(b.id)}>
-                  <p className="flex items-center gap-2 truncate font-display text-[14px] font-bold uppercase tracking-wide">
-                    <span className="truncate">{b.title || 'Ohne Titel'}</span>
-                    {b.id === currentId && <Badge tone="accent">Geöffnet</Badge>}
-                  </p>
-                  <p className="mt-0.5 text-[12px] text-muted">
-                    {fmtStamp(b.updatedAt)} · {b.tokens.length} Figuren
-                    {b.materials.length > 0 ? ` · ${b.materials.length}× Material` : ''}
-                    {b.field === 'full' ? ' · ganzes Feld' : ''}
-                  </p>
+                <button className="flex w-full items-center gap-3 text-left" onClick={() => onLoad(b.id)}>
+                  <BoardThumb board={b} />
+                  <span className="min-w-0 flex-1">
+                    <p className="flex items-center gap-2 truncate font-display text-[14px] font-bold uppercase tracking-wide">
+                      <span className="truncate">{b.title || 'Ohne Titel'}</span>
+                      {b.id === currentId && <Badge tone="accent">Geöffnet</Badge>}
+                    </p>
+                    <p className="mt-0.5 text-[12px] text-muted">
+                      {fmtStamp(b.updatedAt)} · {b.tokens.length} Figuren
+                      {b.materials.length > 0 ? ` · ${b.materials.length}× Material` : ''}
+                      {b.field === 'full' ? ' · ganzes Feld' : ''}
+                    </p>
+                  </span>
                 </button>
                 <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                   {(b.tags ?? []).map((t) => (
                     <span
                       key={t}
-                      className="inline-flex min-h-8 items-center gap-1 rounded-full bg-club-acc px-2.5 text-[11px] font-semibold text-club-acc-ink"
+                      className="inline-flex min-h-11 items-center gap-1 rounded-full bg-club-acc px-2.5 text-[11px] font-semibold text-club-acc-ink"
                     >
                       {t}
                       <button
@@ -269,12 +272,12 @@ function BoardsSheet({
                         placeholder="z.B. Angriff"
                         autoFocus
                         maxLength={24}
-                        className="min-h-8 w-28 rounded-full border border-line bg-card-2 px-2.5 text-[12px] outline-none focus:border-accent"
+                        className="min-h-11 w-28 rounded-full border border-line bg-card-2 px-2.5 text-[12px] outline-none focus:border-accent"
                       />
                     </form>
                   ) : (
                     <button
-                      className="min-h-8 rounded-full border border-dashed border-line px-2.5 text-[11px] font-semibold text-muted active:bg-accent-soft active:text-accent"
+                      className="min-h-11 rounded-full border border-dashed border-line px-2.5 text-[11px] font-semibold text-muted active:bg-accent-soft active:text-accent"
                       onClick={() => {
                         setTagEditId(b.id)
                         setTagVal('')
@@ -286,13 +289,13 @@ function BoardsSheet({
                 </div>
                 <div className="mt-2 flex items-center gap-2">
                   <button
-                    className="min-h-9 flex-1 rounded-lg bg-accent-soft px-2 text-[12px] font-semibold text-accent active:opacity-80"
+                    className="min-h-11 flex-1 rounded-lg bg-accent-soft px-2 text-[12px] font-semibold text-accent active:opacity-80"
                     onClick={() => onLoad(b.id)}
                   >
                     Laden
                   </button>
                   <button
-                    className="min-h-9 flex-1 rounded-lg border border-line px-2 text-[12px] font-semibold text-ink active:bg-card-2"
+                    className="min-h-11 flex-1 rounded-lg border border-line px-2 text-[12px] font-semibold text-ink active:bg-card-2"
                     onClick={() => {
                       setRenameId(b.id)
                       setRenameVal(b.title)
@@ -302,7 +305,7 @@ function BoardsSheet({
                     Umbenennen
                   </button>
                   <button
-                    className={`min-h-9 flex-1 rounded-lg px-2 text-[12px] font-semibold active:opacity-80 ${
+                    className={`min-h-11 flex-1 rounded-lg px-2 text-[12px] font-semibold active:opacity-80 ${
                       confirmId === b.id
                         ? 'bg-crit text-white'
                         : 'bg-crit-soft text-crit'
@@ -1004,5 +1007,47 @@ export default function TaktikScreen() {
         </div>
       </Sheet>
     </div>
+  )
+}
+
+/* ---------- Mini-Vorschau eines Zugs (Thumbnail in "Meine Züge") ---------- */
+
+function BoardThumb({ board }: { board: TacticsBoard }) {
+  // Normierte Koordinaten: x quer (0..1), y längs des Ganzfelds (0..1).
+  // Halbfeld-Züge nutzen y 0..0.5 — Ausschnitt entsprechend wählen.
+  const half = board.field === 'half'
+  const W = 64
+  const H = half ? 64 : 96
+  const mapX = (x: number) => 4 + x * (W - 8)
+  const mapY = (y: number) => 4 + (half ? y / 0.5 : y) * (H - 8)
+  return (
+    <svg
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      role="img"
+      aria-label={`Vorschau: ${board.title || 'Ohne Titel'}`}
+      className="shrink-0 rounded-lg border border-line bg-card-2"
+    >
+      <rect x="4" y="4" width={W - 8} height={H - 8} fill="none" stroke="var(--line)" strokeWidth="1" />
+      {!half && <line x1="4" y1={H / 2} x2={W - 4} y2={H / 2} stroke="var(--line)" strokeWidth="1" />}
+      {/* 6m-Andeutung oben (und unten bei Ganzfeld) */}
+      <path d={`M ${mapX(0.28)} 4 Q ${W / 2} ${mapY(half ? 0.14 : 0.14)} ${mapX(0.72)} 4`} fill="none" stroke="var(--line)" strokeWidth="1" />
+      {!half && (
+        <path d={`M ${mapX(0.28)} ${H - 4} Q ${W / 2} ${H - (mapY(0.14) - 4) - 0} ${mapX(0.72)} ${H - 4}`} fill="none" stroke="var(--line)" strokeWidth="1" />
+      )}
+      {board.tokens.map((t) => (
+        <circle
+          key={t.id}
+          cx={mapX(t.x)}
+          cy={mapY(Math.min(t.y, half ? 0.5 : 1))}
+          r={t.kind === 'ball' ? 2 : 2.6}
+          fill={t.kind === 'own' ? 'var(--club-700)' : t.kind === 'ball' ? 'var(--club-acc)' : 'var(--muted)'}
+        />
+      ))}
+      {board.materials.map((m) => (
+        <rect key={m.id} x={mapX(m.x) - 1.6} y={mapY(Math.min(m.y, half ? 0.5 : 1)) - 1.6} width="3.2" height="3.2" fill="var(--warn)" />
+      ))}
+    </svg>
   )
 }

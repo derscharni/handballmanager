@@ -16,7 +16,7 @@ export const selectCls = `${inputCls} appearance-none pr-8`
 
 /** Kompaktes Select für Listenzeilen (z.B. Import-Vorschau). */
 export const selectSmCls =
-  'appearance-none rounded-lg border border-line bg-card-2 pl-2 pr-7 min-h-9 text-[12.5px] text-ink'
+  'appearance-none rounded-lg border border-line bg-card-2 pl-2 pr-7 min-h-11 text-[12.5px] text-ink'
 
 export function Field({
   label,

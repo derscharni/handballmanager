@@ -394,7 +394,7 @@ function ManualGrid({
                       inputMode="numeric"
                       min={0}
                       max={30}
-                      className="tnum min-h-10 w-12 rounded-lg border border-line bg-card px-1 text-center text-[13px] font-bold"
+                      className="tnum min-h-11 w-12 rounded-lg border border-line bg-card px-1 text-center text-[13px] font-bold"
                       value={s.goals}
                       onChange={(e) =>
                         patch(p.id, { goals: Math.max(0, Number(e.target.value) || 0) })

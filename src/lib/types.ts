@@ -50,6 +50,11 @@ export interface Player {
   /** Geburtstag (ISO-Datum), optional — für Reminder und Altersanzeige. */
   birthday?: string
   photo?: Blob | null
+  /**
+   * Fähigkeiten-Einstufung 0–10 je Dimension (Spinnennetz-Analyse).
+   * Nur fürs Trainerteam sichtbar. Dimensionen: Settings.skillDimensions.
+   */
+  skills?: Record<string, number>
   /** Genereller Verfügbarkeitsschalter (unabhängig von Abwesenheiten). */
   available: boolean
   comment?: string
@@ -352,5 +357,22 @@ export interface Settings {
   seasonStart: string
   /** handball.net-Team-URL für den Spielplan-Import, optional. */
   handballNetUrl?: string
+  /**
+   * Dimensionen der Spinnennetz-Analyse (max. 10). Fehlt = Standard-Set
+   * DEFAULT_SKILL_DIMENSIONS. Vom Trainerteam ergänzbar/entfernbar.
+   */
+  skillDimensions?: string[]
   logo?: Blob | null
 }
+
+/** Standard-Dimensionen der Spinnennetz-Analyse (ergänzbar bis max. 10). */
+export const DEFAULT_SKILL_DIMENSIONS = [
+  'Passen',
+  'Werfen',
+  'Abwehr',
+  'Tempo',
+  'Spielübersicht',
+  'Athletik',
+] as const
+
+export const MAX_SKILL_DIMENSIONS = 10

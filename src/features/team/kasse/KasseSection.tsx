@@ -233,7 +233,7 @@ function OpenGroupRow({
               <button
                 onClick={() => void markPaid(f)}
                 aria-label={`${f.label} als bezahlt markieren`}
-                className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-ok-soft px-2.5 text-[11px] font-bold text-ok"
+                className="inline-flex min-h-11 shrink-0 items-center rounded-lg bg-ok-soft px-2.5 text-[11px] font-bold text-ok"
               >
                 Bezahlt
               </button>
@@ -693,7 +693,7 @@ function KatalogSection({ templates }: { templates: FineTemplate[] }) {
                     onClick={() => void db.fineTemplates.update(t.id, { active: !t.active })}
                     aria-pressed={t.active}
                     aria-label={`${t.label} ${t.active ? 'deaktivieren' : 'aktivieren'}`}
-                    className={`inline-flex min-h-9 shrink-0 items-center rounded-lg px-2.5 text-[11px] font-bold ${
+                    className={`inline-flex min-h-11 shrink-0 items-center rounded-lg px-2.5 text-[11px] font-bold ${
                       t.active ? 'bg-ok-soft text-ok' : 'bg-card-2 text-muted'
                     }`}
                   >
