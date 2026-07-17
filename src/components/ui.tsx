@@ -28,7 +28,8 @@ export function SectionTitle({
 }) {
   return (
     <div className="flex items-baseline justify-between px-1 pt-5 pb-2">
-      <h2 className="font-display uppercase tracking-wide text-[13px] text-muted">
+      {/* Kreideschrift direkt auf der Tafel, mit Kreide-Unterstrich */}
+      <h2 className="chalk-underline font-chalk text-[15px] font-semibold text-chalk">
         {children}
       </h2>
       {action}

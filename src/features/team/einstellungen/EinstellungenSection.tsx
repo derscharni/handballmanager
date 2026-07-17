@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Button, Card, SectionTitle, Segmented, Sheet } from '../../../components/ui'
+import { Button, Card, SectionTitle, Sheet } from '../../../components/ui'
 import { FarbenCard } from './FarbenCard'
 import { TrainerteamCard } from './TrainerteamCard'
 import { db, todayIso } from '../../../lib/db'
 import { fmtDate } from '../../../lib/format'
+import { applyClubColors } from '../../../lib/clubColors'
 import { seedIfEmpty, seedTeamDefaults } from '../../../lib/seed'
 import type { Settings } from '../../../lib/types'
 import type { TeamSectionProps } from '../../props'
@@ -33,15 +34,6 @@ function Field({
       {children}
     </label>
   )
-}
-
-/** Theme sofort anwenden: auto = OS-Präferenz (Attribut entfernen), sonst erzwingen. */
-function applyTheme(theme: Settings['theme']) {
-  if (theme === 'auto') {
-    delete document.documentElement.dataset.theme
-  } else {
-    document.documentElement.dataset.theme = theme
-  }
 }
 
 /* ---------- Verein & Saison ---------- */
@@ -237,7 +229,7 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
     try {
       await applyBackup(pendingImport)
       const fresh = await db.settings.get('app')
-      if (fresh) applyTheme(fresh.theme)
+      applyClubColors(fresh?.colors)
       setPendingImport(null)
       setFormEpoch((n) => n + 1)
       setBackupMsg({ kind: 'ok', text: 'Backup erfolgreich eingespielt.' })
@@ -264,7 +256,7 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
     await seedIfEmpty()
     await seedTeamDefaults()
     const fresh = await db.settings.get('app')
-    if (fresh) applyTheme(fresh.theme)
+    applyClubColors(fresh?.colors)
     setFormEpoch((n) => n + 1)
   }
 
@@ -287,25 +279,6 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
     <div className="pb-6">
       <SectionTitle>Verein &amp; Saison</SectionTitle>
       <VereinCard key={formEpoch} settings={settings} />
-
-      <SectionTitle>Darstellung</SectionTitle>
-      <Card className="p-4">
-        <Segmented
-          options={[
-            { value: 'auto', label: 'Auto' },
-            { value: 'light', label: 'Hell' },
-            { value: 'dark', label: 'Dunkel' },
-          ]}
-          value={settings.theme}
-          onChange={async (theme) => {
-            applyTheme(theme)
-            await db.settings.update('app', { theme })
-          }}
-        />
-        <p className="mt-2 text-[12px] text-muted">
-          Auto folgt der System-Einstellung des Geräts.
-        </p>
-      </Card>
 
       <SectionTitle>Vereinsfarben</SectionTitle>
       <FarbenCard settings={settings} />

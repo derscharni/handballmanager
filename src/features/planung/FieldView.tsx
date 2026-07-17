@@ -60,9 +60,22 @@ function clusterPoint(pos: Position, i: number): [number, number] {
   ]
 }
 
+/* Kreidetafel-Look wie im Taktik-Board: dunkle Tafel, LED-Linien in
+   Vereinsblau (heller Kern), Figuren-Chips in Vereinsfarben. */
+const FLOOR = 'color-mix(in srgb, var(--club-900) 12%, #191d20)'
+const LED_CORE = 'color-mix(in srgb, var(--club-300) 60%, #ffffff)'
+
 const lineStyle: React.CSSProperties = {
-  stroke: 'color-mix(in srgb, var(--accent) 62%, var(--line))',
+  stroke: LED_CORE,
   strokeWidth: 0.16,
+  fill: 'none',
+  strokeLinecap: 'round',
+}
+
+const haloStyle: React.CSSProperties = {
+  stroke: 'var(--club-500)',
+  strokeWidth: 0.42,
+  opacity: 0.7,
   fill: 'none',
   strokeLinecap: 'round',
 }
@@ -91,7 +104,10 @@ export default function FieldView({
   onTokenClick: (playerId: string) => void
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-card shadow-card">
+    <div
+      className="overflow-hidden rounded-2xl shadow-card"
+      style={{ border: '1px solid rgba(238,241,236,0.18)', background: FLOOR }}
+    >
       <svg
         data-drop-field
         viewBox={`${FIELD_VIEWBOX.x} ${FIELD_VIEWBOX.y} ${FIELD_VIEWBOX.w} ${FIELD_VIEWBOX.h}`}
@@ -99,10 +115,22 @@ export default function FieldView({
         role="application"
         aria-label="Feld-Ansicht — Spielerinnen auf Positionszonen ziehen"
       >
-        {/* Boden + Spielfeldlinien (Tor oben) */}
+        {/* Boden (Tafel) + LED-Spielfeldlinien (Tor oben) */}
         <g aria-hidden="true">
-          <rect x={-1} y={-1} width={22} height={22} style={{ fill: 'color-mix(in srgb, var(--club-700) 7%, var(--card))' }} />
-          <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" style={{ fill: 'color-mix(in srgb, var(--accent) 13%, transparent)' }} />
+          <defs>
+            <filter id="fv-led-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="0.3" />
+            </filter>
+          </defs>
+          <rect x={-1} y={-1} width={22} height={22} style={{ fill: FLOOR }} />
+          <ellipse cx={5} cy={13} rx={7} ry={4} fill="rgba(255,255,255,0.035)" />
+          <ellipse cx={15} cy={6} rx={6} ry={3.5} fill="rgba(255,255,255,0.03)" />
+          <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" style={{ fill: 'color-mix(in srgb, var(--club-500) 15%, transparent)' }} />
+          <g filter="url(#fv-led-glow)">
+            <rect x={0} y={0} width={20} height={20} rx={0.3} style={haloStyle} />
+            <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" style={haloStyle} />
+            <path d="M0 2.96 A9 9 0 0 0 8.5 9 L11.5 9 A9 9 0 0 0 20 2.96" style={{ ...haloStyle, strokeDasharray: '0.8 0.55' }} />
+          </g>
           <rect x={0} y={0} width={20} height={20} rx={0.3} style={lineStyle} />
           {/* 6-m-Kreisraum */}
           <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" style={lineStyle} />
@@ -111,8 +139,8 @@ export default function FieldView({
           {/* 7-m-Strich + 4-m-Torwartgrenze */}
           <line x1={9.4} y1={7} x2={10.6} y2={7} style={lineStyle} />
           <line x1={9.65} y1={4} x2={10.35} y2={4} style={lineStyle} />
-          {/* Tor */}
-          <rect x={8.5} y={-0.45} width={3} height={0.45} style={{ fill: 'var(--accent)' }} />
+          {/* Tor in Vereinsgelb */}
+          <rect x={8.5} y={-0.45} width={3} height={0.45} style={{ fill: 'var(--club-acc)' }} />
         </g>
 
         {/* Positionszonen */}

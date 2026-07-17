@@ -1020,6 +1020,8 @@ function BoardThumb({ board }: { board: TacticsBoard }) {
   const H = half ? 64 : 96
   const mapX = (x: number) => 4 + x * (W - 8)
   const mapY = (y: number) => 4 + (half ? y / 0.5 : y) * (H - 8)
+  // Mini-Kreidetafel: LED-Linien in Vereinsblau, Kreide-Punkte als Figuren.
+  const led = 'color-mix(in srgb, var(--club-300) 75%, #ffffff)'
   return (
     <svg
       width={W}
@@ -1027,14 +1029,15 @@ function BoardThumb({ board }: { board: TacticsBoard }) {
       viewBox={`0 0 ${W} ${H}`}
       role="img"
       aria-label={`Vorschau: ${board.title || 'Ohne Titel'}`}
-      className="shrink-0 rounded-lg border border-line bg-card-2"
+      className="shrink-0 rounded-lg"
+      style={{ background: '#1d2124', border: '1px solid rgba(238,241,236,0.18)' }}
     >
-      <rect x="4" y="4" width={W - 8} height={H - 8} fill="none" stroke="var(--line)" strokeWidth="1" />
-      {!half && <line x1="4" y1={H / 2} x2={W - 4} y2={H / 2} stroke="var(--line)" strokeWidth="1" />}
+      <rect x="4" y="4" width={W - 8} height={H - 8} fill="none" stroke={led} strokeWidth="1" opacity="0.75" />
+      {!half && <line x1="4" y1={H / 2} x2={W - 4} y2={H / 2} stroke={led} strokeWidth="1" opacity="0.75" />}
       {/* 6m-Andeutung oben (und unten bei Ganzfeld) */}
-      <path d={`M ${mapX(0.28)} 4 Q ${W / 2} ${mapY(half ? 0.14 : 0.14)} ${mapX(0.72)} 4`} fill="none" stroke="var(--line)" strokeWidth="1" />
+      <path d={`M ${mapX(0.28)} 4 Q ${W / 2} ${mapY(half ? 0.14 : 0.14)} ${mapX(0.72)} 4`} fill="none" stroke={led} strokeWidth="1" opacity="0.75" />
       {!half && (
-        <path d={`M ${mapX(0.28)} ${H - 4} Q ${W / 2} ${H - (mapY(0.14) - 4) - 0} ${mapX(0.72)} ${H - 4}`} fill="none" stroke="var(--line)" strokeWidth="1" />
+        <path d={`M ${mapX(0.28)} ${H - 4} Q ${W / 2} ${H - (mapY(0.14) - 4) - 0} ${mapX(0.72)} ${H - 4}`} fill="none" stroke={led} strokeWidth="1" opacity="0.75" />
       )}
       {board.tokens.map((t) => (
         <circle
@@ -1042,11 +1045,11 @@ function BoardThumb({ board }: { board: TacticsBoard }) {
           cx={mapX(t.x)}
           cy={mapY(Math.min(t.y, half ? 0.5 : 1))}
           r={t.kind === 'ball' ? 2 : 2.6}
-          fill={t.kind === 'own' ? 'var(--club-700)' : t.kind === 'ball' ? 'var(--club-acc)' : 'var(--muted)'}
+          fill={t.kind === 'own' ? '#eef1ec' : t.kind === 'ball' ? 'var(--club-acc)' : 'rgba(238,241,236,0.45)'}
         />
       ))}
       {board.materials.map((m) => (
-        <rect key={m.id} x={mapX(m.x) - 1.6} y={mapY(Math.min(m.y, half ? 0.5 : 1)) - 1.6} width="3.2" height="3.2" fill="var(--warn)" />
+        <rect key={m.id} x={mapX(m.x) - 1.6} y={mapY(Math.min(m.y, half ? 0.5 : 1)) - 1.6} width="3.2" height="3.2" fill="#e9a23b" />
       ))}
     </svg>
   )

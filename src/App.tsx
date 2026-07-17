@@ -1,4 +1,7 @@
 import { Suspense, lazy, useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from './lib/db'
+import { Crest } from './components/Crest'
 
 const StartScreen = lazy(() => import('./features/start/StartScreen'))
 const SpielplanScreen = lazy(() => import('./features/spielplan/SpielplanScreen'))
@@ -95,6 +98,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 export default function App() {
   const [tab, setTab] = useState<TabId>('start')
   const [detailPlayerId, setDetailPlayerId] = useState<string | null>(null)
+  const settings = useLiveQuery(() => db.settings.get('app'), [])
 
   return (
     // App-Frame: die Seite selbst scrollt nie — nur <main>. So kann die
@@ -105,10 +109,19 @@ export default function App() {
     <div className="mx-auto flex h-dvh max-w-lg flex-col lg:max-w-none lg:flex-row">
       <nav
         aria-label="Hauptnavigation"
-        className="hidden shrink-0 flex-col gap-1 border-r border-line bg-card p-3 pl-[max(0.75rem,env(safe-area-inset-left))] lg:flex lg:w-56"
+        className="hidden shrink-0 flex-col gap-1 p-3 pl-[max(0.75rem,env(safe-area-inset-left))] lg:flex lg:w-56"
+        style={{ background: 'var(--nav-grad-side)', borderRight: '3px solid var(--club-acc)' }}
       >
-        <div className="mb-3 px-2 pt-1 font-display text-[15px] font-bold uppercase tracking-wide">
-          HB Manager
+        <div className="mb-3 flex items-center gap-2 px-2 pt-1">
+          <Crest size={30} />
+          <div className="min-w-0">
+            <p className="truncate font-display text-[14px] font-bold uppercase tracking-wide text-club-on">
+              {settings?.clubName ?? 'HB Manager'}
+            </p>
+            <p className="truncate text-[11px] font-semibold text-nav-idle">
+              {settings?.teamName ?? ''}
+            </p>
+          </div>
         </div>
         {TABS.map((t) => (
           <button
@@ -116,7 +129,7 @@ export default function App() {
             onClick={() => setTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
             className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-left font-display text-[14px] font-bold uppercase tracking-wide ${
-              tab === t.id ? 'bg-accent-soft text-accent' : 'text-muted active:bg-card-2'
+              tab === t.id ? 'bg-white/12 text-club-acc' : 'text-nav-idle active:bg-white/8'
             }`}
           >
             {t.icon}
@@ -124,6 +137,22 @@ export default function App() {
           </button>
         ))}
       </nav>
+
+      {/* Mobile Top-Bar: Vereins-Identität in Vereinsfarben */}
+      <header
+        className="flex shrink-0 items-center gap-2.5 px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] lg:hidden"
+        style={{ background: 'var(--nav-grad)', borderBottom: '3px solid var(--club-acc)' }}
+      >
+        <Crest size={30} />
+        <div className="min-w-0">
+          <p className="truncate font-display text-[15px] font-bold uppercase tracking-wide text-club-on">
+            {settings?.clubName ?? 'HB Manager'}
+          </p>
+          <p className="truncate text-[10.5px] font-semibold text-nav-idle">
+            {settings?.teamName ?? ''}
+          </p>
+        </div>
+      </header>
 
       <main
         id="app-scroll"
@@ -161,7 +190,8 @@ export default function App() {
 
       <nav
         aria-label="Hauptnavigation"
-        className="z-40 shrink-0 border-t border-line bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
+        className="z-40 shrink-0 pb-[env(safe-area-inset-bottom)] lg:hidden"
+        style={{ background: 'var(--nav-grad)', borderTop: '3px solid var(--club-acc)' }}
       >
         <div className="mx-auto flex max-w-lg">
           {TABS.map((t) => (
@@ -170,7 +200,7 @@ export default function App() {
               onClick={() => setTab(t.id)}
               aria-current={tab === t.id ? 'page' : undefined}
               className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 ${
-                tab === t.id ? 'text-accent' : 'text-muted'
+                tab === t.id ? 'text-club-acc' : 'text-nav-idle'
               }`}
             >
               {t.icon}

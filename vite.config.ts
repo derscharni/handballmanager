@@ -25,7 +25,7 @@ export default defineConfig({
         // Landscape/Tablet erlaubt — keine Orientierungs-Sperre
         orientation: 'any',
         theme_color: '#0B2158',
-        background_color: '#F5F6F8',
+        background_color: '#1E2226',
         start_url: base,
         scope: base,
         icons: [

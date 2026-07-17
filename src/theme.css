@@ -1,15 +1,24 @@
 @import 'tailwindcss';
 
 /* ================================================================
-   HANDBALL MANAGER — Design "Vereinsfarben" (aus Design C V4)
+   HANDBALL MANAGER — Design "Trainertafel"
+   Grundidee: Die App spielt immer auf einer dunklen Kreidetafel
+   (Hallen-Atmosphäre), Inhalte liegen als helle "Zettel"-Karten
+   darauf. Die Vereinsfarben (Blau/Gelb) tragen Navigation, Buttons
+   und Badges. Es gibt bewusst keinen Hell-/Dunkelmodus mehr —
+   die Tafel ist der eine Look.
+
    Token-Ebenen:
-   1) Club-Töne (--club-*)  — pro Verein, via :root[data-club=…]
-   2) Semantik  (--bg, --ink, --accent …) — pro Theme (hell/dunkel)
+   1) Club-Töne (--club-*)  — pro Verein, via applyClubColors()
+   2) Semantik  (--bg, --ink, --accent …) — global = Tafel
+   3) Zettel-Scope: .bg-card / .bg-card-2 / .surface-paper setzen
+      die Text-/Linien-Tokens lokal auf helle-Karte-Werte um, damit
+      alle Inhalte in Karten und Sheets dunkel-auf-hell bleiben.
    ================================================================ */
 
 :root {
   /* TuS Köln-Ehrenfeld 1865 — Königsblau + Vereinsgelb.
-     Blau führt (Flächen, Buttons, Poster), Gelb ist Energie-Akzent
+     Blau führt (Nav, Buttons, Poster), Gelb ist Energie-Akzent
      (Wappenband, CTA, Gast-Badges) — nie Gelb-Text auf Weiß. */
   --club-950: #071230;
   --club-900: #0b2158;
@@ -22,97 +31,69 @@
   --club-acc-ink: #172b5e;
 }
 
-/* ---------- Semantik — HELL (Basis) ---------- */
+/* ---------- Semantik — TAFEL (immer aktiv) ---------- */
 :root {
-  --bg: color-mix(in srgb, var(--club-700) 6%, #f5f6f8);
+  --bg: #1e2226;
   --card: #ffffff;
-  --card-2: color-mix(in srgb, var(--club-700) 4%, #ffffff);
-  --ink: color-mix(in srgb, var(--club-950) 60%, #14161b);
-  --muted: color-mix(in srgb, var(--club-700) 30%, #676f7d);
-  --line: color-mix(in srgb, var(--club-700) 13%, #e4e6ea);
-  --accent: var(--club-700);
-  --accent-soft: color-mix(in srgb, var(--club-700) 11%, #ffffff);
-  --btn-bg: var(--club-700);
+  --card-2: #f3f4f1;
+  /* Kreide: Text direkt auf der Tafel */
+  --ink: #eef1ec;
+  --muted: color-mix(in srgb, #eef1ec 74%, #1e2226);
+  --line: rgba(238, 241, 236, 0.16);
+  --chalk: #eef1ec;
+  --chalk-dim: rgba(238, 241, 236, 0.55);
+  /* Akzent auf dunkler Tafel: helles Vereinsblau */
+  --accent: var(--club-300);
+  --accent-soft: color-mix(in srgb, var(--club-500) 26%, #171b20);
+  --btn-bg: var(--club-500);
   --btn-ink: var(--club-on);
   --poster-a: var(--club-900);
   --poster-b: var(--club-950);
   --poster-ink: var(--club-on);
-  --ok: #25834f;
-  --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
-  --warn: #8f5804;
-  --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
-  --crit: #c2372c;
-  --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);
-  --shadow: 0 1px 2px rgba(10, 20, 40, 0.05), 0 8px 24px rgba(10, 20, 40, 0.07);
+  --ok: #4cc282;
+  --ok-soft: color-mix(in srgb, #4cc282 18%, #171b20);
+  --warn: #e9a23b;
+  --warn-soft: color-mix(in srgb, #e9a23b 16%, #171b20);
+  --crit: #e5695c;
+  --crit-soft: color-mix(in srgb, #e5695c 16%, #171b20);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.38);
+  /* Navigations-Flächen in Vereinsfarben */
+  --nav-grad: linear-gradient(180deg, var(--club-700), var(--club-950));
+  --nav-grad-side: linear-gradient(160deg, var(--club-900), var(--club-950));
+  --nav-idle: color-mix(in srgb, var(--club-150) 82%, var(--club-700));
   --font-display: 'Helvetica Neue Condensed', 'HelveticaNeue-CondensedBold',
     'Arial Narrow', 'Avenir Next Condensed', 'Roboto Condensed',
     'Liberation Sans Narrow', 'DejaVu Sans Condensed', sans-serif-condensed,
     sans-serif;
   --font-body: 'Helvetica Neue', Helvetica, 'Segoe UI', Roboto, Arial,
     sans-serif;
+  /* Kreideschrift für Überschriften direkt auf der Tafel */
+  --font-chalk: 'Chalkboard SE', 'Comic Sans MS', 'Segoe Print',
+    'Bradley Hand', cursive;
 }
 
-/* ---------- Semantik — DUNKEL via OS ---------- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: color-mix(in srgb, var(--club-900) 22%, #0b0d12);
-    --card: color-mix(in srgb, var(--club-900) 32%, #13161d);
-    --card-2: color-mix(in srgb, var(--club-900) 42%, #171b24);
-    --ink: color-mix(in srgb, var(--club-150) 42%, #eceef2);
-    --muted: color-mix(in srgb, var(--club-300) 32%, #969eac);
-    --line: color-mix(in srgb, var(--club-500) 20%, #272c37);
-    --accent: var(--club-300);
-    --accent-soft: color-mix(in srgb, var(--club-500) 26%, #14171f);
-    --btn-bg: var(--club-500);
-    --btn-ink: var(--club-on);
-    --ok: #4cc282;
-    --ok-soft: color-mix(in srgb, #4cc282 18%, #12151c);
-    --warn: #e9a23b;
-    --warn-soft: color-mix(in srgb, #e9a23b 16%, #12151c);
-    --crit: #e5695c;
-    --crit-soft: color-mix(in srgb, #e5695c 16%, #12151c);
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.35);
-  }
-}
-
-/* ---------- Theme-Schalter gewinnt in beide Richtungen ---------- */
-:root[data-theme='light'] {
-  --bg: color-mix(in srgb, var(--club-700) 6%, #f5f6f8);
-  --card: #ffffff;
-  --card-2: color-mix(in srgb, var(--club-700) 4%, #ffffff);
+/* ---------- Zettel-Scope: helle Karten auf der Tafel ----------
+   Alles, was auf einer hellen Fläche liegt (Card, Sheet, Inputs,
+   Chips mit bg-card/bg-card-2), bekommt lokal die Hell-Werte für
+   Text, Linien, Akzente und Status-Farben. */
+.bg-card,
+.bg-card-2,
+.surface-paper {
+  /* color neu deklarieren: vererbte Kreide-Farbe vom body überschreiben,
+     damit Text ohne explizite Farbklasse in Karten dunkel bleibt. */
+  color: var(--ink);
   --ink: color-mix(in srgb, var(--club-950) 60%, #14161b);
   --muted: color-mix(in srgb, var(--club-700) 30%, #676f7d);
   --line: color-mix(in srgb, var(--club-700) 13%, #e4e6ea);
   --accent: var(--club-700);
   --accent-soft: color-mix(in srgb, var(--club-700) 11%, #ffffff);
   --btn-bg: var(--club-700);
-  --btn-ink: var(--club-on);
   --ok: #25834f;
   --ok-soft: color-mix(in srgb, #25834f 12%, #ffffff);
   --warn: #8f5804;
   --warn-soft: color-mix(in srgb, #c97a08 13%, #ffffff);
   --crit: #c2372c;
   --crit-soft: color-mix(in srgb, #c2372c 10%, #ffffff);
-  --shadow: 0 1px 2px rgba(10, 20, 40, 0.05), 0 8px 24px rgba(10, 20, 40, 0.07);
-}
-:root[data-theme='dark'] {
-  --bg: color-mix(in srgb, var(--club-900) 22%, #0b0d12);
-  --card: color-mix(in srgb, var(--club-900) 32%, #13161d);
-  --card-2: color-mix(in srgb, var(--club-900) 42%, #171b24);
-  --ink: color-mix(in srgb, var(--club-150) 42%, #eceef2);
-  --muted: color-mix(in srgb, var(--club-300) 32%, #969eac);
-  --line: color-mix(in srgb, var(--club-500) 20%, #272c37);
-  --accent: var(--club-300);
-  --accent-soft: color-mix(in srgb, var(--club-500) 26%, #14171f);
-  --btn-bg: var(--club-500);
-  --btn-ink: var(--club-on);
-  --ok: #4cc282;
-  --ok-soft: color-mix(in srgb, #4cc282 18%, #12151c);
-  --warn: #e9a23b;
-  --warn-soft: color-mix(in srgb, #e9a23b 16%, #12151c);
-  --crit: #e5695c;
-  --crit-soft: color-mix(in srgb, #e5695c 16%, #12151c);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
 /* ---------- Tailwind-Anbindung: Tokens als Theme-Farben ---------- */
@@ -123,6 +104,8 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-chalk: var(--chalk);
+  --color-chalk-dim: var(--chalk-dim);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-btn-bg: var(--btn-bg);
@@ -145,15 +128,23 @@
   --color-club-on: var(--club-on);
   --color-club-acc: var(--club-acc);
   --color-club-acc-ink: var(--club-acc-ink);
+  --color-nav-idle: var(--nav-idle);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --font-chalk: var(--font-chalk);
   --shadow-card: var(--shadow);
 }
 
 /* ---------- Basis ---------- */
 html,
 body {
-  background: var(--bg);
+  /* Tafel mit dezenten Kreide-Wischspuren */
+  background:
+    radial-gradient(420px 240px at 18% 12%, rgba(255, 255, 255, 0.045), transparent 70%),
+    radial-gradient(520px 300px at 85% 45%, rgba(255, 255, 255, 0.035), transparent 70%),
+    radial-gradient(400px 280px at 35% 85%, rgba(255, 255, 255, 0.05), transparent 70%),
+    linear-gradient(160deg, #262b2f 0%, var(--bg) 55%, #24282c 100%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -171,6 +162,21 @@ body {
 .font-display {
   font-family: var(--font-display);
   letter-spacing: 0.01em;
+}
+
+.font-chalk {
+  font-family: var(--font-chalk);
+}
+
+/* Kreide-Unterstreichung für Abschnittstitel auf der Tafel */
+.chalk-underline::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 3px;
+  width: 120px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--chalk-dim), transparent);
 }
 
 .tnum {

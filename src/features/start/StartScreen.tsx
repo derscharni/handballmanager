@@ -191,18 +191,9 @@ export default function StartScreen({ goTo, openPlayer }: StartScreenProps) {
 
   return (
     <div className="flex flex-col">
-      {/* ================= 1) KOPF ================= */}
-      <header className="flex items-center gap-3 px-1 pb-3 pt-2">
-        <Crest size={40} />
-        <div className="min-w-0">
-          <h1 className="truncate font-display text-[17px] font-bold uppercase leading-tight tracking-wide text-ink">
-            {clubName}
-          </h1>
-          <p className="font-display text-[12px] font-bold uppercase tracking-[0.14em] text-muted">
-            {teamName}
-          </p>
-        </div>
-      </header>
+      {/* Vereins-Identität steht in der App-Top-Bar (App.tsx) —
+          hier startet der Screen direkt mit dem Spieltag-Poster. */}
+      <h1 className="sr-only">{clubName} · {teamName}</h1>
 
       {posterOpen && heroEvent && (
         <PosterShareOverlay
