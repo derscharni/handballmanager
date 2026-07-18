@@ -91,7 +91,7 @@ export interface BoardDragOptions {
   moveMaterial: (id: string, x: number, y: number) => void
   /** Aufgezeichneten Weg übernehmen (Figur zurück an den Start). */
   commitPath: (id: string, pts: Pt[]) => void
-  onTapToken: (id: string) => void
+  onTapToken: (id: string, clientX: number, clientY: number) => void
   onTapMaterial: (id: string, clientX: number, clientY: number) => void
   onTapPath: (id: string, clientX: number, clientY: number) => void
   onTapBackground: () => void
@@ -217,13 +217,13 @@ export function useBoardDrag(o: BoardDragOptions) {
         o.commitPath(d.id, pts)
       } else {
         o.moveToken(d.id, d.startX, d.startY)
-        if (!cancelled && !d.moved) o.onTapToken(d.id)
+        if (!cancelled && !d.moved) o.onTapToken(d.id, e.clientX, e.clientY)
       }
       return
     }
     if (cancelled || !d.moved) {
       o.moveToken(d.id, d.startX, d.startY)
-      if (!cancelled && !d.moved) o.onTapToken(d.id)
+      if (!cancelled && !d.moved) o.onTapToken(d.id, e.clientX, e.clientY)
     }
   }
 

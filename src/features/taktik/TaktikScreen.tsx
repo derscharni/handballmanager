@@ -34,7 +34,7 @@ import type { Pt } from './useBoardDrag'
  */
 
 const HINT_DEFAULT =
-  'Figuren frei verschieben, antippen = auswählen. „Aufzeichnen“ speichert Laufwege als Pfeil, „Abspielen“ animiert alle Wege gleichzeitig. Weg antippen = löschen.'
+  'Figuren frei verschieben. Antippen (Figur, Weg oder Material) öffnet Aktionen — z.B. „Vom Feld entfernen“ oder „Weg löschen“. „Aufzeichnen“ speichert Laufwege, „Abspielen“ animiert sie.'
 const HINT_RECORD =
   'Aufzeichnen aktiv: Figur oder Ball über das Feld ziehen — der Weg wird als Pfeil gespeichert und die Figur kehrt zum Start zurück. Ball = Pass (durchgezogen).'
 
@@ -346,12 +346,14 @@ export default function TaktikScreen() {
   const [livePath, setLivePath] = useState<Pt[] | null>(null)
   const [trayOpen, setTrayOpen] = useState(false)
   const [ghost, setGhostState] = useState<{ kind: MaterialKind; x: number; y: number } | null>(null)
-  const [sheetView, setSheetView] = useState<'boards' | 'new' | null>(null)
+  const [sheetView, setSheetView] = useState<'boards' | 'new' | 'figur' | null>(null)
   const [presetDesc, setPresetDesc] = useState<string | null>(null)
   const [popover, setPopover] = useState<{
-    kind: 'path' | 'material'
+    kind: 'path' | 'material' | 'token'
     id: string
     title: string
+    /** Nur bei kind='token': hat die Figur einen gespeicherten Weg? */
+    hasPath?: boolean
     x: number
     y: number
     below: boolean
@@ -559,30 +561,47 @@ export default function TaktikScreen() {
     )
   }, [])
 
-  const openPopover = (kind: 'path' | 'material', id: string, clientX: number, clientY: number) => {
+  const openPopover = (
+    kind: 'path' | 'material' | 'token',
+    id: string,
+    clientX: number,
+    clientY: number,
+  ) => {
     const b = boardRef.current
     if (!b) return
     let title: string
-    if (kind === 'path') {
+    let hasPath: boolean | undefined
+    if (kind === 'path' || kind === 'token') {
       const t = b.tokens.find((x) => x.id === id)
-      title =
-        t?.kind === 'ball'
-          ? 'Passweg · Ball'
-          : `Laufweg · ${t?.kind === 'opp' ? `Abwehr ${t.label ?? ''}` : (t?.label ?? 'Figur')}`
+      if (!t) return
+      const name =
+        t.kind === 'ball' ? 'Ball' : t.kind === 'opp' ? `Abwehr ${t.label ?? ''}`.trim() : (t.label ?? 'Spielerin')
+      title = kind === 'path' ? (t.kind === 'ball' ? 'Passweg · Ball' : `Laufweg · ${name}`) : name
+      hasPath = kind === 'token' ? !!t.path && t.path.length > 1 : undefined
     } else {
       const m = b.materials.find((x) => x.id === id)
       if (!m) return
       title = MATERIAL_LABEL[m.kind]
     }
-    setSelectedId(null)
+    // Bei Figuren bleibt der Auswahlring als Zeige-Feedback stehen.
+    setSelectedId(kind === 'token' ? id : null)
     setPopover({
       kind,
       id,
       title,
+      hasPath,
       x: Math.min(window.innerWidth - 100, Math.max(100, clientX)),
       y: clientY,
       below: clientY < 170,
     })
+  }
+
+  const deletePathOf = (id: string) => {
+    setBoard((b) =>
+      b
+        ? { ...b, tokens: b.tokens.map((t) => (t.id === id ? { ...t, path: undefined } : t)) }
+        : b,
+    )
   }
 
   const onPopoverDelete = () => {
@@ -590,14 +609,20 @@ export default function TaktikScreen() {
     if (!p) return
     setPopover(null)
     if (p.kind === 'path') {
-      setBoard((b) =>
-        b
-          ? { ...b, tokens: b.tokens.map((t) => (t.id === p.id ? { ...t, path: undefined } : t)) }
-          : b,
-      )
+      deletePathOf(p.id)
+    } else if (p.kind === 'token') {
+      setSelectedId(null)
+      setBoard((b) => (b ? { ...b, tokens: b.tokens.filter((t) => t.id !== p.id) } : b))
     } else {
       setBoard((b) => (b ? { ...b, materials: b.materials.filter((m) => m.id !== p.id) } : b))
     }
+  }
+
+  const onPopoverDeletePath = () => {
+    const p = popover
+    if (!p) return
+    setPopover(null)
+    deletePathOf(p.id)
   }
 
   const dragHandlers = useBoardDrag({
@@ -609,10 +634,7 @@ export default function TaktikScreen() {
     moveToken,
     moveMaterial,
     commitPath,
-    onTapToken: (id) => {
-      setPopover(null)
-      setSelectedId((s) => (s === id ? null : id))
-    },
+    onTapToken: (id, cx, cy) => openPopover('token', id, cx, cy),
     onTapMaterial: (id, cx, cy) => openPopover('material', id, cx, cy),
     onTapPath: (id, cx, cy) => openPopover('path', id, cx, cy),
     onTapBackground: () => {
@@ -629,6 +651,35 @@ export default function TaktikScreen() {
   /* ---- Feld / Abwehr / Presets / Züge ---- */
 
   const hasOpp = board?.tokens.some((t) => t.kind === 'opp') ?? false
+  const hasBall = board?.tokens.some((t) => t.kind === 'ball') ?? false
+
+  /** Figur ergänzen (Gegenstück zu „Vom Feld entfernen" im Popover). */
+  const addFigure = (kind: 'own' | 'opp' | 'ball') => {
+    setSheetView(null)
+    setBoard((b) => {
+      if (!b) return b
+      if (kind === 'ball' && b.tokens.some((t) => t.kind === 'ball')) return b
+      let label: string | undefined
+      if (kind === 'own') {
+        const used = new Set(b.tokens.filter((t) => t.kind === 'own').map((t) => t.label))
+        label =
+          ['TW', 'LA', 'RA', 'KM', 'RL', 'RM', 'RR'].find((p) => !used.has(p)) ??
+          `S${b.tokens.filter((t) => t.kind === 'own').length + 1}`
+      } else if (kind === 'opp') {
+        label = String(b.tokens.filter((t) => t.kind === 'opp').length + 1)
+      }
+      // In der freien Feldmitte ablegen, leicht versetzt je Figurenzahl
+      const n = b.tokens.length
+      const tok = {
+        id: uid(),
+        kind,
+        label,
+        x: Math.min(0.9, Math.max(0.1, 0.5 + ((n % 5) - 2) * 0.09)),
+        y: b.field === 'half' ? 0.4 : 0.58,
+      }
+      return { ...b, tokens: [...b.tokens, tok] }
+    })
+  }
 
   const toggleDefense = () => {
     stopPlay()
@@ -856,6 +907,9 @@ export default function TaktikScreen() {
           <Chip pressed={trayOpen} onClick={() => setTrayOpen((v) => !v)}>
             <Icon d={IC_CONE} /> Material
           </Chip>
+          <Chip onClick={() => setSheetView('figur')}>
+            <Icon d={IC_PLUS} /> Figur
+          </Chip>
           {PRESETS.map((p) => (
             <Chip key={p.id} onClick={() => loadPreset(p)}>
               <Icon d={IC_PLAY} /> {p.chip}
@@ -969,6 +1023,15 @@ export default function TaktikScreen() {
             }}
           >
             <p className="truncate px-2 py-1 text-[11px] font-semibold text-muted">{popover.title}</p>
+            {popover.kind === 'token' && popover.hasPath && (
+              <button
+                className="flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-[13px] font-semibold text-ink active:bg-card-2"
+                onClick={onPopoverDeletePath}
+              >
+                <Icon d={IC_RESET} className="h-4 w-4" />
+                Weg löschen
+              </button>
+            )}
             <button
               className="flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-[13px] font-semibold text-crit active:bg-crit-soft"
               onClick={onPopoverDelete}
@@ -990,6 +1053,52 @@ export default function TaktikScreen() {
         onDelete={deleteBoard}
         onNew={() => setSheetView('new')}
       />
+      <Sheet open={sheetView === 'figur'} onClose={() => setSheetView(null)} title="Figur hinzufügen">
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => addFigure('own')}
+            className="flex items-center gap-3 rounded-xl border border-line bg-card-2 px-3 py-3 text-left active:border-accent"
+          >
+            <svg viewBox="0 0 24 24" className="h-8 w-8 flex-none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="#20242a" stroke="#eef1ec" strokeWidth="1.8" />
+            </svg>
+            <span>
+              <p className="font-display text-[14px] font-bold uppercase tracking-wide text-ink">Eigene Spielerin</p>
+              <p className="mt-0.5 text-[12px] text-muted">Kreide-Kreis, Kürzel wird automatisch vergeben</p>
+            </span>
+          </button>
+          <button
+            onClick={() => addFigure('opp')}
+            className="flex items-center gap-3 rounded-xl border border-line bg-card-2 px-3 py-3 text-left active:border-accent"
+          >
+            <svg viewBox="0 0 24 24" className="h-8 w-8 flex-none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="#20242a" stroke="rgba(238,241,236,0.6)" strokeWidth="1.4" strokeDasharray="3.2 2.2" />
+            </svg>
+            <span>
+              <p className="font-display text-[14px] font-bold uppercase tracking-wide text-ink">Abwehrspielerin</p>
+              <p className="mt-0.5 text-[12px] text-muted">Gestrichelter Kreis, fortlaufend nummeriert</p>
+            </span>
+          </button>
+          <button
+            onClick={() => addFigure('ball')}
+            disabled={hasBall}
+            className="flex items-center gap-3 rounded-xl border border-line bg-card-2 px-3 py-3 text-left active:border-accent disabled:opacity-40"
+          >
+            <svg viewBox="0 0 24 24" className="h-8 w-8 flex-none" aria-hidden="true">
+              <circle cx="12" cy="12" r="7" fill="var(--club-acc)" stroke="var(--club-acc-ink)" strokeWidth="1" />
+            </svg>
+            <span>
+              <p className="font-display text-[14px] font-bold uppercase tracking-wide text-ink">Ball</p>
+              <p className="mt-0.5 text-[12px] text-muted">
+                {hasBall ? 'Liegt schon auf dem Feld' : 'Gelber Ball für Passwege'}
+              </p>
+            </span>
+          </button>
+          <p className="px-1 text-[11.5px] text-muted">
+            Entfernen: Figur auf dem Feld antippen → „Vom Feld entfernen".
+          </p>
+        </div>
+      </Sheet>
       <Sheet open={sheetView === 'new'} onClose={() => setSheetView(null)} title="Neuer Zug">
         <div className="flex flex-col gap-2">
           {NEW_BOARD_OPTIONS.map((o) => (
