@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Button, Card, SectionTitle, Sheet } from '../../../components/ui'
+import { Button, Card, SectionTitle, Segmented, Sheet } from '../../../components/ui'
 import { FarbenCard } from './FarbenCard'
 import { TrainerteamCard } from './TrainerteamCard'
 import { db, todayIso } from '../../../lib/db'
@@ -33,6 +33,82 @@ function Field({
       <span className="mb-1 block text-[12px] font-semibold text-muted">{label}</span>
       {children}
     </label>
+  )
+}
+
+/** Theme sofort anwenden: auto = OS-Präferenz (Attribut entfernen), sonst erzwingen. */
+function applyTheme(theme: Settings['theme']) {
+  if (theme === 'auto') {
+    delete document.documentElement.dataset.theme
+  } else {
+    document.documentElement.dataset.theme = theme
+  }
+}
+
+/* ---------- Vereinslogo ---------- */
+
+function LogoCard({ settings }: { settings: Settings }) {
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!settings.logo) {
+      setPreview(null)
+      return
+    }
+    const url = URL.createObjectURL(settings.logo)
+    setPreview(url)
+    return () => URL.revokeObjectURL(url)
+  }, [settings.logo])
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file || !file.type.startsWith('image/')) return
+    await db.settings.update('app', { logo: file })
+  }
+
+  return (
+    <Card className="flex items-center gap-4 p-4">
+      {preview ? (
+        <img
+          src={preview}
+          alt="Vereinslogo"
+          className="h-16 w-16 flex-none rounded-xl object-contain"
+        />
+      ) : (
+        <div className="grid h-16 w-16 flex-none place-items-center rounded-xl border border-dashed border-line text-[10px] font-semibold text-muted">
+          Kein Logo
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] text-muted">
+          Das echte Vereinswappen erscheint in der Kopfzeile, als Wasserzeichen
+          im Hintergrund und auf dem Spieltag-Poster. PNG mit Transparenz wirkt
+          am besten.
+        </p>
+        <div className="mt-2 flex gap-2">
+          <Button variant="secondary" onClick={() => fileRef.current?.click()}>
+            {settings.logo ? 'Logo ersetzen …' : 'Logo hochladen …'}
+          </Button>
+          {settings.logo && (
+            <Button
+              variant="ghost"
+              onClick={() => void db.settings.update('app', { logo: null })}
+            >
+              Entfernen
+            </Button>
+          )}
+        </div>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => void onPick(e)}
+      />
+    </Card>
   )
 }
 
@@ -230,6 +306,7 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
       await applyBackup(pendingImport)
       const fresh = await db.settings.get('app')
       applyClubColors(fresh?.colors)
+      if (fresh) applyTheme(fresh.theme)
       setPendingImport(null)
       setFormEpoch((n) => n + 1)
       setBackupMsg({ kind: 'ok', text: 'Backup erfolgreich eingespielt.' })
@@ -257,6 +334,7 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
     await seedTeamDefaults()
     const fresh = await db.settings.get('app')
     applyClubColors(fresh?.colors)
+    if (fresh) applyTheme(fresh.theme)
     setFormEpoch((n) => n + 1)
   }
 
@@ -279,6 +357,29 @@ export default function EinstellungenSection(_props: TeamSectionProps) {
     <div className="pb-6">
       <SectionTitle>Verein &amp; Saison</SectionTitle>
       <VereinCard key={formEpoch} settings={settings} />
+
+      <SectionTitle>Vereinslogo</SectionTitle>
+      <LogoCard settings={settings} />
+
+      <SectionTitle>Darstellung</SectionTitle>
+      <Card className="p-4">
+        <Segmented
+          options={[
+            { value: 'auto', label: 'Auto' },
+            { value: 'light', label: 'Hell' },
+            { value: 'dark', label: 'Dunkel' },
+          ]}
+          value={settings.theme}
+          onChange={async (theme) => {
+            applyTheme(theme)
+            await db.settings.update('app', { theme })
+          }}
+        />
+        <p className="mt-2 text-[12px] text-muted">
+          Auto folgt der System-Einstellung des Geräts. Die Taktik-Tafel bleibt
+          immer Kreidetafel.
+        </p>
+      </Card>
 
       <SectionTitle>Vereinsfarben</SectionTitle>
       <FarbenCard settings={settings} />

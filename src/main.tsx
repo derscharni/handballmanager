@@ -10,8 +10,11 @@ async function boot() {
   await seedIfEmpty()
   await seedTeamDefaults()
 
-  // Design "Trainertafel" ist immer aktiv — kein Hell-/Dunkel-Schalter mehr.
+  // Theme-Einstellung anwenden (auto = OS-Präferenz, sonst erzwungen)
   const settings = await db.settings.get('app')
+  if (settings && settings.theme !== 'auto') {
+    document.documentElement.dataset.theme = settings.theme
+  }
   // Vereinsfarben anwenden (fehlt = TuS-Standardskala aus theme.css)
   applyClubColors(settings?.colors)
 

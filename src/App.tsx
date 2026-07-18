@@ -1,7 +1,23 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './lib/db'
 import { Crest } from './components/Crest'
+
+/** Vereinswappen: hochgeladenes Logo (Einstellungen) oder geometrischer Fallback. */
+function ClubMark({ size, logoUrl }: { size: number; logoUrl: string | null }) {
+  if (logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt=""
+        aria-hidden="true"
+        style={{ height: size, width: size }}
+        className="flex-none object-contain"
+      />
+    )
+  }
+  return <Crest size={size} />
+}
 
 const StartScreen = lazy(() => import('./features/start/StartScreen'))
 const SpielplanScreen = lazy(() => import('./features/spielplan/SpielplanScreen'))
@@ -100,6 +116,18 @@ export default function App() {
   const [detailPlayerId, setDetailPlayerId] = useState<string | null>(null)
   const settings = useLiveQuery(() => db.settings.get('app'), [])
 
+  // Objekt-URL fürs hochgeladene Vereinslogo (Kopfzeile + Wasserzeichen)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!settings?.logo) {
+      setLogoUrl(null)
+      return
+    }
+    const url = URL.createObjectURL(settings.logo)
+    setLogoUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [settings?.logo])
+
   return (
     // App-Frame: die Seite selbst scrollt nie — nur <main>. So kann die
     // Navigation auf iOS/Android nicht aus dem Viewport scrollen
@@ -113,7 +141,7 @@ export default function App() {
         style={{ background: 'var(--nav-grad-side)', borderRight: '3px solid var(--club-acc)' }}
       >
         <div className="mb-3 flex items-center gap-2 px-2 pt-1">
-          <Crest size={30} />
+          <ClubMark size={30} logoUrl={logoUrl} />
           <div className="min-w-0">
             <p className="truncate font-display text-[14px] font-bold uppercase tracking-wide text-club-on">
               {settings?.clubName ?? 'HB Manager'}
@@ -143,7 +171,7 @@ export default function App() {
         className="flex shrink-0 items-center gap-2.5 px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] lg:hidden"
         style={{ background: 'var(--nav-grad)', borderBottom: '3px solid var(--club-acc)' }}
       >
-        <Crest size={30} />
+        <ClubMark size={30} logoUrl={logoUrl} />
         <div className="min-w-0">
           <p className="truncate font-display text-[15px] font-bold uppercase tracking-wide text-club-on">
             {settings?.clubName ?? 'HB Manager'}
@@ -154,9 +182,18 @@ export default function App() {
         </div>
       </header>
 
+      {/* Wappen-Wasserzeichen: groß angerissen im Hintergrund, hinter dem Inhalt */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed -bottom-24 -right-24 z-0 select-none opacity-[0.055]"
+        style={{ transform: 'rotate(-10deg)' }}
+      >
+        <ClubMark size={430} logoUrl={logoUrl} />
+      </div>
+
       <main
         id="app-scroll"
-        className="flex-1 overflow-y-auto overscroll-contain px-3 pb-8 pt-2 lg:px-8"
+        className="relative z-10 flex-1 overflow-y-auto overscroll-contain px-3 pb-8 pt-2 lg:px-8"
       >
         <div className="mx-auto w-full lg:max-w-2xl">
         <Suspense

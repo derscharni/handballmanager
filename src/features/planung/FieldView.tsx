@@ -60,13 +60,9 @@ function clusterPoint(pos: Position, i: number): [number, number] {
   ]
 }
 
-/* Kreidetafel-Look wie im Taktik-Board: dunkle Tafel, weiße Kreide-Linien
-   mit leichtem Handstrich-Wackler, Figuren-Chips in Vereinsfarben. */
-const FLOOR = 'color-mix(in srgb, var(--club-900) 12%, #191d20)'
-
 const lineStyle: React.CSSProperties = {
-  stroke: 'rgba(238, 241, 236, 0.92)',
-  strokeWidth: 0.2,
+  stroke: 'color-mix(in srgb, var(--accent) 62%, var(--line))',
+  strokeWidth: 0.16,
   fill: 'none',
   strokeLinecap: 'round',
 }
@@ -95,10 +91,7 @@ export default function FieldView({
   onTokenClick: (playerId: string) => void
 }) {
   return (
-    <div
-      className="overflow-hidden rounded-2xl shadow-card"
-      style={{ border: '1px solid rgba(238,241,236,0.18)', background: FLOOR }}
-    >
+    <div className="overflow-hidden rounded-2xl border border-line bg-card shadow-card">
       <svg
         data-drop-field
         viewBox={`${FIELD_VIEWBOX.x} ${FIELD_VIEWBOX.y} ${FIELD_VIEWBOX.w} ${FIELD_VIEWBOX.h}`}
@@ -106,30 +99,20 @@ export default function FieldView({
         role="application"
         aria-label="Feld-Ansicht — Spielerinnen auf Positionszonen ziehen"
       >
-        {/* Boden (Tafel) + Kreide-Spielfeldlinien (Tor oben) */}
+        {/* Boden + Spielfeldlinien (Tor oben) */}
         <g aria-hidden="true">
-          <defs>
-            <filter id="fv-chalk-rough" x="-8%" y="-8%" width="116%" height="116%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" seed="11" result="n" />
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="0.3" />
-            </filter>
-          </defs>
-          <rect x={-1} y={-1} width={22} height={22} style={{ fill: FLOOR }} />
-          <ellipse cx={5} cy={13} rx={7} ry={4} fill="rgba(255,255,255,0.035)" />
-          <ellipse cx={15} cy={6} rx={6} ry={3.5} fill="rgba(255,255,255,0.03)" />
-          <g filter="url(#fv-chalk-rough)">
-            <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" style={{ fill: 'rgba(238,241,236,0.05)' }} />
-            <rect x={0} y={0} width={20} height={20} rx={0.3} style={lineStyle} />
-            {/* 6-m-Kreisraum */}
-            <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" style={lineStyle} />
-            {/* 9-m-Linie, gestrichelt */}
-            <path d="M0 2.96 A9 9 0 0 0 8.5 9 L11.5 9 A9 9 0 0 0 20 2.96" style={{ ...lineStyle, strokeDasharray: '0.8 0.55' }} />
-            {/* 7-m-Strich + 4-m-Torwartgrenze */}
-            <line x1={9.4} y1={7} x2={10.6} y2={7} style={lineStyle} />
-            <line x1={9.65} y1={4} x2={10.35} y2={4} style={lineStyle} />
-          </g>
-          {/* Tor in Vereinsgelb */}
-          <rect x={8.5} y={-0.45} width={3} height={0.45} style={{ fill: 'var(--club-acc)' }} />
+          <rect x={-1} y={-1} width={22} height={22} style={{ fill: 'color-mix(in srgb, var(--club-700) 7%, var(--card))' }} />
+          <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" style={{ fill: 'color-mix(in srgb, var(--accent) 13%, transparent)' }} />
+          <rect x={0} y={0} width={20} height={20} rx={0.3} style={lineStyle} />
+          {/* 6-m-Kreisraum */}
+          <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" style={lineStyle} />
+          {/* 9-m-Linie, gestrichelt */}
+          <path d="M0 2.96 A9 9 0 0 0 8.5 9 L11.5 9 A9 9 0 0 0 20 2.96" style={{ ...lineStyle, strokeDasharray: '0.8 0.55' }} />
+          {/* 7-m-Strich + 4-m-Torwartgrenze */}
+          <line x1={9.4} y1={7} x2={10.6} y2={7} style={lineStyle} />
+          <line x1={9.65} y1={4} x2={10.35} y2={4} style={lineStyle} />
+          {/* Tor */}
+          <rect x={8.5} y={-0.45} width={3} height={0.45} style={{ fill: 'var(--accent)' }} />
         </g>
 
         {/* Positionszonen */}

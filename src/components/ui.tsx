@@ -28,8 +28,12 @@ export function SectionTitle({
 }) {
   return (
     <div className="flex items-baseline justify-between px-1 pt-5 pb-2">
-      {/* Kreideschrift direkt auf der Tafel, mit Kreide-Unterstrich */}
-      <h2 className="chalk-underline font-chalk text-[15px] font-semibold text-chalk">
+      {/* Wappenband-Motiv (Blau/Gelb) als kleines Wiederholungselement */}
+      <h2 className="flex items-center gap-2 font-display uppercase tracking-wide text-[13px] text-muted">
+        <span aria-hidden="true" className="flex h-3.5 w-1.5 flex-none flex-col overflow-hidden rounded-[3px]">
+          <span className="flex-1 bg-club-700" />
+          <span className="h-1.5 bg-club-acc" />
+        </span>
         {children}
       </h2>
       {action}
@@ -98,25 +102,15 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    // Tafel: dunkel-transluzent mit blauer Aktiv-Fläche; in Karten
-    // hell mit weißer Aktiv-Fläche (--seg-* Tokens, theme.css).
-    <div
-      className="flex rounded-xl p-0.5"
-      style={{ background: 'var(--seg-bg)', border: '1px solid var(--seg-border)' }}
-    >
+    <div className="flex rounded-xl bg-card-2 border border-line p-0.5">
       {options.map((o) => (
         <button
           key={o.value}
           onClick={() => onChange(o.value)}
           aria-pressed={o.value === value}
           className={`flex-1 min-h-11 rounded-[10px] px-2 text-[13px] font-semibold transition-colors ${
-            o.value === value ? '' : 'text-muted'
+            o.value === value ? 'bg-card text-ink shadow-card' : 'text-muted'
           }`}
-          style={
-            o.value === value
-              ? { background: 'var(--seg-active-bg)', color: 'var(--seg-active-ink)', boxShadow: 'var(--shadow)' }
-              : undefined
-          }
         >
           {o.label}
         </button>
