@@ -72,6 +72,16 @@
     'Bradley Hand', cursive;
 }
 
+/* Bedienelemente (Segmented, Chips, Ablagen) direkt auf der Tafel:
+   dunkel-transluzent, damit die Zettel-Karten die einzigen großen
+   weißen Flächen bleiben. In Karten/Sheets gelten die Paper-Werte. */
+:root {
+  --seg-bg: rgba(238, 241, 236, 0.08);
+  --seg-border: rgba(238, 241, 236, 0.22);
+  --seg-active-bg: var(--club-500);
+  --seg-active-ink: var(--club-on);
+}
+
 /* ---------- Zettel-Scope: helle Karten auf der Tafel ----------
    Alles, was auf einer hellen Fläche liegt (Card, Sheet, Inputs,
    Chips mit bg-card/bg-card-2), bekommt lokal die Hell-Werte für
@@ -79,6 +89,10 @@
 .bg-card,
 .bg-card-2,
 .surface-paper {
+  --seg-bg: color-mix(in srgb, var(--club-700) 5%, #eceee9);
+  --seg-border: transparent;
+  --seg-active-bg: #ffffff;
+  --seg-active-ink: color-mix(in srgb, var(--club-950) 60%, #14161b);
   /* color neu deklarieren: vererbte Kreide-Farbe vom body überschreiben,
      damit Text ohne explizite Farbklasse in Karten dunkel bleibt. */
   color: var(--ink);

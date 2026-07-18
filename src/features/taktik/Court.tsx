@@ -9,53 +9,35 @@ import type { Pt } from './useBoardDrag'
  * Halbfeld = Angriffshälfte oben (nur anderer viewBox-Ausschnitt).
  *
  * Look "Kreidetafel": dunkle Tafel mit Wischspuren; die Spielfeldlinien
- * leuchten als LED in Vereinsblau von hinten durch die Tafel — bewusst
- * abgesetzt von allem, was "mit Kreide gezeichnet" ist (Figuren, Wege).
+ * sind — wie alles auf der Tafel — mit weißer Kreide gezogen: leicht
+ * wacklig (Turbulenz-Filter), korrekt vermessen, 9m gestrichelt.
  */
 
 export const COURT_FLOOR = 'color-mix(in srgb, var(--club-900) 12%, #191d20)'
 /* Kreide auf der Tafel */
 export const CHALK = '#eef1ec'
 export const CHALK_DIM = 'rgba(238, 241, 236, 0.6)'
-/* LED-Linien: blaues Glimmen + heller Kern */
-const LED_HALO = 'var(--club-500)'
-const LED_CORE = 'color-mix(in srgb, var(--club-300) 60%, #ffffff)'
-const AREA_FILL = 'color-mix(in srgb, var(--club-500) 15%, transparent)'
+const CHALK_LINE = 'rgba(238, 241, 236, 0.92)'
+const AREA_FILL = 'rgba(238, 241, 236, 0.05)'
 
 const VIEWBOX_FULL = '-1.1 -1.7 22.2 43.4'
 const VIEWBOX_HALF = '-1.1 -1.7 22.2 22.6'
 
-/** Die Linien einmal definiert — werden als Halo + Kern zweifach gemalt. */
-function LinePaths({ stroke, strokeWidth, opacity }: { stroke: string; strokeWidth: number; opacity?: number }) {
-  const s = { stroke, strokeWidth, opacity, fill: 'none', strokeLinecap: 'round' as const }
-  return (
-    <g {...s}>
-      {/* Außenlinien */}
-      <rect x={0} y={0} width={FIELD_W} height={FIELD_H} rx={0.3} />
-      {/* 6-m-Räume: zwei Viertelkreise um die Pfosten + gerades Mittelstück */}
-      <path d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" />
-      <path d="M2.5 40 A6 6 0 0 1 8.5 34 L11.5 34 A6 6 0 0 1 17.5 40" />
-      {/* 9-m-Linien (gestrichelt) */}
-      <path strokeDasharray="0.8 0.55" d="M0 2.96 A9 9 0 0 0 8.5 9 L11.5 9 A9 9 0 0 0 20 2.96" />
-      <path strokeDasharray="0.8 0.55" d="M0 37.04 A9 9 0 0 1 8.5 31 L11.5 31 A9 9 0 0 1 20 37.04" />
-      {/* Mittellinie */}
-      <line x1={0} y1={20} x2={20} y2={20} />
-      {/* 7-m-Striche */}
-      <line x1={9.5} y1={7} x2={10.5} y2={7} />
-      <line x1={9.5} y1={33} x2={10.5} y2={33} />
-      {/* 4-m-Marken */}
-      <line x1={9.65} y1={4} x2={10.35} y2={4} />
-      <line x1={9.65} y1={36} x2={10.35} y2={36} />
-    </g>
-  )
-}
-
 function FieldLines() {
+  const s = {
+    stroke: CHALK_LINE,
+    strokeWidth: 0.2,
+    fill: 'none',
+    strokeLinecap: 'round' as const,
+  }
   return (
     <g aria-hidden="true">
       <defs>
-        <filter id="led-glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="0.3" />
+        {/* Kreide-Wackler: verschiebt die Linien minimal entlang eines
+            Rauschfelds — Handstrich-Optik, Geometrie bleibt korrekt. */}
+        <filter id="chalk-rough" x="-8%" y="-8%" width="116%" height="116%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" seed="7" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="0.3" />
         </filter>
       </defs>
       <rect x={-1.1} y={-1.7} width={22.2} height={43.4} fill={COURT_FLOOR} />
@@ -63,14 +45,27 @@ function FieldLines() {
       <ellipse cx={5} cy={11} rx={8} ry={4.5} fill="rgba(255,255,255,0.035)" />
       <ellipse cx={15} cy={27} rx={9} ry={5} fill="rgba(255,255,255,0.03)" />
       <ellipse cx={7} cy={35} rx={7} ry={4} fill="rgba(255,255,255,0.04)" />
-      {/* Torraum-Zonen glimmen leicht */}
-      <path fill={AREA_FILL} d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" />
-      <path fill={AREA_FILL} d="M2.5 40 A6 6 0 0 1 8.5 34 L11.5 34 A6 6 0 0 1 17.5 40 Z" />
-      {/* LED-Linien: weiches Glimmen darunter, heller Kern darüber */}
-      <g filter="url(#led-glow)">
-        <LinePaths stroke={LED_HALO} strokeWidth={0.42} opacity={0.7} />
+      <g filter="url(#chalk-rough)">
+        {/* Torraum-Zonen: hauchdünn schraffiert wirkende Kreidefläche */}
+        <path fill={AREA_FILL} d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0 Z" />
+        <path fill={AREA_FILL} d="M2.5 40 A6 6 0 0 1 8.5 34 L11.5 34 A6 6 0 0 1 17.5 40 Z" />
+        {/* Außenlinien */}
+        <rect {...s} x={0} y={0} width={FIELD_W} height={FIELD_H} rx={0.3} />
+        {/* 6-m-Räume: zwei Viertelkreise um die Pfosten + gerades Mittelstück */}
+        <path {...s} d="M2.5 0 A6 6 0 0 0 8.5 6 L11.5 6 A6 6 0 0 0 17.5 0" />
+        <path {...s} d="M2.5 40 A6 6 0 0 1 8.5 34 L11.5 34 A6 6 0 0 1 17.5 40" />
+        {/* 9-m-Linien (gestrichelt) */}
+        <path {...s} strokeDasharray="0.8 0.55" d="M0 2.96 A9 9 0 0 0 8.5 9 L11.5 9 A9 9 0 0 0 20 2.96" />
+        <path {...s} strokeDasharray="0.8 0.55" d="M0 37.04 A9 9 0 0 1 8.5 31 L11.5 31 A9 9 0 0 1 20 37.04" />
+        {/* Mittellinie */}
+        <line {...s} x1={0} y1={20} x2={20} y2={20} />
+        {/* 7-m-Striche */}
+        <line {...s} x1={9.5} y1={7} x2={10.5} y2={7} />
+        <line {...s} x1={9.5} y1={33} x2={10.5} y2={33} />
+        {/* 4-m-Marken */}
+        <line {...s} x1={9.65} y1={4} x2={10.35} y2={4} />
+        <line {...s} x1={9.65} y1={36} x2={10.35} y2={36} />
       </g>
-      <LinePaths stroke={LED_CORE} strokeWidth={0.14} />
       {/* Tore in Vereinsgelb */}
       <rect x={8.5} y={-0.5} width={3} height={0.5} fill="var(--club-acc)" />
       <rect x={8.5} y={40} width={3} height={0.5} fill="var(--club-acc)" />
@@ -251,11 +246,15 @@ function TokenG({
           />
         </>
       ) : isOpp ? (
-        /* Gegnerin als Kreide-X */
-        <g stroke={CHALK_DIM} strokeWidth={0.3} strokeLinecap="round">
-          <line x1={-0.72} y1={-0.72} x2={0.72} y2={0.72} />
-          <line x1={0.72} y1={-0.72} x2={-0.72} y2={0.72} />
-        </g>
+        /* Gegnerin: gestrichelter, gedimmter Kreide-Kreis — klar als
+           Abwehr lesbar, ohne wie ein Fehler-X zu wirken. */
+        <circle
+          r={r}
+          fill="#20242a"
+          stroke={CHALK_DIM}
+          strokeWidth={0.14}
+          strokeDasharray="0.42 0.28"
+        />
       ) : (
         /* Eigene als Kreide-O: dunkler Kern, kräftiger Kreidering */
         <circle r={r} fill="#20242a" stroke={CHALK} strokeWidth={0.18} />
@@ -263,10 +262,10 @@ function TokenG({
       {recording && <circle r={r + 0.12} fill="none" stroke="#e9a23b" strokeWidth={0.24} />}
       {token.label && (
         <text
-          y={isOpp ? 1.68 : 0.34}
+          y={0.34}
           textAnchor="middle"
-          fontSize={isOpp ? 0.78 : 0.92}
-          fill={isOpp ? CHALK_DIM : CHALK}
+          fontSize={0.92}
+          fill={isOpp ? 'rgba(238,241,236,0.8)' : CHALK}
           style={{ fontFamily: 'var(--font-display)', fontWeight: 800, pointerEvents: 'none' }}
         >
           {token.label}

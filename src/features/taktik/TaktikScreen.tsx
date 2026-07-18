@@ -73,14 +73,14 @@ function Chip({
   children: ReactNode
 }) {
   return (
+    // Auf der Tafel: dunkel-transluzente Kreide-Chips, nicht weiß.
     <button
       onClick={onClick}
       aria-pressed={pressed}
       className={`inline-flex min-h-11 flex-none items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${
-        pressed
-          ? 'border-accent bg-accent-soft text-accent'
-          : 'border-line bg-card text-ink'
+        pressed ? 'border-accent bg-accent-soft text-accent' : 'text-ink'
       }`}
+      style={pressed ? undefined : { background: 'var(--seg-bg)', borderColor: 'var(--seg-border)' }}
     >
       {children}
     </button>
@@ -880,8 +880,8 @@ export default function TaktikScreen() {
               onPointerMove={matPointerMove}
               onPointerUp={matPointerEnd}
               onPointerCancel={matPointerEnd}
-              style={{ touchAction: 'none' }}
-              className="flex min-h-[60px] min-w-16 flex-none flex-col items-center justify-center gap-1 rounded-xl border border-line bg-card px-2 py-1.5 text-[10px] font-semibold text-muted active:border-accent"
+              style={{ touchAction: 'none', background: 'var(--seg-bg)', borderColor: 'var(--seg-border)' }}
+              className="flex min-h-[60px] min-w-16 flex-none flex-col items-center justify-center gap-1 rounded-xl border px-2 py-1.5 text-[10px] font-semibold text-muted active:border-accent"
             >
               <svg viewBox="-2 -2 4 4" className="h-6 w-6" aria-hidden="true">
                 <MatGlyph kind={k} />
@@ -1020,8 +1020,8 @@ function BoardThumb({ board }: { board: TacticsBoard }) {
   const H = half ? 64 : 96
   const mapX = (x: number) => 4 + x * (W - 8)
   const mapY = (y: number) => 4 + (half ? y / 0.5 : y) * (H - 8)
-  // Mini-Kreidetafel: LED-Linien in Vereinsblau, Kreide-Punkte als Figuren.
-  const led = 'color-mix(in srgb, var(--club-300) 75%, #ffffff)'
+  // Mini-Kreidetafel: weiße Kreide-Linien, Kreide-Punkte als Figuren.
+  const led = 'rgba(238, 241, 236, 0.65)'
   return (
     <svg
       width={W}

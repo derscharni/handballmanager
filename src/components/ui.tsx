@@ -98,15 +98,25 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div className="flex rounded-xl bg-card-2 border border-line p-0.5">
+    // Tafel: dunkel-transluzent mit blauer Aktiv-Fläche; in Karten
+    // hell mit weißer Aktiv-Fläche (--seg-* Tokens, theme.css).
+    <div
+      className="flex rounded-xl p-0.5"
+      style={{ background: 'var(--seg-bg)', border: '1px solid var(--seg-border)' }}
+    >
       {options.map((o) => (
         <button
           key={o.value}
           onClick={() => onChange(o.value)}
           aria-pressed={o.value === value}
           className={`flex-1 min-h-11 rounded-[10px] px-2 text-[13px] font-semibold transition-colors ${
-            o.value === value ? 'bg-card text-ink shadow-card' : 'text-muted'
+            o.value === value ? '' : 'text-muted'
           }`}
+          style={
+            o.value === value
+              ? { background: 'var(--seg-active-bg)', color: 'var(--seg-active-ink)', boxShadow: 'var(--shadow)' }
+              : undefined
+          }
         >
           {o.label}
         </button>
